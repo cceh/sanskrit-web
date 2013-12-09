@@ -1,0 +1,2 @@
+module DictHelper
+end

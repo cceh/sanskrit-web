@@ -1,0 +1,19 @@
+- content_for(:title, 'Cologne Digital Sanskrit Dictionaries (search)')
+
+%h1 Cologne Digital Sanskrit Dictionaries
+
+= form_tag('/dict', method: 'get') do
+  %div
+    = label_tag(:s, 'term:')
+    = text_field_tag(:s)
+    - iscripts = options_for_select([['SLP1', :spl1], ['Harvad-Kyoto', :hk], ['Devanagari', :devanagari]])
+    = select_tag(:iscript, iscripts)
+  %div
+    = label_tag(:dict, 'dictionary')
+    - dicts = options_for_select([['Monier Williams Sanskrit-English', :mw], ['Boehtlingk + Schmidt Sanskrit-German', :boehtlingk_schmidt], ['Boehtlingk & Roth Sanskrit-German', :boehtlingk_roth], ['Wilson Sanskrit-English', :wilson]])
+    = select_tag(:dict, dicts, multiple: true)
+  %div
+    = label_tag(:oscript, 'output script')
+    - oscripts = options_for_select([['Devanagari only', :devanagari], ['Devanagari + SLP1', :spl1], ['Devanagari + Harvad-Kyoto', :hk]])
+    = select_tag(:oscript, oscripts)
+  %input(type='submit' value='Search')
