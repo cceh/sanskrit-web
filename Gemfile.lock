@@ -1,3 +1,8 @@
+PATH
+  remote: ~/Projects/t13n
+  specs:
+    t13n (0.1.dev)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -139,5 +144,6 @@ DEPENDENCIES
   rails (= 4.0.2)
   sass-rails (~> 4.0.0)
   sqlite3
+  t13n!
   therubyracer
   uglifier (>= 1.3.0)

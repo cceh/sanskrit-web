@@ -47,6 +47,9 @@ gem 'puma'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# Sanskrit <-> Latin transliteration
+gem 't13n', path: '~/Projects/t13n'
+
 group :development do
 	# Runtime developer console
 	gem 'pry'
