@@ -8,7 +8,8 @@
 /.bundle
 
 # Ignore the database
-/db
+/db/*.sqlite3
+/store/
 
 # Ignore all logfiles and tempfiles.
 /log/*.log

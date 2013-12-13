@@ -50,6 +50,12 @@ gem 'puma'
 # Sanskrit <-> Latin transliteration
 gem 't13n', path: '~/Projects/t13n'
 
+# eXist is contacted over REST
+gem 'rest-client'
+
+# Nokogiri as XML processor
+gem 'nokogiri'
+
 group :development do
 	# Runtime developer console
 	gem 'pry'

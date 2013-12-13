@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+mw:
+  handle: mw
+  metadata_path: mw.metadata.xml
+  content_path: mw.tei
+
+boehtlingk_schmidt:
+  handle: boehtlingk_schmidt
+  metadata_path: boehtlingk_schmidt.metadata.xml
+  content_path: boehtlingk_schmidt.tei

@@ -1,0 +1,13 @@
+- dict_param = "dict=mw"
+%dl.entry
+  %dt.lemma
+    %a{:href => "/dict/#{result[:lemma]}?#{dict_param}"}
+      = result[:lemma]
+    - result[:transliterations].each do |method, string|
+      %dt.transliteration
+        - transliterated = result[:transliterations][method]
+        %a{:href => "/dict/#{transliterated}?iscript=#{method}&#{dict_param}"}
+          = transliterated
+  %div.senses
+    - result[:senses].each do |sense|
+      %dd.sense= sense
