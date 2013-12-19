@@ -72,7 +72,7 @@ class Dictionary < ActiveRecord::Base
 	def query_xml_for_term(term)
 		query =<<EOD
 <query xmlns="http://exist.sourceforge.net/NS/exist" xmlns:tei="http://www.tei-c.org/ns/1.0">
-	<text>//tei:entry[.//tei:orth = "#{term}"]</text>
+	<text>//tei:entry[.//tei:orth[contains(., "#{term}")]]</text>
 </query>
 EOD
 		return query
