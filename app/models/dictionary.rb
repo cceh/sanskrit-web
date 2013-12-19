@@ -1,5 +1,6 @@
-require 'rest_client'
 require 'nokogiri'
+require 'rest_client'
+require 't13n/core_ext/string'
 
 class Dictionary < ActiveRecord::Base
 	class DBError < Exception
@@ -24,9 +25,10 @@ class Dictionary < ActiveRecord::Base
 		tei_entries = raw_xml_matches(term)
 
 		entries = tei_entries.map do |tei|
-			lemma = "अंश्" # FIXME: replace with real entry
+			raw_lemma = tei.at('.//tei:orth', NS).text
+			lemma = raw_lemma.transliterate(:Deva)
 			transliterations = {
-				:slp1 => "aMS",
+				:slp1 => lemma.transliterate(:Latn, :method => :slp1)
 			}
 			senses = tei.xpath('.//tei:sense', NS).map(&:text)
 			image_refs = []
