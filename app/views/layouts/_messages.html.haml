@@ -1,4 +1,4 @@
-%div.messages
+%aside.messages
   - flash.each do |name, msg|
     - if msg.is_a?(String)
-      %div{ :class => name }= msg
+      %p{ :class => name }= msg
