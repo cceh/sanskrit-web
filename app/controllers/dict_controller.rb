@@ -46,7 +46,7 @@ class DictController < ApplicationController
 
 		params[:iscript] ||= 'slp1'
 		params[:oscript] ||= 'devanagari'
-		params[:dict] ||= []
+		params[:dict] ||= ['mw'] # FIXME: use all dictionaries if no dict has been specified
 	end
 
 	def validate_params
