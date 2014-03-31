@@ -7,12 +7,12 @@ class DictController < ApplicationController
 		@query = {}
 		@results = {}
 
-		has_search = !params[:s].nil?
+		has_search = !params[:q].nil?
 		if !has_search
 			return
 		end
 
-		term = params[:s]
+		term = params[:q]
 		iscript = params[:iscript] # TODO: transliterate if needed
 		oscript = params[:oscript] # TODO: add transliteration if needed
 		dicts = params[:dict]
@@ -40,7 +40,7 @@ class DictController < ApplicationController
 	end
 
 	def default_params
-		if !params[:s]
+		if !params[:q]
 			return
 		end
 
