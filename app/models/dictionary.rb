@@ -22,7 +22,8 @@ class Dictionary < ActiveRecord::Base
 	}
 
 	def matches(term)
-		tei_entries = raw_xml_matches(term)
+		query_exact = DictQuery.exact(term)
+		tei_entries = query_exact.results_xml
 
 		entries = tei_entries.map do |tei|
 			raw_lemma = tei.at('.//tei:orth', NS).text
@@ -44,39 +45,67 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
-	def raw_xml_matches(term)
-		# FIXME: take dict handle into account
+	class DictQuery
+		def self.exact(term)
+			query = "//tei:entry[.//tei:orth[. = '#{term}']]" # FIXME: escape parameters
+			qe = XQueryExecutor.new('monier.tei', query) # FIXME: take dict handle into account
 
-		dict = RestClient::Resource.new EXIST_REST_ENDPOINT
-
-		query = query_xml_for_term(term)
-
-		opts = {
-			:content_type => 'application/xml'
-		}
-
-		begin
-			response = dict.post(query, opts)
-		rescue Exception => e
-			raise DBError.new(dict, e)
+			return qe
 		end
 
-		# TODO: check for HTTP errors/status codes
+		def self.similar(term)
+			# TODO: implement search for "similar" terms
 
-		xml_response = Nokogiri::XML(response)
-		tei_entries = xml_response.xpath('/exist:result/tei:entry', NS)
+			# xpath = "//tei:entry[.//tei:orth[contains(., '#{term}')]]"
 
-		return tei_entries
+			return nil
+		end
+
+		def self.related(term)
+			# TODO: implement search for "related" terms
+		end
 	end
 
-	def query_xml_for_term(term)
-		xpath = "//tei:entry[.//tei:orth[contains(., '#{term}')]]"
+	class XQueryExecutor
+		def initialize(dict, query)
+			@dict = dict
+			@query = query
+		end
 
-		query =<<EOD
+		def results_xml
+			dict_url = EXIST_REST_ENDPOINT + '/' + @dict
+			dict = RestClient::Resource.new dict_url
+
+			query_message = query_message(@query)
+
+			opts = {
+				:content_type => 'application/xml'
+			}
+
+			begin
+				response = dict.post(query_message, opts)
+			rescue Exception => e
+				raise DBError.new(dict, e)
+			end
+
+			# TODO: check for HTTP errors/status codes
+
+			xml_response = Nokogiri::XML(response)
+			if xml_response.root.name == 'exception'
+				raise DBError.new(dict, xml_response.xpath('//message')[0].text())
+			end
+			tei_entries = xml_response.xpath('/exist:result/tei:entry', NS)
+
+			return tei_entries
+		end
+
+		def query_message(query)
+			message =<<EOD
 <query xmlns="http://exist.sourceforge.net/NS/exist" xmlns:tei="http://www.tei-c.org/ns/1.0">
-	<text>#{xpath}</text>
+	<text>#{query}</text>
 </query>
 EOD
-		return query
+			return message
+		end
 	end
 end
