@@ -18,15 +18,29 @@
     = select_tag(:oscript, oscripts)
   %input(type='submit' value='Search')
 
-- if !@results.empty?
-  %section.results
-    %h2 Found matches
+- if !@results[:exact].empty?
+  %section.results.exact
+    %h2 Exact matches
     %details
-      - total_results = @results.map { |d,r| r.count }.inject(&:+)
+      - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+)
       %summary= "#{total_results} results"
-      - @results.each do |dict, results|
+      - @results[:exact].each do |dict, results|
         %p= "#{results.count} results in #{dict.handle}"
-    - @results.each do |dict, results|
+    - @results[:exact].each do |dict, results|
+      %div
+        %p= "Matches in #{dict.handle}"
+        - results.each do |result|
+          = render 'entry', :result => result
+
+- if !@results[:similar].empty?
+  %section.results.similar
+    %h2 Similar matches
+    %details
+      - total_results = @results[:similar].map { |d,r| r.count }.inject(&:+)
+      %summary= "#{total_results} results"
+      - @results[:similar].each do |dict, results|
+        %p= "#{results.count} results in #{dict.handle}"
+    - @results[:similar].each do |dict, results|
       %div
         %p= "Matches in #{dict.handle}"
         - results.each do |result|

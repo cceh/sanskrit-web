@@ -5,7 +5,10 @@ class DictController < ApplicationController
 	# GET /dict
 	def index
 		@query = {}
-		@results = {}
+		@results = {
+			:exact => {},
+			:similar => {},
+		}
 
 		has_search = !params[:q].nil?
 		if !has_search
@@ -27,8 +30,8 @@ class DictController < ApplicationController
 		begin
 			dicts.each do |dict_handle|
 				dict = Dictionary.find_by handle: dict_handle
-				results = dict.matches(term)
-				@results[dict] = results
+				results = dict.exact_matches(term)
+				@results[:exact][dict] = results
 			end
 		rescue Dictionary::DBError => e
 			flash.now[:error] = "Error during search: #{e.class} #{e.message}"

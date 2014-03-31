@@ -21,7 +21,7 @@ class Dictionary < ActiveRecord::Base
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
 
-	def matches(term)
+	def exact_matches(term)
 		query_exact = DictQuery.exact(term)
 		tei_entries = query_exact.results_xml
 
