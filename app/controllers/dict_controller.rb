@@ -31,7 +31,7 @@ class DictController < ApplicationController
 				@results[dict] = results
 			end
 		rescue Dictionary::DBError => e
-			flash[:error] = "Error during search: #{e.class} #{e.message}"
+			flash.now[:error] = "Error during search: #{e.class} #{e.message}"
 		end
 	end
 
