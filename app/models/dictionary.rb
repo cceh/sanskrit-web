@@ -39,6 +39,7 @@ class Dictionary < ActiveRecord::Base
 				:transliterations => transliterations,
 				:senses => senses,
 				:image_refs => image_refs,
+				:raw => tei.to_xml,
 			}
 		end
 
