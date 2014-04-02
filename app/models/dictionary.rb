@@ -95,6 +95,7 @@ class Dictionary < ActiveRecord::Base
 				raise DBError.new(dict, e)
 			end
 
+			Rails.logger.debug "received XML response\n#{response}"
 			# TODO: check for HTTP errors/status codes
 
 			xml_response = Nokogiri::XML(response)
