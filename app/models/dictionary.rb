@@ -102,7 +102,7 @@ class Dictionary < ActiveRecord::Base
 			if xml_response.root.name == 'exception'
 				raise DBError.new(dict, xml_response.xpath('//message')[0].text())
 			end
-			tei_entries = xml_response.xpath('/exist:result/tei:entry', NS)
+			tei_entries = xml_response.xpath('/exist:result/tei:*', NS)
 
 			return tei_entries
 		end
