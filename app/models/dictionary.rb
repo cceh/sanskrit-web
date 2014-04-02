@@ -25,21 +25,26 @@ class Dictionary < ActiveRecord::Base
 		query_exact = DictQuery.exact(term)
 		tei_entries = query_exact.results_xml
 
-		entries = tei_entries.map do |tei|
-			raw_lemma = tei.at('.//tei:orth', NS).text
+		entries = []
+
+		# extract the top level <entry> or <re> elements
+		tei_entries.each do |tei|
+			raw_lemma = tei.at('./tei:form/tei:orth', NS).text
+
 			lemma = raw_lemma.transliterate(:Deva)
 			transliterations = {
 				:slp1 => lemma.transliterate(:Latn, :method => :slp1)
 			}
-			senses = tei.xpath('.//tei:sense', NS).map(&:text)
-			image_refs = []
+			# FIXME: make transliteration a dictionary from all the words present in the XML to all the  possible transliterations
 
-			{
+			side_data = {
 				:lemma => lemma,
 				:transliterations => transliterations,
-				:senses => senses,
-				:image_refs => image_refs,
-				:raw => tei.to_xml,
+			}
+
+			entries << {
+				:entry => tei,
+				:side_data => side_data,
 			}
 		end
 
@@ -48,7 +53,7 @@ class Dictionary < ActiveRecord::Base
 
 	class DictQuery
 		def self.exact(term)
-			query = "//tei:entry[.//tei:orth[. = '#{term}']]" # FIXME: escape parameters
+			query = "//*[self::tei:entry or self::tei:re][./tei:form/tei:orth/text() = '#{term}']" # FIXME: escape parameters
 			qe = XQueryExecutor.new('monier.tei', query) # FIXME: take dict handle into account
 
 			return qe
@@ -78,6 +83,7 @@ class Dictionary < ActiveRecord::Base
 			dict = RestClient::Resource.new dict_url
 
 			query_message = query_message(@query)
+			Rails.logger.debug "about to run the query\n#{query_message}"
 
 			opts = {
 				:content_type => 'application/xml'

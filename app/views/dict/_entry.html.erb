@@ -1,0 +1,15 @@
+<%# FIXME: use the 'morpheus' gem or something similar %>
+<%
+	require 'nokogiri'
+
+	entry = Nokogiri::XML(entry.to_xml)
+
+	entry.root << side_data_to_xml(side_data).root
+
+Rails.logger.debug entry
+
+	xslt = Nokogiri::XSLT(File.read(Dir.pwd + '/app/views/dict/' + '_entry.html.xslt'))
+
+	html = xslt.transform(entry).root.to_xml
+%>
+<%= html.html_safe %>
