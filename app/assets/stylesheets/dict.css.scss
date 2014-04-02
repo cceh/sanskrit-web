@@ -10,8 +10,32 @@ dl {
 	margin-left: 2em;
 }
 
+dt, div.transliterations {
+	display: inline-block;
+}
+
+div.transliterations {
+	font-size: 80%;
+}
+
 dt {
-	font-weight: bold;
+	&.lemma {
+		font-weight: bold;
+	}
+
+	.method {
+		text-transform: uppercase;
+	}
+
+	&.transliteration a {
+		text-decoration: none;
+		color: black;
+
+		&:hover {
+			color: blue;
+			text-decoration: underline;
+		}
+	}
 }
 
 dd {

@@ -10,7 +10,13 @@
 		<xsl:element name="dl">
 			<!-- FIXME: find a better way to show lemmas and transliterations -->
 			<xsl:apply-templates select="$side-data/rails:lemma"/>
-			<xsl:apply-templates select="$side-data/rails:transliterations/rails:*"/>
+			<xsl:element name="div">
+				<xsl:attribute name="class">transliterations</xsl:attribute>
+
+				<xsl:text>(</xsl:text>
+				<xsl:apply-templates select="$side-data/rails:transliterations/rails:*"/>
+				<xsl:text>)</xsl:text>
+			</xsl:element>
 
 			<xsl:apply-templates select="tei:sense"/>
 		</xsl:element>
@@ -50,6 +56,11 @@
 					<xsl:value-of select="$method"/>
 				</xsl:attribute>
 
+				<xsl:element name="span">
+					<xsl:attribute name="class">method</xsl:attribute>
+					<xsl:value-of select="$method"/>
+				</xsl:element>
+				<xsl:text>: </xsl:text>
 				<xsl:value-of select="$lemma"/>
 			</xsl:element>
 		</xsl:element>
