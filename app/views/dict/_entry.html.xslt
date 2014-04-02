@@ -6,6 +6,8 @@
                 version="1.0">
 	<xsl:variable name="side-data" select="//rails:side-data"/>
 
+	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
+
 	<xsl:template match="/*">
 		<xsl:element name="dl">
 			<!-- FIXME: find a better way to show lemmas and transliterations -->
@@ -68,7 +70,26 @@
 
 	<xsl:template match="tei:sense">
 		<dd class="sense">
-			<xsl:value-of select="."/>
+			<xsl:apply-templates/>
 		</dd>
+	</xsl:template>
+
+	<xsl:template match="tei:cit">
+		<!-- FIXME: use a proper citational URI scheme -->
+		<a href="/biblio/FIXME">
+			<xsl:value-of select="normalize-space(.)"/>
+		</a>
+
+		<xsl:value-of select="$space-char"/>
+	</xsl:template>
+
+	<xsl:template match="tei:note[tei:ref]">
+		<!-- FIXME: link to the scan using a proper URI scheme -->
+		<xsl:value-of select="$space-char"/>
+		<xsl:text>[in scan </xsl:text>
+		<a href="/scan/FIXME">
+			<xsl:value-of select="tei:ref"/>
+		</a>
+		<xsl:text>]</xsl:text>
 	</xsl:template>
 </xsl:stylesheet>
