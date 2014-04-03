@@ -31,5 +31,4 @@
         %p= "Matches in #{dict.handle}"
         - results.each do |result|
           = render 'entry', :entry => result[:entry], :side_data => result[:side_data]
-          %pre
-            %code= result[:entry].to_xml
+          = render 'raw_entry', :entry => result[:entry]

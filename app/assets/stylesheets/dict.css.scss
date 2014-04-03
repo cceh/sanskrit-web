@@ -2,6 +2,10 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+details, summary {
+	display: block; // FIXME: use a reset style
+}
+
 details p {
 	margin-left: 2em;
 }
@@ -40,4 +44,12 @@ dt {
 
 dd {
 	line-height: 2;
+}
+
+details.raw-tei {
+	margin-left: 4em;
+
+	pre {
+		font-size: 90%;
+	}
 }
