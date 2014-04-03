@@ -14,7 +14,7 @@ class Dictionary < ActiveRecord::Base
 		end
 	end
 
-	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db/dict'
+	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db'
 
 	NS = {
 		'exist' => 'http://exist.sourceforge.net/NS/exist',
@@ -22,7 +22,7 @@ class Dictionary < ActiveRecord::Base
 	}
 
 	def exact_matches(term)
-		query_exact = DictQuery.exact(term)
+		query_exact = DictQuery.new('monier').exact(term) # FIXME: use dict code
 		tei_entries = query_exact.results_xml
 
 		entries = []
@@ -52,14 +52,19 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	class DictQuery
-		def self.exact(term)
+		def initialize(dict)
+			@dict = dict
+			@dict_db = "dict/#{dict}.tei"
+		end
+
+		def exact(term)
 			query = "//*[self::tei:entry or self::tei:re][./tei:form/tei:orth/text() = '#{term}']" # FIXME: escape parameters
-			qe = XQueryExecutor.new('monier.tei', query) # FIXME: take dict handle into account
+			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
 		end
 
-		def self.similar(term)
+		def similar(term)
 			# TODO: implement search for "similar" terms
 
 			# xpath = "//tei:entry[.//tei:orth[contains(., '#{term}')]]"
@@ -67,23 +72,23 @@ class Dictionary < ActiveRecord::Base
 			return nil
 		end
 
-		def self.related(term)
+		def related(term)
 			# TODO: implement search for "related" terms
 		end
 	end
 
 	class XQueryExecutor
-		def initialize(dict, query)
-			@dict = dict
+		def initialize(dict_db, query)
+			@dict_db = dict_db
 			@query = query
 		end
 
 		def results_xml
-			dict_url = EXIST_REST_ENDPOINT + '/' + @dict
+			dict_url = EXIST_REST_ENDPOINT + '/' + @dict_db
 			dict = RestClient::Resource.new dict_url
 
 			query_message = query_message(@query)
-			Rails.logger.debug "about to run the query\n#{query_message}"
+			Rails.logger.debug "about to run on #{dict_url} the query\n#{query_message}"
 
 			opts = {
 				:content_type => 'application/xml'
