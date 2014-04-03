@@ -5,7 +5,7 @@
 = form_tag('/dict', method: 'get') do
   %div
     = label_tag(:q, 'term:')
-    = text_field_tag(:q)
+    = text_field_tag(:q, @query[:term])
     - iscripts = options_for_select([['SLP1', :spl1], ['Harvad-Kyoto', :hk], ['Devanagari', :devanagari]])
     = select_tag(:iscript, iscripts)
   %div
