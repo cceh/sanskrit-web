@@ -70,7 +70,11 @@
 
 	<xsl:template match="tei:sense">
 		<dd class="sense">
-			<xsl:apply-templates/>
+			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
+
+			<xsl:call-template name="provenance-info">
+				<xsl:with-param name="sense" select="."/>
+			</xsl:call-template>
 		</dd>
 	</xsl:template>
 
@@ -83,13 +87,26 @@
 		<xsl:value-of select="$space-char"/>
 	</xsl:template>
 
-	<xsl:template match="tei:note[tei:ref]">
-		<!-- FIXME: link to the scan using a proper URI scheme -->
+	<xsl:template name="provenance-info">
+		<xsl:param name="sense"/>
+		<xsl:variable name="dictionary" select="$side-data/rails:dict"/>
+
 		<xsl:value-of select="$space-char"/>
-		<xsl:text>[in scan </xsl:text>
-		<a href="/scan/FIXME">
-			<xsl:value-of select="tei:ref"/>
-		</a>
-		<xsl:text>]</xsl:text>
+
+		<cite class="provenance-info">
+			<xsl:text>(</xsl:text>
+			<abbr class="dictionary">
+				<a href="/dictionary/{$dictionary}">
+					<xsl:value-of select="$dictionary"/>
+				</a>
+			</abbr>
+
+			<xsl:text> at page </xsl:text>
+			<!-- FIXME: link to the scan using a proper URI scheme -->
+			<a href="/scan/FIXME">
+				<xsl:value-of select="$sense/tei:note/tei:ref"/>
+			</a>
+			<xsl:text>)</xsl:text>
+		</cite>
 	</xsl:template>
 </xsl:stylesheet>

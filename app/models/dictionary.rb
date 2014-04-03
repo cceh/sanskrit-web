@@ -22,7 +22,9 @@ class Dictionary < ActiveRecord::Base
 	}
 
 	def exact_matches(term)
-		query_exact = DictQuery.new('monier').exact(term) # FIXME: use dict code
+		dict = 'monier' # FIXME: use dict code from DB
+
+		query_exact = DictQuery.new(dict).exact(term)
 		tei_entries = query_exact.results_xml
 
 		entries = []
@@ -38,6 +40,7 @@ class Dictionary < ActiveRecord::Base
 			# FIXME: make transliteration a dictionary from all the words present in the XML to all the  possible transliterations
 
 			side_data = {
+				:dict => dict,
 				:lemma => lemma,
 				:transliterations => transliterations,
 			}
