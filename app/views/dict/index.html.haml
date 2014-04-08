@@ -32,3 +32,18 @@
         - results.each do |result|
           = render 'entry', :entry => result[:entry], :side_data => result[:side_data]
           = render 'raw_entry', :entry => result[:entry]
+
+- if !@results[:similar].empty?
+  %section.results.similar
+    %h2 Similar matches
+    %details
+      - total_results = @results[:similar].map { |d,r| r.count }.inject(&:+)
+      %summary= "#{total_results} results"
+      - @results[:similar].each do |dict, results|
+        %p= "#{results.count} results in #{dict.handle}"
+    - @results[:similar].each do |dict, results|
+      %div
+        %p= "Matches in #{dict.handle}"
+        %ul
+          - results.each do |result|
+            = render 'similar_entry', :entry => result[:entry], :side_data => result[:side_data]

@@ -21,11 +21,10 @@ class Dictionary < ActiveRecord::Base
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
 
-	def exact_matches(term)
-		dict = 'monier' # FIXME: use dict code from DB
+	def matches(query)
+		dict = 'monier' # FIXME: use content_path from DB
 
-		query_exact = DictQuery.new(dict).exact(term)
-		tei_entries = query_exact.results_xml
+		tei_entries = query.results_xml
 
 		entries = []
 
@@ -54,6 +53,16 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
+	def exact_matches(term)
+		dict = 'monier' # FIXME: use content_path from DB
+		return matches(DictQuery.new(dict).exact(term))
+	end
+
+	def similar_matches(term)
+		dict = 'monier' # FIXME: use content_path from DB
+		return matches(DictQuery.new(dict).similar(term))
+	end
+
 	class DictQuery
 		def initialize(dict)
 			@dict = dict
@@ -68,11 +77,10 @@ class Dictionary < ActiveRecord::Base
 		end
 
 		def similar(term)
-			# TODO: implement search for "similar" terms
+			query = "//*[self::tei:entry or self::tei:re][contains(./tei:form/tei:orth/text(), '#{term}')][./tei:form/tei:orth/text() != '#{term}']" # FIXME: escape parameters
+			qe = XQueryExecutor.new(@dict_db, query)
 
-			# xpath = "//tei:entry[.//tei:orth[contains(., '#{term}')]]"
-
-			return nil
+			return qe
 		end
 
 		def related(term)

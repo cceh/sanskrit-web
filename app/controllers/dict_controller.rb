@@ -30,8 +30,12 @@ class DictController < ApplicationController
 		begin
 			dicts.each do |dict_handle|
 				dict = Dictionary.find_by handle: dict_handle
-				results = dict.exact_matches(term)
-				@results[:exact][dict] = results
+
+				exact_results = dict.exact_matches(term)
+				@results[:exact][dict] = exact_results
+
+				similar_results = dict.similar_matches(term)
+				@results[:similar][dict] = similar_results
 			end
 		rescue Dictionary::DBError => e
 			flash.now[:error] = "Error during search: #{e.class} #{e.message}"
