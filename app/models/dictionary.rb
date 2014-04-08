@@ -4,13 +4,15 @@ require 't13n/core_ext/string'
 
 class Dictionary < ActiveRecord::Base
 	class DBError < Exception
-		def initialize(connection, error)
+		def initialize(connection, query, error)
 			@connection = connection
+			@query = query
 			@error = error
 		end
 
 		def message
-			"Cannot connect to <#{@connection.url}>, #{@error}"
+			# XXX: maybe move the query to an accessor method?
+			"Cannot connect to <#{@connection.url}>, #{@error} (query: #{@query})"
 		end
 	end
 
@@ -110,7 +112,7 @@ class Dictionary < ActiveRecord::Base
 			begin
 				response = dict.post(query_message, opts)
 			rescue Exception => e
-				raise DBError.new(dict, e)
+				raise DBError.new(dict, @query, e)
 			end
 
 			Rails.logger.debug "received XML response\n#{response}"
@@ -118,7 +120,7 @@ class Dictionary < ActiveRecord::Base
 
 			xml_response = Nokogiri::XML(response)
 			if xml_response.root.name == 'exception'
-				raise DBError.new(dict, xml_response.xpath('//message')[0].text())
+				raise DBError.new(dict, @query, xml_response.xpath('//message')[0].text())
 			end
 			tei_entries = xml_response.xpath('/exist:result/tei:*', NS)
 
