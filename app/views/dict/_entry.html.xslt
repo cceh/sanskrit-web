@@ -78,6 +78,12 @@
 		</dd>
 	</xsl:template>
 
+	<xsl:template match="tei:gram">
+		<em class="gram">
+			<xsl:value-of select="."/>
+		</em>
+	</xsl:template>
+
 	<xsl:template match="tei:cit">
 		<!-- FIXME: use a proper citational URI scheme -->
 		<a href="/biblio/FIXME">
