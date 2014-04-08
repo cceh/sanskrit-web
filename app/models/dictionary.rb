@@ -64,20 +64,22 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	class DictQuery
+		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
+
 		def initialize(dict)
 			@dict = dict
 			@dict_db = "dict/#{dict}.tei"
 		end
 
 		def exact(term)
-			query = "//*[self::tei:entry or self::tei:re][./tei:form/tei:orth/text() = '#{term}']" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']" # FIXME: escape parameters
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
 		end
 
 		def similar(term)
-			query = "//*[self::tei:entry or self::tei:re][contains(./tei:form/tei:orth/text(), '#{term}')][./tei:form/tei:orth/text() != '#{term}']" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '#{term}')][./tei:form/tei:orth/text() != '#{term}']" # FIXME: escape parameters
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
