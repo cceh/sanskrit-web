@@ -128,9 +128,10 @@ class Dictionary < ActiveRecord::Base
 		end
 
 		def query_message(query)
+			# FIXME: sanitize query parameters
 			message =<<EOD
 <query xmlns="http://exist.sourceforge.net/NS/exist" xmlns:tei="http://www.tei-c.org/ns/1.0">
-	<text>#{query}</text>
+	<text>#{query.gsub('&', '&amp;').gsub('<', '&lt;')}</text>
 </query>
 EOD
 			return message
