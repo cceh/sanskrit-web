@@ -32,6 +32,15 @@
         - results.each do |result|
           = render 'entry', :entry => result[:entry], :side_data => result[:side_data]
           = render 'raw_entry', :entry => result[:entry]
+    %h3 Adjacent lemmas
+    %ul.adjacent
+      - @results[:preceding].each do |dict, results|
+        - results.each do |result|
+          = render 'adjacent_entry', :entry => result[:entry], :side_data => result[:side_data]
+      %li.term= "#{@query[:term]}"
+      - @results[:following].each do |dict, results|
+        - results.each do |result|
+          = render 'adjacent_entry', :entry => result[:entry], :side_data => result[:side_data]
 
 - if !@results[:similar].empty?
   %section.results.similar

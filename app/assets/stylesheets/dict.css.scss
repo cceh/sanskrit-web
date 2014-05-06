@@ -53,3 +53,19 @@ details.raw-tei {
 		font-size: 90%;
 	}
 }
+
+ul.adjacent {
+	text-align: center;
+
+	li {
+		display: inline;
+	}
+
+	li.term {
+		border: solid thin black;
+		padding: 0.4em;
+
+		margin-left: 1em;
+		margin-right: 1em;
+	}
+}

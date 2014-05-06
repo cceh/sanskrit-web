@@ -65,6 +65,16 @@ class Dictionary < ActiveRecord::Base
 		return matches(DictQuery.new(dict).similar(term))
 	end
 
+	def preceding_matches(term)
+		dict = 'monier' # FIXME: use content_path from DB
+		return matches(DictQuery.new(dict).preceding(term, 3)) # FIXME: make number configurable
+	end
+
+	def following_matches(term)
+		dict = 'monier' # FIXME: use content_path from DB
+		return matches(DictQuery.new(dict).following(term, 3)) # FIXME: make number configurable
+	end
+
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 
@@ -87,8 +97,19 @@ class Dictionary < ActiveRecord::Base
 			return qe
 		end
 
-		def related(term)
-			# TODO: implement search for "related" terms
+		def preceding(term, num)
+			# FIXME: the order/position() is wrong, so the wrong set is returned
+			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']/preceding::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
+			qe = XQueryExecutor.new(@dict_db, query)
+
+			return qe
+		end
+
+		def following(term, num)
+			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']/following::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
+			qe = XQueryExecutor.new(@dict_db, query)
+
+			return qe
 		end
 	end
 

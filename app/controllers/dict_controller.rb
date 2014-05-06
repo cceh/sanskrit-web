@@ -8,6 +8,8 @@ class DictController < ApplicationController
 		@results = {
 			:exact => {},
 			:similar => {},
+			:preceding => {},
+			:following => {},
 		}
 
 		has_search = !params[:q].nil?
@@ -36,6 +38,12 @@ class DictController < ApplicationController
 
 				similar_results = dict.similar_matches(term)
 				@results[:similar][dict] = similar_results
+
+				preceding_results = dict.preceding_matches(term)
+				@results[:preceding][dict] = preceding_results
+
+				following_results = dict.following_matches(term)
+				@results[:following][dict] = following_results
 			end
 		rescue Dictionary::DBError => e
 			flash.now[:error] = "Error during search: #{e.class} #{e.message}"
