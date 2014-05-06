@@ -77,6 +77,7 @@ class Dictionary < ActiveRecord::Base
 
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
+		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
 
 		def initialize(dict)
 			@dict = dict
@@ -84,14 +85,14 @@ class Dictionary < ActiveRecord::Base
 		end
 
 		def exact(term)
-			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]"
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
 		end
 
 		def similar(term)
-			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '#{term}')][./tei:form/tei:orth/text() != '#{term}']" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '#{term}')][not(#{ORTH_EQUALS[term]})]"
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
@@ -99,14 +100,14 @@ class Dictionary < ActiveRecord::Base
 
 		def preceding(term, num)
 			# FIXME: the order/position() is wrong, so the wrong set is returned
-			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']/preceding::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/preceding::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
 		end
 
 		def following(term, num)
-			query = "//*[#{IS_DICT_ENTRY}][./tei:form/tei:orth/text() = '#{term}']/following::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/following::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
 			qe = XQueryExecutor.new(@dict_db, query)
 
 			return qe
