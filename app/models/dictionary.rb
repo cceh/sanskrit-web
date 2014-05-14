@@ -1,32 +1,15 @@
-require 'nokogiri'
-require 'rest_client'
 require 't13n/core_ext/string'
+require 'xpathquery'
 
 class Dictionary < ActiveRecord::Base
-	class DBError < Exception
-		def initialize(connection, query, error)
-			@connection = connection
-			@query = query
-			@error = error
-		end
-
-		def message
-			# XXX: maybe move the query to an accessor method?
-			"Cannot connect to <#{@connection.url}>, #{@error} (query: #{@query})"
-		end
-	end
-
 	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db'
 
 	NS = {
-		'exist' => 'http://exist.sourceforge.net/NS/exist',
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
 
-	def matches(query)
+	def matches(tei_entries)
 		dict = 'monier' # FIXME: use content_path from DB
-
-		tei_entries = query.results_xml
 
 		entries = []
 
@@ -81,82 +64,29 @@ class Dictionary < ActiveRecord::Base
 
 		def initialize(dict)
 			@dict = dict
-			@dict_db = "dict/#{dict}.tei"
+			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict}.tei"
+			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
 		end
 
 		def exact(term)
 			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]"
-			qe = XQueryExecutor.new(@dict_db, query)
-
-			return qe
+			return @query_engine.query(query, NS)
 		end
 
 		def similar(term)
 			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '#{term}')][not(#{ORTH_EQUALS[term]})]"
-			qe = XQueryExecutor.new(@dict_db, query)
-
-			return qe
+			return @query_engine.query(query, NS)
 		end
 
 		def preceding(term, num)
 			# FIXME: the order/position() is wrong, so the wrong set is returned
 			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/preceding::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
-			qe = XQueryExecutor.new(@dict_db, query)
-
-			return qe
+			return @query_engine.query(query, NS)
 		end
 
 		def following(term, num)
 			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/following::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
-			qe = XQueryExecutor.new(@dict_db, query)
-
-			return qe
-		end
-	end
-
-	class XQueryExecutor
-		def initialize(dict_db, query)
-			@dict_db = dict_db
-			@query = query
-		end
-
-		def results_xml
-			dict_url = EXIST_REST_ENDPOINT + '/' + @dict_db
-			dict = RestClient::Resource.new dict_url
-
-			query_message = query_message(@query)
-			Rails.logger.debug "about to run on #{dict_url} the query\n#{query_message}"
-
-			opts = {
-				:content_type => 'application/xml'
-			}
-
-			begin
-				response = dict.post(query_message, opts)
-			rescue Exception => e
-				raise DBError.new(dict, @query, e)
-			end
-
-			Rails.logger.debug "received XML response\n#{response}"
-			# TODO: check for HTTP errors/status codes
-
-			xml_response = Nokogiri::XML(response)
-			if xml_response.root.name == 'exception'
-				raise DBError.new(dict, @query, xml_response.xpath('//message')[0].text())
-			end
-			tei_entries = xml_response.xpath('/exist:result/tei:*', NS)
-
-			return tei_entries
-		end
-
-		def query_message(query)
-			# FIXME: sanitize query parameters
-			message =<<EOD
-<query xmlns="http://exist.sourceforge.net/NS/exist" xmlns:tei="http://www.tei-c.org/ns/1.0">
-	<text>#{query.gsub('&', '&amp;').gsub('<', '&lt;')}</text>
-</query>
-EOD
-			return message
+			return @query_engine.query(query, NS)
 		end
 	end
 end

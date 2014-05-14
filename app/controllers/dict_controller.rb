@@ -1,3 +1,5 @@
+require 'xpathquery/error'
+
 class DictController < ApplicationController
 	before_action :default_params, :only => :index
 	before_action :validate_params, :only => :index
@@ -45,8 +47,10 @@ class DictController < ApplicationController
 				following_results = dict.following_matches(term)
 				@results[:following][dict] = following_results
 			end
-		rescue Dictionary::DBError => e
-			flash.now[:error] = "Error during search: #{e.class} #{e.message}"
+		rescue XPathQuery::Error => ex
+			flash.now[:error] = ex.message
+			flash.now[:query] = ex.query
+			flash.now[:response] = ex.response
 		end
 	end
 

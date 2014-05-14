@@ -1,5 +1,25 @@
-aside.messages p.error {
-	color: rgb(245,0,19);
-	background-color: rgb(254,221,239);
-	padding: 1em;
+aside.messages {
+	p.error,
+	p.query,
+	p.response
+	{
+		color: rgb(245,0,19);
+		background-color: rgb(254,221,239);
+		padding: 1rem;
+		margin: 0;
+	}
+
+	p.query,
+	p.response
+	{
+		margin-left: 3rem;
+
+		&:before {
+			content: "» ";
+		}
+	}
+
+	p.query {
+		font-family: monospace;
+	}
 }
