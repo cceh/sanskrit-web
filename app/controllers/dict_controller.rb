@@ -51,6 +51,7 @@ class DictController < ApplicationController
 			flash.now[:error] = ex.message
 			flash.now[:query] = ex.query
 			flash.now[:response] = ex.response
+			flash.now[:cause] = ex.cause.inspect
 		end
 	end
 

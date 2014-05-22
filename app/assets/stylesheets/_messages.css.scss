@@ -1,8 +1,5 @@
 aside.messages {
-	p.error,
-	p.query,
-	p.response
-	{
+	p {
 		color: rgb(245,0,19);
 		background-color: rgb(254,221,239);
 		padding: 1rem;
@@ -10,8 +7,12 @@ aside.messages {
 	}
 
 	p.query,
-	p.response
+	p.response,
+	p.cause
 	{
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+
 		margin-left: 3rem;
 
 		&:before {
