@@ -64,7 +64,7 @@ class Dictionary < ActiveRecord::Base
 
 		def initialize(dict)
 			@dict = dict
-			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict}.tei"
+			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict}.tei" # FIXME: use content_path from DB
 			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
 		end
 
