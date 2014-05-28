@@ -51,8 +51,9 @@ gem 'puma'
 # Sanskrit <-> Latin transliteration
 gem 't13n', path: '~/Projects/t13n'
 
-# eXist is contacted via XPathQuery
+# eXist is contacted via XPathQuery + rest_client
 gem 'xpathquery', path: '~/Projects/xpathquery'
+gem 'rest_client'
 
 # Nokogiri as XML processor
 gem 'nokogiri'
