@@ -1,11 +1,16 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-mw:
-  handle: mw
-  metadata_path: mw.metadata.xml
-  content_path: mw.tei
+monier:
+  handle: monier
+  metadata_path: monier.metadata.xml
+  content_path: monier.tei
 
-boehtlingk_schmidt:
-  handle: boehtlingk_schmidt
-  metadata_path: boehtlingk_schmidt.metadata.xml
-  content_path: boehtlingk_schmidt.tei
+pwg:
+  handle: pwg
+  metadata_path: pwg.metadata.xml
+  content_path: pwg.tei
+
+aptees1:
+  handle: aptees1
+  metadata_path: aptees1.metadata.xml
+  content_path: aptees1.xml

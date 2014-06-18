@@ -10,7 +10,7 @@
     = select_tag(:iscript, iscripts)
   %div
     = label_tag(:dict, 'dictionary')
-    - dicts = options_for_select([['Monier Williams Sanskrit-English', :mw], ['Boehtlingk + Schmidt Sanskrit-German', :boehtlingk_schmidt], ['Boehtlingk & Roth Sanskrit-German', :boehtlingk_roth], ['Wilson Sanskrit-English', :wilson]])
+    - dicts = options_for_select([['Monierr-Williams Sanskrit-English', :monier], ['Boehtlingk & Roth Sanskrit-German', :pwg], ['Apte English-Sanskrit', :aptees1]])
     = select_tag(:dict, dicts, multiple: true)
   %div
     = label_tag(:oscript, 'output script')
