@@ -9,8 +9,6 @@ class Dictionary < ActiveRecord::Base
 	}
 
 	def matches(tei_entries)
-		dict = 'monier' # FIXME: use content_path from DB
-
 		entries = []
 
 		# extract the top level <entry> or <re> elements
@@ -24,7 +22,7 @@ class Dictionary < ActiveRecord::Base
 			# FIXME: make transliteration a dictionary from all the words present in the XML to all the  possible transliterations
 
 			side_data = {
-				:dict => dict,
+				:dict => self.handle,
 				:lemma => lemma,
 				:transliterations => transliterations,
 			}
@@ -38,33 +36,34 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
+	def query_engine
+		@query_engine ||= DictQuery.new(self.content_path)
+		return @query_engine
+	end
+
 	def exact_matches(term)
-		dict = 'monier' # FIXME: use content_path from DB
-		return matches(DictQuery.new(dict).exact(term))
+		return matches(query_engine.exact(term))
 	end
 
 	def similar_matches(term)
-		dict = 'monier' # FIXME: use content_path from DB
-		return matches(DictQuery.new(dict).similar(term))
+		return matches(query_engine.similar(term))
 	end
 
 	def preceding_matches(term)
-		dict = 'monier' # FIXME: use content_path from DB
-		return matches(DictQuery.new(dict).preceding(term, 3)) # FIXME: make number configurable
+		return matches(query_engine.preceding(term, 3)) # FIXME: make number configurable
 	end
 
 	def following_matches(term)
-		dict = 'monier' # FIXME: use content_path from DB
-		return matches(DictQuery.new(dict).following(term, 3)) # FIXME: make number configurable
+		return matches(query_engine.following(term, 3)) # FIXME: make number configurable
 	end
 
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
 
-		def initialize(dict)
-			@dict = dict
-			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict}.tei" # FIXME: use content_path from DB
+		def initialize(dict_path)
+			@dict_path = dict_path
+			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
 			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
 		end
 
