@@ -95,7 +95,10 @@
 
 	<xsl:template name="provenance-info">
 		<xsl:param name="sense"/>
+
 		<xsl:variable name="dictionary" select="$side-data/rails:dict"/>
+		<xsl:variable name="page-info" select="$sense/tei:note/tei:ref"/>
+		<xsl:variable name="page-num" select="substring-after($page-info/@target, '#')"/>
 
 		<xsl:value-of select="$space-char"/>
 
@@ -109,8 +112,8 @@
 
 			<xsl:text> at page </xsl:text>
 			<!-- FIXME: link to the scan using a proper URI scheme -->
-			<a href="/scan/FIXME">
-				<xsl:value-of select="$sense/tei:note/tei:ref"/>
+			<a href="/dictionary/{$dictionary}/scan/{$page-num}">
+				<xsl:value-of select="$page-info"/>
 			</a>
 			<xsl:text>)</xsl:text>
 		</cite>
