@@ -33,7 +33,7 @@ class DictController < ApplicationController
 
 		begin
 			dicts.each do |dict_handle|
-				dict = Dictionary.find_by handle: dict_handle
+				dict = Dictionary.find_by! handle: dict_handle
 
 				exact_results = dict.exact_matches(term)
 				@results[:exact][dict] = exact_results
