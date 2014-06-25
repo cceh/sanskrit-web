@@ -1,0 +1,4 @@
+%h1 Dictionaries of the Cologne Digital Sanskrit Lexicon
+
+- @dictionaries.each_pair do |handle, header|
+  = render 'entry', :entry => header, :side_data => { handle: handle }

@@ -8,6 +8,10 @@ class Dictionary < ActiveRecord::Base
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
 
+	def header
+		return query_engine.raw('/tei:TEI/tei:teiHeader').first
+	end
+
 	def matches(tei_entries)
 		entries = []
 
@@ -65,6 +69,10 @@ class Dictionary < ActiveRecord::Base
 			@dict_path = dict_path
 			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
 			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
+		end
+
+		def raw(query)
+			return @query_engine.query(query, NS)
 		end
 
 		def exact(term)
