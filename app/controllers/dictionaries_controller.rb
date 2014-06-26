@@ -9,6 +9,13 @@ class DictionariesController < ApplicationController
 
 	# GET /dictionary/monier
 	def show
-		@dictionary = Dictionary.find_by_handle!(params[:id])
+		dictionary = Dictionary.find_by_handle!(params[:id])
+
+		@handle = dictionary.handle
+		@header = dictionary.header
+
+		@side_data = {
+			:handle => @handle,
+		}
 	end
 end
