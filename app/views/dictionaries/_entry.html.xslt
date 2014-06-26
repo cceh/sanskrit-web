@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:tei="http://www.tei-c.org/ns/1.0"
-                xmlns:rails="http://svario.it/rails-xslt"
+                xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="side-data" select="//rails:side-data"/>
-
 	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
 
-	<xsl:variable name="handle" select="$side-data/rails:handle"/>
+	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
 
-	<xsl:template match="/tei:teiHeader">
+	<xsl:template match="/">
+		<xsl:apply-templates select="/rails:variables/rails:header/tei:teiHeader"/>
+	</xsl:template>
+
+	<xsl:template match="tei:teiHeader">
 		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
 		<xsl:variable name="orig-title" select=".//tei:titleStmt/tei:title[@type='main']"/>
 		<xsl:variable name="orig-sub-title" select=".//tei:titleStmt/tei:title[@type='sub']"/>

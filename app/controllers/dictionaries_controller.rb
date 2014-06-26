@@ -13,9 +13,5 @@ class DictionariesController < ApplicationController
 
 		@handle = dictionary.handle
 		@header = dictionary.header
-
-		@side_data = {
-			:handle => @handle,
-		}
 	end
 end
