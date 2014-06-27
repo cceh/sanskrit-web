@@ -1,5 +1,5 @@
 module ApplicationHelper
-	def render_xslt(bindings)
+	def render_xslt(bindings, include_globals=false)
 		xslt_path = eval('__FILE__', bindings).sub(/\.erb$/, '.xslt')
 		_self = eval('self', bindings)
 
@@ -12,14 +12,22 @@ module ApplicationHelper
 
 		wrapper = Nokogiri::XML("<rails:variables xmlns:rails='#{rAILS_NS}'>")
 
-		variables.each do |var_name|
-			wrapper.root << xml_element_for_variable(var_name, _self.instance_variable_get(var_name))
-		end
-
 		if bindings.local_variable_defined?('local_assigns')
 			locals = bindings.local_variable_get('local_assigns')
+
+			overriden_include_globals = locals['include_globals']
+			if !overriden_include_globals.nil?
+				include_globals = overriden_include_globals
+			end
+
 			locals.each_pair do |var_name, value|
 				wrapper.root << xml_element_for_variable(var_name, value)
+			end
+		end
+
+		if include_globals
+			variables.each do |var_name|
+				wrapper.root << xml_element_for_variable(var_name, _self.instance_variable_get(var_name))
 			end
 		end
 
