@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:tei="http://www.tei-c.org/ns/1.0"
-                xmlns:rails="http://svario.it/rails-xslt"
+                xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="side-data" select="//rails:side-data"/>
+	<xsl:variable name="side-data" select="/rails:variables/rails:side_data"/>
 
 	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
 
-	<xsl:template match="/*">
+	<xsl:template match="/">
+		<xsl:apply-templates select="/rails:variables/rails:entry"/>
+	</xsl:template>
+
+	<xsl:template match="rails:entry">
 		<xsl:element name="li">
 			<!-- FIXME: find a better way to show lemmas and transliterations -->
 			<xsl:apply-templates select="$side-data/rails:lemma"/>
