@@ -1,0 +1,7 @@
+%h1
+  Listing scans of
+  %span= @dict_handle
+
+%ol
+- @scans.each do |scan|
+  = render 'scan_in_index', :scan => scan

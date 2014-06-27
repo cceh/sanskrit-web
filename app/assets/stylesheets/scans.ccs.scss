@@ -1,0 +1,30 @@
+// Place all the styles related to the scans controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+nav ol {
+	text-align: center;
+
+	& li {
+		display: inline-block;
+
+		margin: 2em;
+
+		&:first-of-type {
+			&::before {
+				content: '< ';
+			}
+		}
+
+		&:last-of-type {
+			&::after {
+				content: ' >';
+			}
+		}
+	}
+}
+
+img {
+	border: solid thin black;
+	width: 90%;
+}

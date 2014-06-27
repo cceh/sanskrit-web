@@ -7,6 +7,10 @@ Sanskrit::Application.routes.draw do
 	get '/dict', :to => 'dict#index'
 	get '/dict/:lemma', :to => 'dict#show' # FIXME: choose a proper path
 
-	resources :dictionary, :controller => 'dictionaries', :only => [:index, :show]
-	get '/dictionaries', :to => 'dictionaries#index',  :trailing_slash => true
+	get '/dictionary', :to => redirect('/dictionaries')
+	get '/dictionaries', :to => 'dictionaries#index'
+	resources :dictionary, :controller => 'dictionaries', :only => [:index, :show] do
+		# FIXME: /dictionary/X/scans
+		resources :scan, :controller => 'scans', :only => [:index, :show]
+	end
 end

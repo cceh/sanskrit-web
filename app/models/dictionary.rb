@@ -61,6 +61,26 @@ class Dictionary < ActiveRecord::Base
 		return matches(query_engine.following(term, 3)) # FIXME: make number configurable
 	end
 
+	def scans
+		query = "/tei:TEI/tei:facsimile/tei:graphic"
+		return query_engine.raw(query)
+	end
+
+	def scan(scan_handle)
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']"
+		return query_engine.raw(query).first
+	end
+
+	def preceding_scan(scan_handle)
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']/preceding-sibling::tei:graphic[1]"
+		return query_engine.raw(query).first
+	end
+
+	def following_scan(scan_handle)
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']/following-sibling::tei:graphic[1]"
+		return query_engine.raw(query).first
+	end
+
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
