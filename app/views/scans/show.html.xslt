@@ -4,8 +4,6 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
-
 	<xsl:variable name="dict-name" select="/rails:variables/rails:dict_handle/text()"/>  <!-- FIXME: extract dictionary name -->
 
 	<!-- page-code = page-frontmatter-iv -->
@@ -78,24 +76,5 @@
 		<a href="{$page-code}">
 			<xsl:value-of select="$page-name"/>
 		</a>
-	</xsl:template>
-
-	<xsl:template name="page-code">
-		<xsl:param name="graphic"/>
-
-		<xsl:value-of select="$graphic/@xml:id"/>
-	</xsl:template>
-
-	<xsl:template name="page-name">
-		<xsl:param name="graphic"/>
-
-		<!-- FIXME: use human-readable name instead of code -->
-		<xsl:variable name="page-code">
-			<xsl:call-template name="page-code">
-				<xsl:with-param name="graphic" select="$graphic"/>
-			</xsl:call-template>
-		</xsl:variable>
-
-		<xsl:value-of select="substring-after($page-code, 'page-')"/>
 	</xsl:template>
 </xsl:stylesheet>

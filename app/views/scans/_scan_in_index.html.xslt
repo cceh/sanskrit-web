@@ -4,8 +4,6 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
-
 	<xsl:variable name="scans-url">./scan</xsl:variable> <!-- FIXME: get from controller -->
 
 	<xsl:template match="/">
@@ -15,15 +13,21 @@
 	<xsl:template match="rails:scan">
 		<xsl:variable name="graphic" select="./tei:graphic"/>
 
-		<li>
-			<a>
-				<xsl:attribute name="href">
-					<xsl:value-of select="$scans-url"/>
-					<xsl:text>/</xsl:text>
-					<xsl:value-of select="$graphic/@xml:id"/>
-				</xsl:attribute>
+		<xsl:variable name="page-code">
+			<xsl:call-template name="page-code">
+				<xsl:with-param name="graphic" select="./tei:graphic"/>
+			</xsl:call-template>
+		</xsl:variable>
 
-				<xsl:value-of select="$graphic/@xml:id"/>
+		<xsl:variable name="page-name">
+			<xsl:call-template name="page-name">
+				<xsl:with-param name="graphic" select="./tei:graphic"/>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<li>
+			<a href="{$scans-url}/{$page-code}">
+				<xsl:value-of select="$page-name"/>
 			</a>
 		</li>
 	</xsl:template>
