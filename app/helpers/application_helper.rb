@@ -1,6 +1,7 @@
 module ApplicationHelper
 	def render_xslt(bindings, include_globals=false)
 		xslt_path = eval('__FILE__', bindings).sub(/\.erb$/, '.xslt')
+		controller_name = eval('controller_name', bindings)
 		_self = eval('self', bindings)
 
 		require 'nokogiri'
@@ -34,8 +35,14 @@ module ApplicationHelper
 		Rails.logger.debug wrapper
 
 		xslt_source = File.read(xslt_path)
-		xslt = Nokogiri::XSLT(xslt_source)
 
+		helper_path = Rails.root + "app/helpers/#{controller_name}_helper.xsl"
+		if File.exists?(helper_path)
+			elem = "<import href='#{helper_path}' xmlns='http://www.w3.org/1999/XSL/Transform'/>"
+			xslt_source.sub!(/(stylesheet .*?)>/m, '\1>' + elem)
+		end
+
+		xslt = Nokogiri::XSLT(xslt_source)
 		root = xslt.transform(wrapper).root
 
 		html = ''
