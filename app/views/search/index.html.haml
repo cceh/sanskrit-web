@@ -2,7 +2,7 @@
 
 %h1 Cologne Digital Sanskrit Dictionaries
 
-= form_tag('/dict', method: 'get') do
+= form_tag('/search', method: 'get') do
   %div
     = label_tag(:q, 'term:')
     = text_field_tag(:q, @query[:term])

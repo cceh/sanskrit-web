@@ -1,10 +1,10 @@
 require 'xpathquery/error'
 
-class DictController < ApplicationController
+class SearchController < ApplicationController
 	before_action :default_params, :only => :index
 	before_action :validate_params, :only => :index
 
-	# GET /dict
+	# GET /search
 	def index
 		@query = {}
 		@results = {
@@ -55,7 +55,7 @@ class DictController < ApplicationController
 		end
 	end
 
-	# GET /dict/:id # <- FIXME update to a better path
+	# GET /search/:id # <- FIXME update to a better path
 	def show
 	end
 

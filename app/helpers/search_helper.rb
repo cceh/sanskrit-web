@@ -1,4 +1,4 @@
-module DictHelper
+module SearchHelper
 	# FIXME: remove this method once we have a rails-xslt gem
 	def simple_xmlify(v)
 		case v

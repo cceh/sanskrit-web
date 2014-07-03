@@ -22,8 +22,6 @@
 				<xsl:text>(</xsl:text>
 				<xsl:apply-templates select="$side-data/rails:transliterations/rails:*"/>
 				<xsl:text>)</xsl:text>
-
-				<xsl:call-template name="provenance-info"/>
 			</xsl:element>
 		</xsl:element>
 	</xsl:template>
@@ -35,7 +33,7 @@
 
 			<xsl:element name="a">
 				<xsl:attribute name="href">
-					<xsl:text>/dict?q=</xsl:text>
+					<xsl:text>/search?q=</xsl:text>
 					<xsl:value-of select="$side-data/rails:lemma"/>
 					<xsl:text>;iscript=devanagari;utf8=✓</xsl:text>
 				</xsl:attribute>
@@ -57,7 +55,7 @@
 
 			<xsl:element name="a">
 				<xsl:attribute name="href">
-					<xsl:text>/dict?q=</xsl:text>
+					<xsl:text>/search?q=</xsl:text>
 					<xsl:value-of select="$lemma"/>
 					<xsl:text>;iscript=</xsl:text>
 					<xsl:value-of select="$method"/>
@@ -71,21 +69,5 @@
 				<xsl:value-of select="$lemma"/>
 			</xsl:element>
 		</xsl:element>
-	</xsl:template>
-
-	<xsl:template name="provenance-info">
-		<xsl:variable name="dictionary" select="$side-data/rails:dict"/>
-
-		<xsl:value-of select="$space-char"/>
-
-		<cite class="provenance-info">
-			<xsl:text>(</xsl:text>
-			<abbr class="dictionary">
-				<a href="/dictionary/{$dictionary}">
-					<xsl:value-of select="$dictionary"/>
-				</a>
-			</abbr>
-			<xsl:text>)</xsl:text>
-		</cite>
 	</xsl:template>
 </xsl:stylesheet>
