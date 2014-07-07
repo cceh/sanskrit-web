@@ -5,7 +5,6 @@ Sanskrit::Application.routes.draw do
 	root :to => redirect('/search')
 
 	get '/search', :to => 'search#index'
-	get '/search/:lemma', :to => 'search#show' # FIXME: choose a proper path
 
 	get '/dictionary', :to => redirect('/dictionaries')
 	get '/dictionaries', :to => 'dictionaries#index'

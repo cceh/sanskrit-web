@@ -55,10 +55,6 @@ class SearchController < ApplicationController
 		end
 	end
 
-	# GET /search/:id # <- FIXME update to a better path
-	def show
-	end
-
 	def default_params
 		if !params[:q]
 			return
