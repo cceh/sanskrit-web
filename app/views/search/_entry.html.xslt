@@ -102,7 +102,7 @@
 
 		<xsl:variable name="dictionary" select="$side-data/rails:dict"/>
 		<xsl:variable name="page-info" select="$sense/tei:note/tei:ref"/>
-		<xsl:variable name="page-num" select="substring-after($page-info/@target, '#')"/>
+		<xsl:variable name="page-num" select="substring-after($page-info/@target, '#page-')"/>
 
 		<xsl:value-of select="$space-char"/>
 
