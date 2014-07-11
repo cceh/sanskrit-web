@@ -9,7 +9,7 @@ Sanskrit::Application.routes.draw do
 	get '/dictionary', :to => redirect('/dictionaries')
 	get '/dictionaries', :to => 'dictionaries#index'
 	resources :dictionary, :controller => 'dictionaries', :only => [:index, :show] do
-		# FIXME: /dictionary/X/scans
+		get '/scans', :to => 'scans#index'
 		resources :scan, :controller => 'scans', :only => [:index, :show]
 	end
 end
