@@ -85,6 +85,47 @@ class Dictionary < ActiveRecord::Base
 		query_engine.all
 	end
 
+	def default_language
+		@default_language ||= lambda do
+			ancestor = query_engine.raw("(//tei:re|//tei:entry)[1]/ancestor::*[@xml:lang]").first # FIXME
+
+			language = ancestor.attr('xml:lang') unless ancestor.nil?
+			language ||= 'unk'
+
+			return language
+		end.call
+
+		return @default_language
+	end
+
+	def language_of_lemmas
+		@language_of_lemmas ||= lambda do
+			first_lemma = query_engine.first_entry
+
+			language_attr = first_lemma.at('./tei:form/tei:orth/@xml:lang', NS) unless first_lemma.nil?
+			language = language_attr.text unless language_attr.nil?
+			language ||= self.default_language
+
+			return language
+		end.call
+
+		return @language_of_lemmas
+	end
+
+	def language_of_definitions
+		@language_of_definitions ||= lambda do
+			first_lemma = query_engine.first_entry
+
+			language_attr = first_lemma.at('./tei:sense/@xml:lang', NS) unless first_lemma.nil?
+			language = language_attr.text unless language_attr.nil?
+			language ||= self.default_language
+
+			return language
+		end.call
+
+		return @language_of_definitions
+	end
+
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
@@ -102,6 +143,11 @@ class Dictionary < ActiveRecord::Base
 		def all
 			query = "//*[#{IS_DICT_ENTRY}]"
 			return @query_engine.query(query, NS)
+		end
+
+		def first_entry
+			query = "//*[#{IS_DICT_ENTRY}][1]"
+			return @query_engine.query(query, NS).first
 		end
 
 		def exact(term)

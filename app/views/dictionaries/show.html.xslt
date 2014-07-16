@@ -8,8 +8,20 @@
 
 	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
 	<xsl:variable name="num-lemmas" select="/rails:variables/rails:num_lemmas"/>
-	<xsl:variable name="lang-lemmas" select="/rails:variables/rails:lang_lemmas"/>
-	<xsl:variable name="lang-definitions" select="/rails:variables/rails:lang_definitions"/>
+	<xsl:variable name="lang-code-lemmas" select="/rails:variables/rails:lang_lemmas"/>
+	<xsl:variable name="lang-code-definitions" select="/rails:variables/rails:lang_definitions"/>
+
+	<xsl:variable name="lang-lemmas">
+		<xsl:call-template name="language-name">
+			<xsl:with-param name="lang-code" select="$lang-code-lemmas"/>
+		</xsl:call-template>
+	</xsl:variable>
+
+	<xsl:variable name="lang-definitions">
+		<xsl:call-template name="language-name">
+			<xsl:with-param name="lang-code" select="$lang-code-definitions"/>
+		</xsl:call-template>
+	</xsl:variable>
 
 	<xsl:template match="/rails:variables/rails:header/tei:teiHeader">
 		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
@@ -42,9 +54,11 @@
 				<xsl:text> dictionary contains </xsl:text>
 				<xsl:value-of select="$num-lemmas"/>
 				<xsl:value-of select="$space-char"/>
-				<xsl:value-of select="$lang-lemmas"/>
-				<xsl:text> lemmas translated into </xsl:text>
-				<xsl:value-of select="$lang-definitions"/>
+				<xsl:text> lemmas in </xsl:text>
+				<xsl:copy-of select="$lang-lemmas"/>
+				<xsl:text> and </xsl:text>
+				<xsl:text> definitions in </xsl:text>
+				<xsl:copy-of select="$lang-definitions"/>
 				<xsl:text>.</xsl:text>
 			</p>
 
@@ -60,5 +74,21 @@
 				<xsl:text>Search inside</xsl:text>
 			</a>
 		</rails:wrapper>
+	</xsl:template>
+
+	<xsl:template name="language-name">
+		<xsl:param name="lang-code"/>
+
+		<xsl:choose>
+			<xsl:when test="starts-with($lang-code, 'en')">English</xsl:when>
+			<xsl:when test="starts-with($lang-code, 'san')">Sanskrit</xsl:when>
+			<xsl:when test="$lang-code = 'unk'">an unknown language</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>the language </xsl:text>
+				<em>
+					<xsl:value-of select="$lang-code"/>
+				</em>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
