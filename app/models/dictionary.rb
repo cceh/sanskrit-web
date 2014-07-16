@@ -81,6 +81,10 @@ class Dictionary < ActiveRecord::Base
 		return query_engine.raw(query).first
 	end
 
+	def lemmas
+		query_engine.all
+	end
+
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
@@ -92,6 +96,11 @@ class Dictionary < ActiveRecord::Base
 		end
 
 		def raw(query)
+			return @query_engine.query(query, NS)
+		end
+
+		def all
+			query = "//*[#{IS_DICT_ENTRY}]"
 			return @query_engine.query(query, NS)
 		end
 

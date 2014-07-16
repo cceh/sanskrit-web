@@ -13,5 +13,10 @@ class DictionariesController < ApplicationController
 
 		@handle = dictionary.handle
 		@header = dictionary.header
+
+		@num_lemmas = dictionary.lemmas.count
+
+		@lang_lemmas = "Sanskrit?" # FIXME: extract lemmas lang
+		@lang_definitions = "English?" #FIXME: extract defs lang
 	end
 end

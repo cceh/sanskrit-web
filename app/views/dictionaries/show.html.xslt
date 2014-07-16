@@ -7,6 +7,9 @@
 	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
 
 	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
+	<xsl:variable name="num-lemmas" select="/rails:variables/rails:num_lemmas"/>
+	<xsl:variable name="lang-lemmas" select="/rails:variables/rails:lang_lemmas"/>
+	<xsl:variable name="lang-definitions" select="/rails:variables/rails:lang_definitions"/>
 
 	<xsl:template match="/rails:variables/rails:header/tei:teiHeader">
 		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
@@ -37,11 +40,11 @@
 				<xsl:text>The </xsl:text>
 				<xsl:value-of select="$desc-title"/>
 				<xsl:text> dictionary contains </xsl:text>
-				<xsl:text>FIXME(10000)</xsl:text>
+				<xsl:value-of select="$num-lemmas"/>
 				<xsl:value-of select="$space-char"/>
-				<xsl:text>FIXME(Sanskrit)</xsl:text>
+				<xsl:value-of select="$lang-lemmas"/>
 				<xsl:text> lemmas translated into </xsl:text>
-				<xsl:text>FIXME(English)</xsl:text>
+				<xsl:value-of select="$lang-definitions"/>
 				<xsl:text>.</xsl:text>
 			</p>
 
