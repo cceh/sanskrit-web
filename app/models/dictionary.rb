@@ -40,6 +40,27 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
+	def lemmas
+		tei_entries = query_engine.all.to_a.uniq { |tei| tei.at('./tei:form/tei:orth', NS).text }
+
+		entries = []
+
+		tei_entries.each do |tei|
+			transliterations = {
+				:Deva => 'xxDEVAxx',
+				:Latn_hk => 'xxLatn-HKxx',
+			}
+
+			entries << {
+				:entry => tei,
+				:transliterations => transliterations,
+				:dict => self.handle,
+			}
+		end
+
+		return entries
+	end
+
 	def query_engine
 		@query_engine ||= DictQuery.new(self.content_path)
 		return @query_engine
@@ -79,10 +100,6 @@ class Dictionary < ActiveRecord::Base
 	def following_scan(scan_handle)
 		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']/following-sibling::tei:graphic[1]"
 		return query_engine.raw(query).first
-	end
-
-	def lemmas
-		query_engine.all
 	end
 
 	def default_language
