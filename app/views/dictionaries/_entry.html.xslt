@@ -14,10 +14,10 @@
 
 	<xsl:template match="tei:teiHeader">
 		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
-		<xsl:variable name="orig-title" select=".//tei:titleStmt/tei:title[@type='main']"/>
-		<xsl:variable name="orig-sub-title" select=".//tei:titleStmt/tei:title[@type='sub']"/>
+		<xsl:variable name="orig-title" select=".//tei:sourceDesc//tei:title[@type='main']"/>
+		<xsl:variable name="orig-sub-title" select=".//tei:sourceDesc//tei:title[@type='sub']"/>
 
-		<xsl:variable name="author" select=".//tei:titleStmt/tei:author"/>
+		<xsl:variable name="author" select=".//tei:sourceDesc//tei:author"/>
 
 		<section>
 			<h2>
@@ -32,6 +32,7 @@
 				<xsl:text>, </xsl:text>
 				<xsl:value-of select="$orig-sub-title"/>
 			</p>
+
 			<p>
 				<xsl:text>By </xsl:text>
 				<xsl:value-of select="$author"/>

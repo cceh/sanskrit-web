@@ -10,16 +10,16 @@
 
 	<xsl:template match="/rails:variables/rails:header/tei:teiHeader">
 		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
-		<xsl:variable name="orig-title" select=".//tei:titleStmt/tei:title[@type='main']"/>
-		<xsl:variable name="orig-sub-title" select=".//tei:titleStmt/tei:title[@type='sub']"/>
+		<xsl:variable name="orig-title" select=".//tei:sourceDesc//tei:title[@type='main']"/>
+		<xsl:variable name="orig-sub-title" select=".//tei:sourceDesc//tei:title[@type='sub']"/>
 
-		<xsl:variable name="author" select=".//tei:titleStmt/tei:author"/>
+		<xsl:variable name="author" select=".//tei:sourceDesc//tei:author"/>
 
 		<rails:wrapper>
 			<h1>
 				<xsl:value-of select="$desc-title"/>
 			</h1>
-	
+
 			<p>
 				<xsl:text>Originally: </xsl:text>
 				<xsl:value-of select="$orig-title"/>
@@ -32,7 +32,7 @@
 				<xsl:value-of select="$author"/>
 				<xsl:text>.</xsl:text>
 			</p>
-			
+
 			<p>
 				<xsl:text>The </xsl:text>
 				<xsl:value-of select="$desc-title"/>
@@ -44,15 +44,15 @@
 				<xsl:text>FIXME(English)</xsl:text>
 				<xsl:text>.</xsl:text>
 			</p>
-			
+
 			<a href="{$handle}/lemmas">
 				<xsl:text>Browse lemmas</xsl:text>
 			</a>
-			
+
 			<a href="{$handle}/scans">
 				<xsl:text>Browse scans</xsl:text>
 			</a>
-			
+
 			<a href="../search?dict={$handle}">
 				<xsl:text>Search inside</xsl:text>
 			</a>
