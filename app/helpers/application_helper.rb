@@ -47,7 +47,7 @@ module ApplicationHelper
 
 		html = ''
 		if !root.namespace.nil? && root.namespace.href == rAILS_NS && root.name == 'wrapper'
-			html = root.children.map { |c| c.to_xml }.join('')
+			html = root.children.map { |c| c.to_xml }.join("\n")
 		else
 			html = root.to_xml
 		end
