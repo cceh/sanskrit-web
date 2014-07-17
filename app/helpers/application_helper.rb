@@ -62,13 +62,53 @@ module ApplicationHelper
 		return html
 	end
 
+	# FIXME: use Builder instead of strings
+	def xml_elements_for_value(v)
+		case v
+		when Hash
+			v.map do |key, value|
+				name = accepteable_xml_name(key)
+				"<rails:#{name}>" +
+				xml_elements_for_value(value) +
+				"</rails:#{name}>"
+			end.join("")
+		when Array
+			v.map do |value|
+				"<rails:elem>" +
+				xml_elements_for_value(value) +
+				"</rails:elem>"
+			end.join("")
+		else
+			if v.respond_to?(:to_xml)
+				begin
+					v.to_xml(:skip_instruct => true).to_s
+				rescue ArgumentError
+					# Some to_xml methods don't understand skip_instruct
+					v.to_xml.to_s
+				end
+			elsif v.respond_to?(:to_s)
+				CGI::escapeHTML(v.to_s)
+			else
+				raise "Cannot XMLify #{v.inspect}"
+			end
+		end
+	end
+
 	def xml_element_for_variable(sym, value)
-		name = sym.to_s.sub(/^@/, '')
+		name = accepteable_xml_name(sym)
 
 		Nokogiri::XML::Builder.new do |elem|
 			elem.send("rails:#{name}", 'xmlns' => 'http://svario.it/xslt-rails') do
-				elem << simple_xmlify(value)
+				elem << xml_elements_for_value(value)
 			end
 		end.doc.root
+	end
+
+	def accepteable_xml_name(sym)
+		name = sym.to_s
+		name.sub!(/^@/, '')
+		name = CGI::escapeHTML(name)
+
+		return name
 	end
 end
