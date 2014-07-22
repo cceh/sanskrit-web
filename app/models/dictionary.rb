@@ -13,30 +13,8 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def matches(tei_entries)
-		entries = []
-
 		# extract the top level <entry> or <re> elements
-		tei_entries.each do |tei|
-			raw_lemma = tei.at('./tei:form/tei:orth', NS).text
-
-			lemma = raw_lemma.transliterate(:Deva)
-			transliterations = {
-				:slp1 => lemma.transliterate(:Latn, :method => :slp1)
-			}
-			# FIXME: make transliteration a dictionary from all the words present in the XML to all the  possible transliterations
-
-			side_data = {
-				:dict => self.handle,
-				:lemma => lemma,
-				:transliterations => transliterations,
-			}
-
-			entries << {
-				:entry => tei,
-				:side_data => side_data,
-			}
-		end
-
+		entries = tei_entries.to_a.map { |tei_entry| entry_for_lemma(tei_entry) }
 		return entries
 	end
 
@@ -70,7 +48,12 @@ class Dictionary < ActiveRecord::Base
 		end
 
 		tei_entry = results.first
+		entry = entry_for_lemma(tei_entry)
 
+		return entry
+	end
+
+	def entry_for_lemma(tei_entry)
 		tei_orth = tei_entry.at('./tei:form/tei:orth', NS)
 		words = [tei_orth] # FIXME: search for words inside definitions
 
