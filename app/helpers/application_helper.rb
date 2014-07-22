@@ -49,8 +49,17 @@ module ApplicationHelper
 			xslt_source.sub!(/(stylesheet .*?)>/m, '\1>' + elem)
 		end
 
-		xslt = Nokogiri::XSLT(xslt_source)
-		root = xslt.transform(wrapper).root
+		view_dir = Rails.root + 'app/views' + controller_name
+
+		root = nil
+		Dir.chdir(view_dir) do
+			xslt = Nokogiri::XSLT(xslt_source)
+			root = xslt.transform(wrapper).root
+		end
+
+		if root.nil?
+			raise "XSLT Transformation #{xslt_path.sub(Rails.root.to_s, '')} failed (Empty result)"
+		end
 
 		html = ''
 		if !root.namespace.nil? && root.namespace.href == rAILS_NS && root.name == 'wrapper'
