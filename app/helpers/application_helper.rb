@@ -67,8 +67,11 @@ module ApplicationHelper
 		case v
 		when Hash
 			v.map do |key, value|
-				name = accepteable_xml_name(key)
-				"<rails:#{name}>" +
+				name = acceptable_xml_name(key)
+				if name != key.to_s
+					orig_key = " orig-key='#{CGI::escapeHTML(key.to_s)}'"
+				end
+				"<rails:#{name}#{orig_key}>" +
 				xml_elements_for_value(value) +
 				"</rails:#{name}>"
 			end.join("")
@@ -95,7 +98,7 @@ module ApplicationHelper
 	end
 
 	def xml_element_for_variable(sym, value)
-		name = accepteable_xml_name(sym)
+		name = acceptable_xml_name(sym)
 
 		Nokogiri::XML::Builder.new do |elem|
 			elem.send("rails:#{name}", 'xmlns' => 'http://svario.it/xslt-rails') do
@@ -104,9 +107,10 @@ module ApplicationHelper
 		end.doc.root
 	end
 
-	def accepteable_xml_name(sym)
-		name = sym.to_s
+	def acceptable_xml_name(sym)
+		name = sym.to_s.dup
 		name.sub!(/^@/, '')
+		name.gsub!(/[<>{}\[\]*:\/]/, '')
 		name = CGI::escapeHTML(name)
 
 		return name
