@@ -9,9 +9,12 @@ class LemmasController < ApplicationController
 
 	# GET /dictionary/monier/lemma/aMSa?script=slp1
 	def show
-		#dictionary = Dictionary.find_by_handle!(params[:dictionary_id])
-		#lemma = dictionary.lemma(params[:id], script)
+		script = params[:script]
+		if !script.nil? && !script.empty? && script != 'slp1'
+			raise "Unknown script #{script}"
+		end
 
-		raise "SHOW lemma #{params[:id]}" # TODO
+		dictionary = Dictionary.find_by_handle!(params[:dictionary_id])
+		@lemma = dictionary.lemma(params[:id], script)
 	end
 end

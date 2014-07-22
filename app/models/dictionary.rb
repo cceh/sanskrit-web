@@ -61,6 +61,50 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
+	def lemma(id, script)
+		query = "/tei:TEI/tei:text/tei:body//*[self::tei:entry | self::tei:re][@xml:id = 'lemma-#{id}']"
+
+		results = query_engine.raw(query)
+		if results.empty?
+			raise "Lemma not found"
+		end
+
+		tei_entry = results.first
+
+		tei_orth = tei_entry.at('./tei:form/tei:orth', NS)
+		words = [tei_orth] # FIXME: search for words inside definitions
+
+		transliterations = words.map do |tei_word|
+			word = tei_word.text
+			raw_script = tei_word.attr('xml:lang')
+			transliterations = transliterations_for_word(word, raw_script)
+
+			[word, transliterations_for_word(word, raw_script)]
+		end.to_h
+
+		entry = {
+			:entry => tei_entry,
+			:transliterations => transliterations,
+			:dict_handle => self.handle,
+		}
+
+		return entry
+	end
+
+	def transliterations_for_word(word, script)
+		case script
+		when 'san-Latn-x-SLP1'
+			native_script = word.transliterate(:Deva)
+			return {
+				'san-Deva' => native_script,
+				'san-Latn-x-SLP1' => native_script.transliterate(:Latn, :method => :slp1),
+				#'san-Latn-x-IAST' => native_script.transliterate(:Latn, :method => :iast),
+			}
+		else
+			raise "Entry is stored in unknown script #{script}"
+		end
+	end
+
 	def query_engine
 		@query_engine ||= DictQuery.new(self.content_path)
 		return @query_engine
