@@ -4,12 +4,27 @@ require 'xpathquery'
 class Dictionary < ActiveRecord::Base
 	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db'
 
+	IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
+	ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
+
 	NS = {
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
 
+	after_initialize :setup_query_engine
+
+	def setup_query_engine
+		dict_path = self.content_path
+		@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
+		@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
+	end
+
+	def xpathquery(query, params = {})
+		@query_engine.query(query, params, NS)
+	end
+
 	def header
-		return query_engine.raw('/tei:TEI/tei:teiHeader').first
+		return xpathquery('/tei:TEI/tei:teiHeader').first
 	end
 
 	def matches(tei_entries)
@@ -19,7 +34,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemmas
-		tei_entries = query_engine.all.to_a.uniq { |tei| tei.at('./tei:form/tei:orth', NS).text }
+		tei_entries = all_entries.to_a.uniq { |tei| tei.at('./tei:form/tei:orth', NS).text }
 
 		entries = []
 
@@ -40,9 +55,10 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemma(id, script)
-		query = "/tei:TEI/tei:text/tei:body//*[self::tei:entry | self::tei:re][@xml:id = 'lemma-#{id}']"
+		query = "/tei:TEI/tei:text/tei:body//*[self::tei:entry or self::tei:re][@xml:id = 'lemma-%{id}']"
+		params = { :id => id }
 
-		results = query_engine.raw(query)
+		results = xpathquery(query, params)
 		if results.empty?
 			raise "Lemma not found"
 		end
@@ -88,53 +104,74 @@ class Dictionary < ActiveRecord::Base
 		end
 	end
 
-	def query_engine
-		@query_engine ||= DictQuery.new(self.content_path)
-		return @query_engine
-	end
-
 	def exact_matches(term)
-		return matches(query_engine.exact(term))
+		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]"
+		params = { :term => term }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
 	end
 
 	def similar_matches(term)
-		return matches(query_engine.similar(term))
+		# FIXME: use something better than "contains"
+		query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
+		params = { :term => term }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
 	end
 
 	def preceding_matches(term)
-		return matches(query_engine.preceding(term, 3)) # FIXME: make number configurable
+		num = 3 # FIXME: make number configurable
+
+		# FIXME: the order/position() may be wrong, check that the correct set is returned
+		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		params = { :term => term, :num => num }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
 	end
 
 	def following_matches(term)
-		return matches(query_engine.following(term, 3)) # FIXME: make number configurable
+		num = 3 # FIXME: make number configurable
+
+		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		params = { :term => term, :num => num }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
 	end
 
 	def scans
 		query = "/tei:TEI/tei:facsimile/tei:graphic"
-		return query_engine.raw(query)
+		return xpathquery(query)
 	end
 
 	def scan(scan_handle)
 		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']"
 		params = { :scan_handle => scan_handle }
-		return query_engine.raw(query, params).first
+		return xpathquery(query, params).first
 	end
 
 	def preceding_scan(scan_handle)
 		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/preceding-sibling::tei:graphic[1]"
 		params = { :scan_handle => scan_handle }
-		return query_engine.raw(query, params).first
+		return xpathquery(query, params).first
 	end
 
 	def following_scan(scan_handle)
 		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/following-sibling::tei:graphic[1]"
 		params = { :scan_handle => scan_handle }
-		return query_engine.raw(query, params).first
+		return xpathquery(query, params).first
 	end
 
 	def default_language
 		@default_language ||= lambda do
-			ancestor = query_engine.raw("(//tei:re|//tei:entry)[1]/ancestor::*[@xml:lang]").first # FIXME
+			ancestor = xpathquery("(//tei:re|//tei:entry)[1]/ancestor::*[@xml:lang]").first # FIXME
 
 			language = ancestor.attr('xml:lang') unless ancestor.nil?
 			language ||= 'unk'
@@ -147,7 +184,7 @@ class Dictionary < ActiveRecord::Base
 
 	def language_of_lemmas
 		@language_of_lemmas ||= lambda do
-			first_lemma = query_engine.first_entry
+			first_lemma = first_entry
 
 			language_attr = first_lemma.at('./tei:form/tei:orth/@xml:lang', NS) unless first_lemma.nil?
 			language = language_attr.text unless language_attr.nil?
@@ -161,7 +198,7 @@ class Dictionary < ActiveRecord::Base
 
 	def language_of_definitions
 		@language_of_definitions ||= lambda do
-			first_lemma = query_engine.first_entry
+			first_lemma = first_entry
 
 			language_attr = first_lemma.at('./tei:sense/@xml:lang', NS) unless first_lemma.nil?
 			language = language_attr.text unless language_attr.nil?
@@ -173,53 +210,14 @@ class Dictionary < ActiveRecord::Base
 		return @language_of_definitions
 	end
 
-	class DictQuery
-		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
-		ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
 
-		def initialize(dict_path)
-			@dict_path = dict_path
-			@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
-			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
-		end
+	def all_entries
+		query = "//*[#{IS_DICT_ENTRY}]"
+		return xpathquery(query)
+	end
 
-		def raw(query, params = {})
-			return @query_engine.query(query, params, NS)
-		end
-
-		def all
-			query = "//*[#{IS_DICT_ENTRY}]"
-			return @query_engine.direct_query(query, NS)
-		end
-
-		def first_entry
-			query = "//*[#{IS_DICT_ENTRY}][1]"
-			return @query_engine.direct_query(query, NS).first
-		end
-
-		def exact(term)
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]"
-			params = { :term => term }
-			return @query_engine.query(query, params, NS)
-		end
-
-		def similar(term)
-			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
-			params = { :term => term }
-			return @query_engine.query(query, params, NS)
-		end
-
-		def preceding(term, num)
-			# FIXME: the order/position() is wrong, so the wrong set is returned
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
-			params = { :term => term, :num => num }
-			return @query_engine.query(query, params, NS)
-		end
-
-		def following(term, num)
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
-			params = { :term => term, :num => num }
-			return @query_engine.query(query, params, NS)
-		end
+	def first_entry
+		query = "//*[#{IS_DICT_ENTRY}][1]"
+		return xpathquery(query).first
 	end
 end
