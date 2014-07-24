@@ -115,18 +115,21 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']"
-		return query_engine.raw(query).first
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']"
+		params = { :scan_handle => scan_handle }
+		return query_engine.raw(query, params).first
 	end
 
 	def preceding_scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']/preceding-sibling::tei:graphic[1]"
-		return query_engine.raw(query).first
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/preceding-sibling::tei:graphic[1]"
+		params = { :scan_handle => scan_handle }
+		return query_engine.raw(query, params).first
 	end
 
 	def following_scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '#{scan_handle}']/following-sibling::tei:graphic[1]"
-		return query_engine.raw(query).first
+		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/following-sibling::tei:graphic[1]"
+		params = { :scan_handle => scan_handle }
+		return query_engine.raw(query, params).first
 	end
 
 	def default_language
@@ -172,7 +175,7 @@ class Dictionary < ActiveRecord::Base
 
 	class DictQuery
 		IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
-		ORTH_EQUALS = lambda { |term| "./tei:form/tei:orth/text() = '#{term}'" } # FIXME: escape parameters
+		ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
 
 		def initialize(dict_path)
 			@dict_path = dict_path
@@ -180,39 +183,43 @@ class Dictionary < ActiveRecord::Base
 			@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
 		end
 
-		def raw(query)
-			return @query_engine.query(query, NS)
+		def raw(query, params = {})
+			return @query_engine.query(query, params, NS)
 		end
 
 		def all
 			query = "//*[#{IS_DICT_ENTRY}]"
-			return @query_engine.query(query, NS)
+			return @query_engine.direct_query(query, NS)
 		end
 
 		def first_entry
 			query = "//*[#{IS_DICT_ENTRY}][1]"
-			return @query_engine.query(query, NS).first
+			return @query_engine.direct_query(query, NS).first
 		end
 
 		def exact(term)
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]"
-			return @query_engine.query(query, NS)
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]"
+			params = { :term => term }
+			return @query_engine.query(query, params, NS)
 		end
 
 		def similar(term)
-			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '#{term}')][not(#{ORTH_EQUALS[term]})]"
-			return @query_engine.query(query, NS)
+			query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
+			params = { :term => term }
+			return @query_engine.query(query, params, NS)
 		end
 
 		def preceding(term, num)
 			# FIXME: the order/position() is wrong, so the wrong set is returned
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/preceding::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
-			return @query_engine.query(query, NS)
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+			params = { :term => term, :num => num }
+			return @query_engine.query(query, params, NS)
 		end
 
 		def following(term, num)
-			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS[term]}]/following::*[#{IS_DICT_ENTRY}][position() <= #{num}]" # FIXME: escape parameters
-			return @query_engine.query(query, NS)
+			query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+			params = { :term => term, :num => num }
+			return @query_engine.query(query, params, NS)
 		end
 	end
 end
