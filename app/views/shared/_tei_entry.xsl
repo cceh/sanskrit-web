@@ -234,12 +234,14 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:variable name="lemma-url">
-			<xsl:call-template name="lemma-url"/>
+		<xsl:variable name="search-url">
+			<xsl:call-template name="search-url">
+				<xsl:with-param name="text" select="$text"/>
+			</xsl:call-template>
 		</xsl:variable>
 
 		<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
-			<a href="{$lemma-url}">
+			<a href="{$search-url}">
 				<xsl:if test="$method != ''">
 					<span class="method">
 						<xsl:value-of select="$method"/>
@@ -291,6 +293,21 @@
 
 			<xsl:text>)</xsl:text>
 		</cite>
+	</xsl:template>
+
+
+
+	<xsl:template name="search-url">
+		<xsl:param name="text"/>
+
+		<xsl:text>/search</xsl:text>
+		<xsl:text>?</xsl:text>
+		<xsl:text>utf8=✓</xsl:text>
+		<xsl:text>&amp;</xsl:text>
+		<xsl:text>q=</xsl:text>
+		<xsl:value-of select="$text"/>
+		<xsl:text>&amp;</xsl:text>
+		<xsl:text>iscript=slp1</xsl:text>
 	</xsl:template>
 
 	<xsl:template name="lemma-url">
