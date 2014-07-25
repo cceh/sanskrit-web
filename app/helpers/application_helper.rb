@@ -119,7 +119,7 @@ module ApplicationHelper
 	def acceptable_xml_name(sym)
 		name = sym.to_s.dup
 		name.sub!(/^@/, '')
-		name.gsub!(/[<>{}\[\]*:\/]/, '')
+		name.gsub!(/[<>{}\[\]*:\/]/, '-')
 		name = CGI::escapeHTML(name)
 
 		return name
