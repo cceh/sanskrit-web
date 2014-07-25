@@ -77,6 +77,9 @@ class Dictionary < ActiveRecord::Base
 
 		transliterations = tei_words.map do |tei_word|
 			word = tei_word.text
+			word.strip! # FIXME
+			word.gsub!("\u221A", '!') # FIXME: deal with root char
+			word.gsub!(/[0-9]/, '!') # FIXME: deal with digits
 			raw_script = tei_word.attr('xml:lang')
 			transliterations = transliterations_for_word(word, raw_script)
 
