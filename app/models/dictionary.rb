@@ -73,10 +73,9 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def entry_for_lemma(tei_entry)
-		tei_orth = tei_entry.at('./tei:form/tei:orth', NS)
-		words = [tei_orth] # FIXME: search for words inside definitions
+		tei_words = tei_words_inside_tei_entry(tei_entry)
 
-		transliterations = words.map do |tei_word|
+		transliterations = tei_words.map do |tei_word|
 			word = tei_word.text
 			raw_script = tei_word.attr('xml:lang')
 			transliterations = transliterations_for_word(word, raw_script)
@@ -91,6 +90,11 @@ class Dictionary < ActiveRecord::Base
 		}
 
 		return entry
+	end
+
+	def tei_words_inside_tei_entry(tei_entry)
+		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:w or self::tei:m][@xml:lang = 'san-Latn-x-SLP1']", NS)
+		return tei_words
 	end
 
 	def transliterations_for_word(word, script)

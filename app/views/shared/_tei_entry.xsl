@@ -170,9 +170,93 @@
 	</xsl:template>
 
 	<xsl:template match="tei:w">
-		<span style="color: magenta; font-weight: bold;">
-			<xsl:apply-templates/>
+		<xsl:variable name="is-or-needs-transliteration">
+			<xsl:value-of select="contains(@xml:lang, 'san-Latn-')"/> <!-- FIXME: maybe set to true for cyrillic and others -->
+		</xsl:variable>
+
+		<span class="tei-w">
+			<xsl:choose>
+				<xsl:when test="$is-or-needs-transliteration">
+					<xsl:call-template name="text-and-transliterations">
+						<xsl:with-param name="text" select="text()"/> <!-- FIXME: can there be elements inside tei:w? -->
+						<xsl:with-param name="wrapper-native">span</xsl:with-param>
+						<xsl:with-param name="wrapper-transliterations">span</xsl:with-param>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:otherwise>
+					<span xml:lang="{@xml:lang}" lang="{@xml:lang}">
+						<xsl:apply-templates/>
+					</span>
+				</xsl:otherwise>
+			</xsl:choose>
 		</span>
+	</xsl:template>
+
+	<xsl:template name="text-and-transliterations">
+		<xsl:param name="text"/>
+		<xsl:param name="wrapper-native"/>
+		<xsl:param name="wrapper-transliterations"/>
+
+		<xsl:variable name="transliterations" select="/rails:variables/rails:lemma/rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
+		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
+		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
+
+		<xsl:element name="{$wrapper-native}">
+			<xsl:apply-templates select="$native-script" mode="generic"/>
+			<xsl:apply-templates select="../@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
+		</xsl:element>
+
+		<xsl:value-of select="$space-char"/>
+
+		<xsl:element name="{$wrapper-transliterations}">
+			<xsl:attribute name="class">transliterations</xsl:attribute>
+
+			<xsl:for-each select="$additional-scripts">
+				<xsl:sort select="local-name()"/>
+
+				<xsl:apply-templates select="." mode="generic">
+					<xsl:with-param name="class">transliteration</xsl:with-param>
+					<xsl:with-param name="last" select="position() = count($additional-scripts)"/>
+				</xsl:apply-templates>
+			</xsl:for-each>
+		</xsl:element>
+	</xsl:template>
+
+	<xsl:template match="rails:transliterations/rails:*/rails:*" mode="generic">
+		<xsl:param name="last" select="true()"/>
+		<xsl:param name="class">native-script</xsl:param>
+
+		<xsl:variable name="lang" select="local-name()"/>
+		<xsl:variable name="text" select="text()"/>
+		<xsl:variable name="method">
+			<xsl:call-template name="method-name">
+				<xsl:with-param name="lang" select="$lang"/>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:variable name="lemma-url">
+			<xsl:call-template name="lemma-url"/>
+		</xsl:variable>
+
+		<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
+			<a href="{$lemma-url}">
+				<xsl:if test="$method != ''">
+					<span class="method">
+						<xsl:value-of select="$method"/>
+					</span>
+
+					<xsl:value-of select="$space-char"/>
+				</xsl:if>
+
+				<span>
+					<xsl:value-of select="$text"/>
+				</span>
+			</a>
+		</span>
+
+		<xsl:if test="not($last)">
+			<xsl:value-of select="$space-char"/>
+		</xsl:if>
 	</xsl:template>
 
 

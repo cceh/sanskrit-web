@@ -1,0 +1,29 @@
+dd.sense {
+	span.tei-w {
+		color: magenta;
+
+		a {
+			color: inherit;
+		}
+	}
+}
+
+span.native-script {
+	font-weight: bold;
+}
+
+span.transliterations {
+	&:before {
+		content: '(';
+	}
+
+	&:after {
+		content: ')';
+	}
+
+	& span.method:after {
+		content: ':';
+	}
+
+	font-size: small;
+}
