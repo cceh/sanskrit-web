@@ -7,6 +7,9 @@ class Dictionary < ActiveRecord::Base
 	IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 	ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
 
+	DICT_ENTRIES = "/tei:TEI/tei:text/tei:body//*[#{IS_DICT_ENTRY}]"
+	DICT_SCANS = '/tei:TEI/tei:facsimile/tei:graphic'
+
 	NS = {
 		'tei' => 'http://www.tei-c.org/ns/1.0',
 	}
@@ -55,7 +58,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemma(id, script)
-		query = "/tei:TEI/tei:text/tei:body//*[self::tei:entry or self::tei:re][@xml:id = 'lemma-%{id}']"
+		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{id}']"
 		params = { :id => id }
 
 		results = xpathquery(query, params)
@@ -105,7 +108,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def exact_matches(term)
-		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]"
+		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]"
 		params = { :term => term }
 
 		tei_matches = xpathquery(query, params)
@@ -115,7 +118,7 @@ class Dictionary < ActiveRecord::Base
 
 	def similar_matches(term)
 		# FIXME: use something better than "contains"
-		query = "//*[#{IS_DICT_ENTRY}][contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
+		query = "#{DICT_ENTRIES}[contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
 		params = { :term => term }
 
 		tei_matches = xpathquery(query, params)
@@ -127,7 +130,7 @@ class Dictionary < ActiveRecord::Base
 		num = 3 # FIXME: make number configurable
 
 		# FIXME: the order/position() may be wrong, check that the correct set is returned
-		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
 		params = { :term => term, :num => num }
 
 		tei_matches = xpathquery(query, params)
@@ -138,7 +141,7 @@ class Dictionary < ActiveRecord::Base
 	def following_matches(term)
 		num = 3 # FIXME: make number configurable
 
-		query = "//*[#{IS_DICT_ENTRY}][#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
 		params = { :term => term, :num => num }
 
 		tei_matches = xpathquery(query, params)
@@ -147,25 +150,28 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def scans
-		query = "/tei:TEI/tei:facsimile/tei:graphic"
+		query = DICT_SCANS
 		return xpathquery(query)
 	end
 
 	def scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']"
+		query = "#{DICT_SCANS}[@xml:id = '%{scan_handle}']"
 		params = { :scan_handle => scan_handle }
+
 		return xpathquery(query, params).first
 	end
 
 	def preceding_scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/preceding-sibling::tei:graphic[1]"
+		query = "#{DICT_SCANS}[@xml:id = '%{scan_handle}']/preceding-sibling::tei:graphic[1]"
 		params = { :scan_handle => scan_handle }
+
 		return xpathquery(query, params).first
 	end
 
 	def following_scan(scan_handle)
-		query = "/tei:TEI/tei:facsimile/tei:graphic[@xml:id = '%{scan_handle}']/following-sibling::tei:graphic[1]"
+		query = "#{DICT_SCANS}[@xml:id = '%{scan_handle}']/following-sibling::tei:graphic[1]"
 		params = { :scan_handle => scan_handle }
+
 		return xpathquery(query, params).first
 	end
 
@@ -212,12 +218,12 @@ class Dictionary < ActiveRecord::Base
 
 
 	def all_entries
-		query = "//*[#{IS_DICT_ENTRY}]"
+		query = DICT_ENTRIES
 		return xpathquery(query)
 	end
 
 	def first_entry
-		query = "//*[#{IS_DICT_ENTRY}][1]"
+		query = "#{DICT_ENTRIES}[1]"
 		return xpathquery(query).first
 	end
 end
