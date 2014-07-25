@@ -72,34 +72,37 @@ module ApplicationHelper
 	end
 
 	# FIXME: use Builder instead of strings
-	def xml_elements_for_value(v)
+	def xml_elements_for_value(v, doc)
 		case v
 		when Hash
 			v.map do |key, value|
 				name = acceptable_xml_name(key)
-				if name != key.to_s
-					orig_key = " orig-key='#{CGI::escapeHTML(key.to_s)}'"
+				Rails.logger.debug "key = #{key.inspect}, name = #{name.inspect}"
+
+				attrs = {}
+				attrs[:orig_key] = key.to_s unless name == key.to_s
+
+				doc.send("rails:#{name}", attrs) do
+					xml_elements_for_value(value, doc)
 				end
-				"<rails:#{name}#{orig_key}>" +
-				xml_elements_for_value(value) +
-				"</rails:#{name}>"
-			end.join("")
+			end
 		when Array
 			v.map do |value|
-				"<rails:elem>" +
-				xml_elements_for_value(value) +
-				"</rails:elem>"
-			end.join("")
+				doc.send('rails:elem') do
+					xml_elements_for_value(value, doc)
+				end
+			end
 		else
 			if v.respond_to?(:to_xml)
 				begin
-					v.to_xml(:skip_instruct => true).to_s
+					doc << v.to_xml(:skip_instruct => true).to_s
 				rescue ArgumentError
 					# Some to_xml methods don't understand skip_instruct
-					v.to_xml.to_s
+					doc << v.to_xml.to_s
 				end
 			elsif v.respond_to?(:to_s)
-				CGI::escapeHTML(v.to_s)
+				Rails.logger.debug "v = #{v.inspect}"
+				doc.text v.to_s
 			else
 				raise "Cannot XMLify #{v.inspect}"
 			end
@@ -111,7 +114,7 @@ module ApplicationHelper
 
 		Nokogiri::XML::Builder.new do |elem|
 			elem.send("rails:#{name}", 'xmlns' => 'http://svario.it/xslt-rails') do
-				elem << xml_elements_for_value(value)
+				xml_elements_for_value(value, elem)
 			end
 		end.doc.root
 	end
@@ -119,7 +122,7 @@ module ApplicationHelper
 	def acceptable_xml_name(sym)
 		name = sym.to_s.dup
 		name.sub!(/^@/, '')
-		name.gsub!(/[<>{}\[\]*:\/]/, '-')
+		name.gsub!(/[^A-Za-z0-9_\-]/, '-')
 		name = CGI::escapeHTML(name)
 
 		return name
