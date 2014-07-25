@@ -169,24 +169,28 @@
 		</abbr>
 	</xsl:template>
 
-	<xsl:template match="tei:w">
-		<xsl:variable name="is-or-needs-transliteration">
-			<xsl:value-of select="contains(@xml:lang, 'san-Latn-')"/> <!-- FIXME: maybe set to true for cyrillic and others -->
-		</xsl:variable>
+	<xsl:template match="tei:w | tei:m">
+		<xsl:variable name="is-or-needs-transliteration" select="contains(@xml:lang, 'san-Latn-')"/> <!-- FIXME: maybe set to true for cyrillic and others -->
 
-		<span class="tei-w">
+		<xsl:variable name="text" select="."/> <!-- FIXME: can there be elements inside tei:w? -->
+		<xsl:variable name="class" select="concat('tei-', local-name())"/>
+
+		<span class="{$class}">
 			<xsl:choose>
 				<xsl:when test="$is-or-needs-transliteration">
 					<xsl:call-template name="text-and-transliterations">
-						<xsl:with-param name="text" select="text()"/> <!-- FIXME: can there be elements inside tei:w? -->
+						<xsl:with-param name="text" select="$text"/>
 						<xsl:with-param name="wrapper-native">span</xsl:with-param>
 						<xsl:with-param name="wrapper-transliterations">span</xsl:with-param>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
-					<span xml:lang="{@xml:lang}" lang="{@xml:lang}">
-						<xsl:apply-templates/>
-					</span>
+					<xsl:if test="@xml:lang">
+						<xsl:attribute name="xml:lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+						<xsl:attribute name="lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+					</xsl:if>
+
+					<xsl:apply-templates/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</span>
@@ -202,11 +206,11 @@
 		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
 
 		<xsl:element name="{$wrapper-native}">
+			<xsl:attribute name="class">native</xsl:attribute>
+
 			<xsl:apply-templates select="$native-script" mode="generic"/>
 			<xsl:apply-templates select="../@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
 		</xsl:element>
-
-		<xsl:value-of select="$space-char"/>
 
 		<xsl:element name="{$wrapper-transliterations}">
 			<xsl:attribute name="class">transliterations</xsl:attribute>
