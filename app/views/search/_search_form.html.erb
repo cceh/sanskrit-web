@@ -1,0 +1,48 @@
+<form action="/search" method="GET">
+	<div id="query">
+		<label for="q">Query:</label>
+		<input type="text" name="q" id="q" value="<%= @query[:term] %>" />
+	</div>
+
+	<fieldset id="dictionaries">
+		<legend>Dictionaries</legend>
+
+		<input type="checkbox" name="dict" value="all" id="dict-all" checked="checked"/><label for="dict-all">ALL</label>
+		<input type="checkbox" name="dict" value="monier" id="dict-monier" disabled="disabled" checked="checked"/><label for="dict-monier">monier</label>
+		<input type="checkbox" name="dict" value="pwg" id="dict-pwg" disabled="disabled" checked="checked"/><label for="dict-pwg">pwg</label>
+	</fieldset>
+
+	<fieldset id="input-language">
+		<legend>Input language</legend>
+
+		<div>
+			<input id="lan-any" type="radio" name="ilang" checked="checked" value="any"/><label for="lan-any">Sanskrit (SLP1) or any other language</label>
+		</div>
+
+		<div>
+			<input type="radio" name="ilang" value="san" id="lan-san"/><label for="lan-san">Sanskrit (autodetect input script)</label>
+			<input type="radio" name="ilang" value="san-slp1" id="lan-san-slp1"><label for="lan-san-slp1">SLP1</label>
+			<input type="radio" name="ilang" value="san-hk" id="lan-san-hk"><label for="lan-san-hk">Harvard-Kyoto</label>
+			<input type="radio" name="ilang" value="san-itrans" id="lan-san-itrans"><label for="lan-san-itrans">ITRANS</label>
+			<input type="radio" name="ilang" value="san-devanagari" id="lan-san-devanagari"><label for="lan-san-devanagari">Devanagari</label>
+		</div>
+
+		<div>
+			<input type="radio" name="ilang" value="other" id="lan-other"/><label for="lan-other">other languages</label>
+			<input type="radio" name="ilang" value="eng" id="lan-eng"/><label for="lan-eng">English</label>
+			<input type="radio" name="ilang" value="deu" id="lan-deu"/><label for="lan-deu">German</label>
+		</div>
+	</fieldset>
+
+	<fieldset id="where">
+		<legend>Where to search</legend>
+
+		<div>
+			<input type="radio" name="where" value="lemma-def" id="where-both" checked="checked"/><label for="where-both">both lemmas and definitions</label>
+			<input type="radio" name="where" value="lemma" id="where-lemma"/><label for="where-lemma">only lemmas</label>
+			<input type="radio" name="where" value="def" id="where-def"/><label for="where-def">only definitions</label>
+		</div>
+	</fieldset>
+
+	<input type="submit"/>
+</form>

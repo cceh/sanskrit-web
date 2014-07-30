@@ -1,6 +1,7 @@
 require 'xpathquery/error'
 
 class SearchController < ApplicationController
+	before_action :fix_params, :only => :index
 	before_action :default_params, :only => :index
 	before_action :validate_params, :only => :index
 
@@ -20,15 +21,15 @@ class SearchController < ApplicationController
 		end
 
 		term = params[:q]
-		iscript = params[:iscript] # TODO: transliterate if needed
-		oscript = params[:oscript] # TODO: add transliteration if needed
+		language = params[:ilang] # TODO: transliterate if needed
 		dicts = params[:dict]
+		where = params[:where]
 
 		@query = {
 			:term => term,
-			:iscript => iscript,
-			:oscript => oscript,
+			:ilang => language,
 			:dicts => dicts,
+			:where => where,
 		}
 
 		begin
@@ -60,12 +61,20 @@ class SearchController < ApplicationController
 			return
 		end
 
-		params[:iscript] ||= 'slp1'
-		params[:oscript] ||= 'devanagari'
+		params[:ilang] ||= 'slp1'
 		params[:dict] ||= ['monier'] # FIXME: use all dictionaries if no dict has been specified
+		params[:where] ||= 'both'
 	end
 
 	def validate_params
 		# TODO: raise if problems detected
+	end
+
+	def fix_params
+		if params[:dict] == 'all'
+			params[:dict] = nil
+		end
+
+		params[:ilang].sub!('san-', '') unless params[:ilang].nil?
 	end
 end

@@ -2,21 +2,7 @@
 
 %h1 Cologne Digital Sanskrit Dictionaries
 
-= form_tag('/search', method: 'get') do
-  %div
-    = label_tag(:q, 'term:')
-    = text_field_tag(:q, @query[:term])
-    - iscripts = options_for_select([['SLP1', :spl1], ['Harvad-Kyoto', :hk], ['Devanagari', :devanagari]])
-    = select_tag(:iscript, iscripts)
-  %div
-    = label_tag(:dict, 'dictionary')
-    - dicts = options_for_select([['Monierr-Williams Sanskrit-English', :monier], ['Boehtlingk & Roth Sanskrit-German', :pwg], ['Apte English-Sanskrit', :aptees1]])
-    = select_tag(:dict, dicts, multiple: true)
-  %div
-    = label_tag(:oscript, 'output script')
-    - oscripts = options_for_select([['Devanagari only', :devanagari], ['Devanagari + SLP1', :spl1], ['Devanagari + Harvad-Kyoto', :hk]])
-    = select_tag(:oscript, oscripts)
-  %input(type='submit' value='Search')
+= render 'search_form'
 
 - if !@results[:exact].all? { |dict, results| results.empty? }
   %section.results.exact
