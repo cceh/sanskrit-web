@@ -13,17 +13,5 @@ span.native-script {
 }
 
 span.transliterations {
-	&:before {
-		content: ' (';
-	}
-
-	&:after {
-		content: ')';
-	}
-
-	& span.method:after {
-		content: ':';
-	}
-
 	font-size: small;
 }

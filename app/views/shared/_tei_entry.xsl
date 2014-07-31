@@ -4,6 +4,8 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
+	<xsl:import href="_urls.xsl"/>
+
 	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
@@ -88,7 +90,10 @@
 		</xsl:variable>
 
 		<xsl:variable name="lemma-url">
-			<xsl:call-template name="lemma-url"/>
+			<xsl:call-template name="lemma-url">
+				<xsl:with-param name="entry" select="$entry"/>
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+			</xsl:call-template>
 		</xsl:variable>
 
 		<dt xml:lang="{$lang}" class="{$class}">
@@ -182,6 +187,7 @@
 						<xsl:with-param name="text" select="$text"/>
 						<xsl:with-param name="wrapper-native">span</xsl:with-param>
 						<xsl:with-param name="wrapper-transliterations">span</xsl:with-param>
+						<xsl:with-param name="entry" select="/rails:variables/rails:lemma"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
@@ -200,8 +206,9 @@
 		<xsl:param name="text"/>
 		<xsl:param name="wrapper-native"/>
 		<xsl:param name="wrapper-transliterations"/>
+		<xsl:param name="entry"/>
 
-		<xsl:variable name="transliterations" select="/rails:variables/rails:lemma/rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
+		<xsl:variable name="transliterations" select="$entry/rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
 
@@ -212,8 +219,12 @@
 			<xsl:apply-templates select="../@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
 		</xsl:element>
 
+		<xsl:value-of select="$space-char"/>
+
 		<xsl:element name="{$wrapper-transliterations}">
 			<xsl:attribute name="class">transliterations</xsl:attribute>
+
+			<xsl:text>(</xsl:text>
 
 			<xsl:for-each select="$additional-scripts">
 				<xsl:sort select="local-name()"/>
@@ -223,6 +234,8 @@
 					<xsl:with-param name="last" select="position() = count($additional-scripts)"/>
 				</xsl:apply-templates>
 			</xsl:for-each>
+
+			<xsl:text>)</xsl:text>
 		</xsl:element>
 	</xsl:template>
 
@@ -244,17 +257,18 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
+		<span>
 			<a href="{$search-url}">
 				<xsl:if test="$method != ''">
 					<span class="method">
 						<xsl:value-of select="$method"/>
+						<xsl:text>:</xsl:text>
 					</span>
 
 					<xsl:value-of select="$space-char"/>
 				</xsl:if>
 
-				<span>
+				<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
 					<xsl:value-of select="$text"/>
 				</span>
 			</a>
@@ -276,6 +290,7 @@
 		<xsl:variable name="scan-url">
 			<xsl:call-template name="scan-url">
 				<xsl:with-param name="page-ref" select="$page-ref"/>
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
 			</xsl:call-template>
 		</xsl:variable>
 
@@ -297,51 +312,5 @@
 
 			<xsl:text>)</xsl:text>
 		</cite>
-	</xsl:template>
-
-
-
-	<xsl:template name="search-url">
-		<xsl:param name="text"/>
-
-		<xsl:text>/search</xsl:text>
-		<xsl:text>?</xsl:text>
-		<xsl:text>utf8=✓</xsl:text>
-		<xsl:text>&amp;</xsl:text>
-		<xsl:text>q=</xsl:text>
-		<xsl:value-of select="$text"/>
-		<xsl:text>&amp;</xsl:text>
-		<xsl:text>iscript=slp1</xsl:text>
-	</xsl:template>
-
-	<xsl:template name="lemma-url">
-		<xsl:variable name="id-for-url" select="substring-after($entry/@xml:id, 'lemma-')"/>
-
-		<xsl:text>/dictionary/</xsl:text>
-		<xsl:value-of select="$dict-handle"/>
-		<xsl:text>/lemma/</xsl:text>
-		<xsl:value-of select="$id-for-url"/>
-	</xsl:template>
-
-	<xsl:template name="scan-url">
-		<xsl:param name="page-ref"/>
-
-		<xsl:variable name="page-num" select="substring-after($page-ref/@target, '#page-')"/>
-
-		<xsl:text>/dictionary/</xsl:text>
-		<xsl:value-of select="$dict-handle"/>
-		<xsl:text>/scan/</xsl:text>
-		<xsl:value-of select="$page-num"/>
-	</xsl:template>
-
-	<xsl:template name="biblio-url">
-		<xsl:param name="biblio-ref"/>
-
-		<xsl:variable name="biblio-id" select="substring-after($biblio-ref/@target, '#auth-')"/>
-
-		<xsl:text>/dictionary/</xsl:text>
-		<xsl:value-of select="$dict-handle"/>
-		<xsl:text>/biblio/</xsl:text>
-		<xsl:value-of select="$biblio-id"/>
 	</xsl:template>
 </xsl:stylesheet>

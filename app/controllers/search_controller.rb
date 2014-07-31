@@ -10,7 +10,7 @@ class SearchController < ApplicationController
 		@query = {}
 		@results = {
 			:exact => {},
-			:similar => {},
+			:similar => [],
 			:preceding => {},
 			:following => {},
 		}
@@ -40,7 +40,7 @@ class SearchController < ApplicationController
 				@results[:exact][dict] = exact_results
 
 				similar_results = dict.similar_matches(term)
-				@results[:similar][dict] = similar_results
+				@results[:similar] += similar_results
 
 				preceding_results = dict.preceding_matches(term)
 				@results[:preceding][dict] = preceding_results

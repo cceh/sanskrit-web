@@ -28,16 +28,4 @@
           = render 'adjacent_entry', :lemma => follow_result
 
 - if !@results[:similar].empty?
-  %section.results.similar
-    %h2 Similar matches
-    %details
-      - total_results = @results[:similar].map { |d,r| r.count }.inject(&:+)
-      %summary= "#{total_results} results"
-      - @results[:similar].each do |dict, results|
-        %p= "#{results.count} results in #{dict.handle}"
-    - @results[:similar].each do |dict, similar_results|
-      %div
-        %p= "Matches in #{dict.handle}"
-        %ul
-          - similar_results.each do |similar_result|
-            = render 'similar_entry', :lemma => similar_result
+  = render 'similar_entries', :similar_entries => @results[:similar]
