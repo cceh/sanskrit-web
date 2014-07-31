@@ -61,11 +61,13 @@ module ApplicationHelper
 			raise "XSLT Transformation #{xslt_path.sub(Rails.root.to_s, '')} failed (Empty result)"
 		end
 
+		save_opts = { :save_with => Nokogiri::XML::Node::SaveOptions::AS_XML }
+
 		html = ''
 		if !root.namespace.nil? && root.namespace.href == rAILS_NS && root.name == 'wrapper'
-			html = root.children.map { |c| c.to_xml }.join("\n")
+			html = root.children.map { |c| c.to_xml(save_opts) }.join("\n")
 		else
-			html = root.to_xml
+			html = root.to_xml(save_opts)
 		end
 
 		return html
