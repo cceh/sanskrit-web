@@ -4,8 +4,6 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
-
 	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
 	<xsl:variable name="num-lemmas" select="/rails:variables/rails:num_lemmas"/>
 	<xsl:variable name="lang-code-lemmas" select="/rails:variables/rails:lang_lemmas"/>

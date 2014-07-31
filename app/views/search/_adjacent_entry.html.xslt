@@ -6,8 +6,6 @@
                 version="1.0">
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 
-	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
-
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
 	<xsl:variable name="entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 

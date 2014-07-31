@@ -4,9 +4,8 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
+	<xsl:import href="_chars.xsl"/>
 	<xsl:import href="_urls.xsl"/>
-
-	<xsl:variable name="space-char" xml:space="preserve"><xsl:text>&#32;</xsl:text></xsl:variable>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
 	<xsl:variable name="entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
@@ -20,7 +19,7 @@
 		<xsl:apply-templates select="$native-script" mode="heading"/>
 		<xsl:apply-templates select="../@n"/>
 
-		<xsl:value-of select="$space-char"/>
+		<xsl:value-of select="$char-space"/>
 
 		<span class="transliterations">
 			<xsl:text>(</xsl:text>
@@ -48,7 +47,7 @@
 		</span>
 
 		<xsl:if test="not($last)">
-			<xsl:value-of select="$space-char"/>
+			<xsl:value-of select="$char-space"/>
 		</xsl:if>
 	</xsl:template>
 
@@ -59,7 +58,7 @@
 		<xsl:apply-templates select="$native-script"/>
 		<xsl:apply-templates select="../@n"/>
 
-		<xsl:value-of select="$space-char"/>
+		<xsl:value-of select="$char-space"/>
 
 		<div class="transliterations">
 			<xsl:text>(</xsl:text>
@@ -112,7 +111,7 @@
 		</dt>
 
 		<xsl:if test="not($last)">
-			<xsl:value-of select="$space-char"/>
+			<xsl:value-of select="$char-space"/>
 		</xsl:if>
 	</xsl:template>
 
@@ -219,7 +218,7 @@
 			<xsl:apply-templates select="../@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
 		</xsl:element>
 
-		<xsl:value-of select="$space-char"/>
+		<xsl:value-of select="$char-space"/>
 
 		<xsl:element name="{$wrapper-transliterations}">
 			<xsl:attribute name="class">transliterations</xsl:attribute>
@@ -265,7 +264,7 @@
 						<xsl:text>:</xsl:text>
 					</span>
 
-					<xsl:value-of select="$space-char"/>
+					<xsl:value-of select="$char-space"/>
 				</xsl:if>
 
 				<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
@@ -275,7 +274,7 @@
 		</span>
 
 		<xsl:if test="not($last)">
-			<xsl:value-of select="$space-char"/>
+			<xsl:value-of select="$char-space"/>
 		</xsl:if>
 	</xsl:template>
 
@@ -294,7 +293,7 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:value-of select="$space-char"/>
+		<xsl:value-of select="$char-space"/>
 
 		<cite class="provenance-info">
 			<xsl:text>(</xsl:text>
