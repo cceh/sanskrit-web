@@ -51,68 +51,18 @@
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template match="tei:form">
-		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
-		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
+	<xsl:template match="tei:form" mode="definition">
+		<xsl:param name="linked-url"/>
 
-		<xsl:apply-templates select="$native-script"/>
-		<xsl:apply-templates select="../@n"/>
-
-		<xsl:value-of select="$char-space"/>
-
-		<div class="transliterations">
-			<xsl:text>(</xsl:text>
-
-			<xsl:for-each select="$additional-scripts">
-				<xsl:sort select="local-name()"/>
-
-				<xsl:apply-templates select=".">
-					<xsl:with-param name="last" select="position() = count($additional-scripts)"/>
-					<xsl:with-param name="class">transliteration</xsl:with-param>
-				</xsl:apply-templates>
-			</xsl:for-each>
-
-			<xsl:text>)</xsl:text>
-		</div>
-	</xsl:template>
-
-	<xsl:template match="rails:transliterations/rails:*/rails:*">
-		<xsl:param name="last" select="true()"/>
-		<xsl:param name="class">native-script</xsl:param>
-
-		<xsl:variable name="lang" select="local-name()"/>
-		<xsl:variable name="text" select="text()"/>
-		<xsl:variable name="method">
-			<xsl:call-template name="method-name">
-				<xsl:with-param name="lang" select="$lang"/>
-			</xsl:call-template>
-		</xsl:variable>
-
-		<xsl:variable name="lemma-url">
-			<xsl:call-template name="lemma-url">
-				<xsl:with-param name="entry" select="$entry"/>
-				<xsl:with-param name="dict-handle" select="$dict-handle"/>
-			</xsl:call-template>
-		</xsl:variable>
-
-		<dt xml:lang="{$lang}" class="{$class}">
-			<a href="{$lemma-url}">
-				<xsl:if test="$method != ''">
-					<span class="method">
-						<xsl:value-of select="$method"/>
-					</span>
-					<xsl:text>: </xsl:text>
-				</xsl:if>
-
-				<dfn>
-					<xsl:value-of select="$text"/>
-				</dfn>
-			</a>
-		</dt>
-
-		<xsl:if test="not($last)">
-			<xsl:value-of select="$char-space"/>
-		</xsl:if>
+		<xsl:call-template name="text-and-transliterations">
+			<xsl:with-param name="text" select="tei:orth/text()"/>
+			<xsl:with-param name="wrapper-native">div</xsl:with-param>
+			<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
+			<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
+			<xsl:with-param name="wrapper-text">dfn</xsl:with-param>
+			<xsl:with-param name="linked-url" select="$linked-url"/>
+			<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
+		</xsl:call-template>
 	</xsl:template>
 
 	<xsl:template match="tei:*/@n">
@@ -132,7 +82,7 @@
 
 
 
-	<xsl:template match="tei:sense">
+	<xsl:template match="tei:sense" mode="definition">
 		<dd class="sense">
 			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
 
@@ -184,9 +134,7 @@
 				<xsl:when test="$is-or-needs-transliteration">
 					<xsl:call-template name="text-and-transliterations">
 						<xsl:with-param name="text" select="$text"/>
-						<xsl:with-param name="wrapper-native">span</xsl:with-param>
-						<xsl:with-param name="wrapper-transliterations">span</xsl:with-param>
-						<xsl:with-param name="entry" select="/rails:variables/rails:lemma"/>
+						<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
@@ -203,19 +151,26 @@
 
 	<xsl:template name="text-and-transliterations">
 		<xsl:param name="text"/>
-		<xsl:param name="wrapper-native"/>
-		<xsl:param name="wrapper-transliterations"/>
-		<xsl:param name="entry"/>
+		<xsl:param name="wrapper-native">span</xsl:param>
+		<xsl:param name="wrapper-transliterations">span</xsl:param>
+		<xsl:param name="wrapper-text-container">span</xsl:param>
+		<xsl:param name="wrapper-text">span</xsl:param>
+		<xsl:param name="linked-url"/>
+		<xsl:param name="rails-entry"/>
 
-		<xsl:variable name="transliterations" select="$entry/rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
+		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
 
 		<xsl:element name="{$wrapper-native}">
-			<xsl:attribute name="class">native</xsl:attribute>
+			<xsl:attribute name="class">native-script</xsl:attribute>
 
-			<xsl:apply-templates select="$native-script" mode="generic"/>
-			<xsl:apply-templates select="../@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
+			<xsl:apply-templates select="$native-script" mode="generic">
+				<xsl:with-param name="wrapper-text-container" select="$wrapper-text-container"/>
+				<xsl:with-param name="wrapper-text" select="$wrapper-text"/>
+				<xsl:with-param name="linked-url" select="$linked-url"/>
+			</xsl:apply-templates>
+			<xsl:apply-templates select="$rails-entry/tei:*/@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
 		</xsl:element>
 
 		<xsl:value-of select="$char-space"/>
@@ -231,6 +186,9 @@
 				<xsl:apply-templates select="." mode="generic">
 					<xsl:with-param name="class">transliteration</xsl:with-param>
 					<xsl:with-param name="last" select="position() = count($additional-scripts)"/>
+					<xsl:with-param name="wrapper-text-container" select="$wrapper-text-container"/>
+					<xsl:with-param name="wrapper-text" select="$wrapper-text"/>
+					<xsl:with-param name="linked-url" select="$linked-url"/>
 				</xsl:apply-templates>
 			</xsl:for-each>
 
@@ -241,6 +199,9 @@
 	<xsl:template match="rails:transliterations/rails:*/rails:*" mode="generic">
 		<xsl:param name="last" select="true()"/>
 		<xsl:param name="class">native-script</xsl:param>
+		<xsl:param name="wrapper-text-container"/>
+		<xsl:param name="wrapper-text"/>
+		<xsl:param name="linked-url"/>
 
 		<xsl:variable name="lang" select="local-name()"/>
 		<xsl:variable name="text" select="text()"/>
@@ -250,28 +211,37 @@
 			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:variable name="search-url">
-			<xsl:call-template name="search-url">
-				<xsl:with-param name="text" select="$text"/>
-			</xsl:call-template>
+		<xsl:variable name="formatted-text">
+			<xsl:if test="$method != ''">
+				<span class="method">
+					<xsl:value-of select="$method"/>
+					<xsl:text>:</xsl:text>
+				</span>
+
+				<xsl:value-of select="$char-space"/>
+			</xsl:if>
+
+			<xsl:element name="{$wrapper-text}">
+				<xsl:attribute name="xml:lang"><xsl:value-of select="$lang"/></xsl:attribute>
+				<xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
+				<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+
+				<xsl:value-of select="$text"/>
+			</xsl:element>
 		</xsl:variable>
 
-		<span>
-			<a href="{$search-url}">
-				<xsl:if test="$method != ''">
-					<span class="method">
-						<xsl:value-of select="$method"/>
-						<xsl:text>:</xsl:text>
-					</span>
-
-					<xsl:value-of select="$char-space"/>
-				</xsl:if>
-
-				<span xml:lang="{$lang}" lang="{$lang}" class="{$class}">
-					<xsl:value-of select="$text"/>
-				</span>
-			</a>
-		</span>
+		<xsl:element name="{$wrapper-text-container}">
+			<xsl:choose>
+				<xsl:when test="$linked-url != ''">
+					<a href="{$linked-url}">
+						<xsl:copy-of select="$formatted-text"/>
+					</a>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:copy-of select="$formatted-text"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:element>
 
 		<xsl:if test="not($last)">
 			<xsl:value-of select="$char-space"/>

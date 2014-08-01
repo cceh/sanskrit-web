@@ -1,4 +1,34 @@
-dd.sense {
+dl {
+	margin-left: 2em;
+}
+
+dt, dl > div {
+	display: inline-block;
+}
+
+.native-script {
+	font-weight: bold;
+}
+
+.method {
+	text-transform: uppercase;
+}
+
+.transliterations {
+	font-size: small;
+}
+
+sup {
+	font-weight: normal;
+	font-size: normal;
+
+	margin-left: 0.3em;
+}
+
+dd {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+
 	span.tei-w {
 		color: magenta;
 
@@ -6,12 +36,36 @@ dd.sense {
 			color: inherit;
 		}
 	}
+
+	&:before {
+		content: '» ';
+	}
 }
 
-span.native-script {
-	font-weight: bold;
+.native-script, .transliterations {
+	& a {
+		text-decoration: none;
+	}
+
+	& a:hover {
+		text-decoration: underline;
+
+		sup {
+			text-decoration: none;
+		}
+	}
 }
 
-span.transliterations {
-	font-size: small;
+a.lemma {
+	text-decoration: none;
+
+	&:hover {
+		*:not(.transliterations) {
+			text-decoration: underline;
+		}
+
+		sup {
+			text-decoration: none !important;
+		}
+	}
 }

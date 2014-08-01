@@ -24,8 +24,8 @@
 		</h1>
 
 		<dl>
-			<xsl:apply-templates select="tei:form"/>
-			<xsl:apply-templates select="tei:sense"/>
+			<xsl:apply-templates select="tei:form" mode="definition"/>
+			<xsl:apply-templates select="tei:sense" mode="definition"/>
 		</dl>
 	</xsl:template>
 

@@ -49,15 +49,21 @@
 
 	<xsl:template match="tei:entry | tei:re">
 		<xsl:for-each select="key('entries', tei:form/tei:orth)">
-			<xsl:variable name="lemma" select="tei:form/tei:orth"/>
+			<xsl:variable name="lemma" select="tei:form/tei:orth/text()"/>
+
+			<xsl:variable name="search-url">
+				<xsl:call-template name="search-url">
+					<xsl:with-param name="text" select="$lemma"/>
+				</xsl:call-template>
+			</xsl:variable>
 
 			<li>
-				<xsl:call-template name="text-and-transliterations">
-					<xsl:with-param name="text" select="$lemma"/>
-					<xsl:with-param name="wrapper-native">span</xsl:with-param>
-					<xsl:with-param name="wrapper-transliterations">span</xsl:with-param>
-					<xsl:with-param name="entry" select="parent::rails:entry/parent::rails:elem"/>
-				</xsl:call-template>
+				<a href="{$search-url}" class="lemma search">
+					<xsl:call-template name="text-and-transliterations">
+						<xsl:with-param name="text" select="$lemma"/>
+						<xsl:with-param name="rails-entry" select="parent::rails:entry"/>
+					</xsl:call-template>
+				</a>
 			</li>
 
 			<xsl:value-of select="$char-newline"/>

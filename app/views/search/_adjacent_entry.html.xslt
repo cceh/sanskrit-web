@@ -5,11 +5,30 @@
                 exclude-result-prefixes="tei rails"
                 version="1.0">
 	<xsl:import href="../shared/_tei_entry.xsl"/>
+	<xsl:import href="../shared/_urls.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
-	<xsl:variable name="entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
+	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 
 	<xsl:template match="/">
-		<li><xsl:apply-templates select="$entry/tei:form"/></li>
+		<xsl:apply-templates select="$tei-entry"/>
+	</xsl:template>
+
+	<xsl:template match="tei:entry | tei:re">
+		<xsl:variable name="lemma" select="tei:form/tei:orth/text()"/>
+
+		<xsl:variable name="search-url">
+			<xsl:call-template name="search-url">
+				<xsl:with-param name="text" select="$lemma"/>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<li>
+			<a href="{$search-url}" class="lemma search">
+				<xsl:call-template name="text-and-transliterations">
+					<xsl:with-param name="text" select="$lemma"/>
+					<xsl:with-param name="rails-entry" select="parent::rails:entry"/>
+				</xsl:call-template>
+			</a>
+		</li>
 	</xsl:template>
 </xsl:stylesheet>

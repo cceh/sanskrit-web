@@ -50,42 +50,6 @@ details p {
 	margin-left: 2em;
 }
 
-dl {
-	margin-left: 2em;
-}
-
-dt, div.transliterations {
-	display: inline-block;
-}
-
-div.transliterations {
-	font-size: 80%;
-}
-
-dt {
-	&.lemma {
-		font-weight: bold;
-	}
-
-	.method {
-		text-transform: uppercase;
-	}
-
-	&.transliteration a {
-		text-decoration: none;
-		color: black;
-
-		&:hover {
-			color: blue;
-			text-decoration: underline;
-		}
-	}
-}
-
-dd {
-	line-height: 2;
-}
-
 details.raw-tei {
 	margin-left: 4em;
 
@@ -115,5 +79,6 @@ ul.adjacent {
 
 	li {
 		display: inline;
+
 	}
 }
