@@ -17,15 +17,15 @@
         %p= "Matches in #{dict.handle}"
         - exact_results.each do |exact_result|
           = render 'entry', :lemma => exact_result
-    %h3 Adjacent lemmas
-    %ul.adjacent
-      - @results[:preceding].each do |dict, prec_results|
-        - prec_results.each do |prec_result|
-          = render 'adjacent_entry', :lemma => prec_result
-      %li.term= "#{@query[:term]}"
-      - @results[:following].each do |dict, follow_results|
-        - follow_results.each do |follow_result|
-          = render 'adjacent_entry', :lemma => follow_result
+    %h3 Adjacent lemmas (FIXME: disabled)
+-#    %ul.adjacent
+-#      - @results[:preceding].each do |dict, prec_results|
+-#        - prec_results.each do |prec_result|
+-#          = render 'adjacent_entry', :lemma => prec_result
+-#      %li.term= "#{@query[:term]}"
+-#      - @results[:following].each do |dict, follow_results|
+-#        - follow_results.each do |follow_result|
+-#          = render 'adjacent_entry', :lemma => follow_result
 
 - if !@results[:similar].empty?
   = render 'similar_entries', :similar_entries => @results[:similar]
