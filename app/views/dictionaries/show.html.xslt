@@ -4,6 +4,8 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
+	<xsl:import href="../shared/_chars.xsl"/>
+
 	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
 	<xsl:variable name="num-lemmas" select="/rails:variables/rails:num_lemmas"/>
 	<xsl:variable name="lang-code-lemmas" select="/rails:variables/rails:lang_lemmas"/>
@@ -51,7 +53,7 @@
 				<xsl:value-of select="$desc-title"/>
 				<xsl:text> dictionary contains </xsl:text>
 				<xsl:value-of select="$num-lemmas"/>
-				<xsl:value-of select="$space-char"/>
+				<xsl:value-of select="$char-space"/>
 				<xsl:text> lemmas in </xsl:text>
 				<xsl:copy-of select="$lang-lemmas"/>
 				<xsl:text> and </xsl:text>
