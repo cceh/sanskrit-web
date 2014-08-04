@@ -28,7 +28,13 @@
 	</xsl:template>
 
 	<xsl:template match="tei:entry | tei:re">
-		<li>
+		<xsl:variable name="class">
+			<xsl:text>tei-</xsl:text>
+			<xsl:value-of select="local-name()"/>
+			<!-- FIXME: extra parameter for deeply nested entries -->
+		</xsl:variable>
+
+		<li class="{$class}">
 			<xsl:variable name="lemma" select="tei:form/tei:orth/text()"/>
 
 			<xsl:variable name="lemma-url">
