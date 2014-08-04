@@ -74,7 +74,7 @@ class SearchController < ApplicationController
 		end
 
 		params[:ilang] ||= 'slp1'
-		params[:dict] ||= ['monier'] # FIXME: use all dictionaries if no dict has been specified
+		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
 		params[:where] ||= 'both'
 	end
 
