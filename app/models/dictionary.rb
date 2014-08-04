@@ -41,16 +41,16 @@ class Dictionary < ActiveRecord::Base
 
 		entries = []
 
-		tei_entries.each do |tei|
-			transliterations = {
-				:Deva => 'xxDEVAxx',
-				:Latn_hk => 'xxLatn-HKxx',
-			}
+		tei_entries.each do |tei_entry|
+			tei_orth = tei_entry.at("./tei:form/tei:orth", NS)
+			tei_words = [tei_orth]
+
+			transliterations = transliterations_for_words(tei_words)
 
 			entries << {
-				:entry => tei,
+				:entry => tei_entry,
 				:transliterations => transliterations,
-				:dict => self.handle,
+				:dict_handle => self.handle,
 			}
 		end
 
@@ -75,16 +75,7 @@ class Dictionary < ActiveRecord::Base
 	def entry_for_lemma(tei_entry)
 		tei_words = tei_words_inside_tei_entry(tei_entry)
 
-		transliterations = tei_words.map do |tei_word|
-			word = tei_word.text
-			word.strip! # FIXME
-			word.gsub!("\u221A", '!') # FIXME: deal with root char
-			word.gsub!(/[0-9]/, '!') # FIXME: deal with digits
-			raw_script = tei_word.attr('xml:lang')
-			transliterations = transliterations_for_word(word, raw_script)
-
-			[word, transliterations_for_word(word, raw_script)]
-		end.to_h
+		transliterations = transliterations_for_words(tei_words)
 
 		entry = {
 			:entry => tei_entry,
@@ -93,6 +84,23 @@ class Dictionary < ActiveRecord::Base
 		}
 
 		return entry
+	end
+
+	def transliterations_for_words(tei_words)
+		transliterations = tei_words.map do |tei_word|
+			word = tei_word.text # FIXME: include sub-tags?
+			word.strip! # FIXME
+			word.gsub!("\u221a", '!') # FIXME: deal with root char
+			word.gsub!(/[0-9]/, '!') # FIXME: deal with digits
+
+			raw_script = tei_word.attr('xml:lang')
+
+			transliterations = transliterations_for_word(word, raw_script)
+
+			next [word, transliterations_for_word(word, raw_script)]
+		end
+
+		return transliterations.to_h
 	end
 
 	def tei_words_inside_tei_entry(tei_entry)
@@ -110,7 +118,7 @@ class Dictionary < ActiveRecord::Base
 				#'san-Latn-x-IAST' => native_script.transliterate(:Latn, :method => :iast),
 			}
 		else
-			raise "Entry is stored in unknown script #{script}"
+			raise "Entry is stored in unknown script #{script.inspect}"
 		end
 	end
 
