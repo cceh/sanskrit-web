@@ -37,7 +37,8 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemmas
-		tei_entries = all_entries.to_a.uniq { |tei| tei.at('./tei:form/tei:orth', NS).text }
+		# FIXME: load only tei:form, not complete tei:(entry|re)
+		tei_entries = all_entries.to_a
 
 		entries = []
 
