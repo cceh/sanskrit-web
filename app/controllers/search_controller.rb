@@ -32,8 +32,13 @@ class SearchController < ApplicationController
 			:where => where,
 		}
 
-		begin
-			dicts.each do |dict_handle|
+		flash.now[:error] ||= []
+		flash.now[:query] ||= []
+		flash.now[:response] ||= []
+		flash.now[:cause] ||= []
+
+		dicts.each do |dict_handle|
+			begin
 				dict = Dictionary.find_by! handle: dict_handle
 
 				exact_results = dict.exact_matches(term)
@@ -47,12 +52,19 @@ class SearchController < ApplicationController
 
 				following_results = dict.following_matches(term)
 				@results[:following][dict] = following_results
+			rescue XPathQuery::Error => ex
+				flash.now[:error] << ex.message
+				flash.now[:query] << ex.query
+				flash.now[:response] << ex.response
+				flash.now[:cause] << ex.cause.inspect
+
+				next
+			rescue T13n::Error => ex
+				flash.now[:error] << "(in #{dict_handle}) " + ex.message
+				flash.now[:cause] << ex.cause.inspect
+
+				next
 			end
-		rescue XPathQuery::Error => ex
-			flash.now[:error] = ex.message
-			flash.now[:query] = ex.query
-			flash.now[:response] = ex.response
-			flash.now[:cause] = ex.cause.inspect
 		end
 	end
 

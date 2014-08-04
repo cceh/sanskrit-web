@@ -1,4 +1,8 @@
 %aside.messages
-  - flash.each do |name, msg|
-    - if msg.is_a?(String)
-      %p{ :class => name }= msg
+  - has_errors = !flash.first.nil?
+  - num_msgs = has_errors ? flash.first.second.count : 0
+  - num_msgs.times do |idx|
+    - flash.each do |name, msgs|
+      - msg = msgs[idx]
+      - if msg.is_a?(String)
+        %p{ :class => name }= msg
