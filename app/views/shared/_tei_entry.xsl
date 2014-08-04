@@ -132,10 +132,18 @@
 		<span class="{$class}">
 			<xsl:choose>
 				<xsl:when test="$is-or-needs-transliteration">
-					<xsl:call-template name="text-and-transliterations">
-						<xsl:with-param name="text" select="$text"/>
-						<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma"/>
-					</xsl:call-template>
+					<xsl:variable name="search-url">
+						<xsl:call-template name="search-url">
+							<xsl:with-param name="text" select="$text"/>
+						</xsl:call-template>
+					</xsl:variable>
+
+					<a href="{$search-url}" class="lemma search">
+						<xsl:call-template name="text-and-transliterations">
+							<xsl:with-param name="text" select="$text"/>
+							<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma/rails:entry"/>
+						</xsl:call-template>
+					</a>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:if test="@xml:lang">

@@ -58,7 +58,7 @@
 			</xsl:variable>
 
 			<li>
-				<a href="{$search-url}" class="lemma search">
+				<a href="{$search-url}" class="lemma similar search">
 					<xsl:call-template name="text-and-transliterations">
 						<xsl:with-param name="text" select="$lemma"/>
 						<xsl:with-param name="rails-entry" select="parent::rails:entry"/>
