@@ -148,34 +148,62 @@
 	</xsl:template>
 
 	<xsl:template match="tei:w | tei:m">
-		<xsl:variable name="is-or-needs-transliteration" select="contains(@xml:lang, 'san-Latn-')"/> <!-- FIXME: maybe set to true for cyrillic and others -->
+		<xsl:variable name="is-in-sanskrit" select="contains(@xml:lang, 'san-Latn-')"/>
 
-		<xsl:variable name="text" select="."/> <!-- FIXME: can there be elements inside tei:w? -->
-		<xsl:variable name="class" select="concat('tei-', local-name())"/>
+		<xsl:variable name="is-part-of-mixed-script-word" select="self::tei:m and following-sibling::text()"/>
+		<xsl:variable name="is-or-needs-transliteration" select="$is-in-sanskrit and not($is-part-of-mixed-script-word)"/> <!-- FIXME: maybe set to true for cyrillic and others -->
+		<xsl:variable name="should-be-searchable" select="$is-in-sanskrit"/>
 
-		<span class="{$class}">
+		<xsl:variable name="text" select="string(.)"/> <!-- FIXME: deal with <g> elements inside <w> -->
+
+		<xsl:variable name="text-content">
 			<xsl:choose>
 				<xsl:when test="$is-or-needs-transliteration">
-					<xsl:variable name="search-url">
-						<xsl:call-template name="search-url">
-							<xsl:with-param name="text" select="$text"/>
-						</xsl:call-template>
-					</xsl:variable>
+					<xsl:call-template name="text-and-transliterations">
+						<xsl:with-param name="text" select="$text"/>
+						<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma/rails:entry"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$is-part-of-mixed-script-word">
+					<span class="mixed-scripts">
+						<xsl:apply-templates/> <!-- FIXME: generate transliterations -->
+					</span>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:apply-templates/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
+		<xsl:variable name="search-url">
+			<xsl:call-template name="search-url">
+				<xsl:with-param name="text" select="$text"/>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<span class="tei-{local-name()}">
+			<xsl:choose>
+				<xsl:when test="$should-be-searchable">
 					<a href="{$search-url}" class="lemma search">
-						<xsl:call-template name="text-and-transliterations">
-							<xsl:with-param name="text" select="$text"/>
-							<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma/rails:entry"/>
-						</xsl:call-template>
+						<xsl:if test="not($is-or-needs-transliteration)">
+							<xsl:if test="@xml:lang">
+								<xsl:attribute name="xml:lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+								<xsl:attribute name="lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+							</xsl:if>
+						</xsl:if>
+
+						<xsl:copy-of select="$text-content"/>
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:if test="@xml:lang">
-						<xsl:attribute name="xml:lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
-						<xsl:attribute name="lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+					<xsl:if test="not($is-or-needs-transliteration)">
+						<xsl:if test="@xml:lang">
+							<xsl:attribute name="xml:lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+							<xsl:attribute name="lang"><xsl:value-of select="@xml:lang"/></xsl:attribute>
+						</xsl:if>
 					</xsl:if>
 
-					<xsl:apply-templates/>
+					<xsl:copy-of select="$text-content"/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</span>
