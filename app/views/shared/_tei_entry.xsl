@@ -221,6 +221,7 @@
 		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig-key = $text or local-name() = $text]"/>
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
+		<xsl:variable name="is-lemma-text" select="$rails-entry/tei:*/tei:form/tei:orth/text() = $text"/>
 
 		<xsl:element name="{$wrapper-native}">
 			<xsl:attribute name="class">native-script</xsl:attribute>
@@ -230,7 +231,9 @@
 				<xsl:with-param name="wrapper-text" select="$wrapper-text"/>
 				<xsl:with-param name="linked-url" select="$linked-url"/>
 			</xsl:apply-templates>
-			<xsl:apply-templates select="$rails-entry/tei:*/@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
+			<xsl:if test="$is-lemma-text">
+				<xsl:apply-templates select="$rails-entry/tei:*/@n"/> <!-- FIXME: how are homographs distinguished in tei:w? -->
+			</xsl:if>
 		</xsl:element>
 
 		<xsl:value-of select="$char-space"/>
