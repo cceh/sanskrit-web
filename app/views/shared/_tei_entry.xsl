@@ -98,6 +98,39 @@
 		</em>
 	</xsl:template>
 
+	<xsl:template match="tei:choice">
+		<xsl:choose>
+			<xsl:when test="tei:abbr and tei:expand">
+				<xsl:apply-templates select="tei:expand"/>
+			</xsl:when>
+			<xsl:when test="tei:reg">
+				<xsl:variable name="favourites" select="tei:reg[descendant-or-self::tei:*[@xml:lang = 'san-Latn-x-SLP1']]"/>
+
+				<xsl:apply-templates select="$favourites"/>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="tei:abbr">
+		<xsl:variable name="expansion">FIXME abbrevations</xsl:variable>
+
+		<abbr class="tei-abbr" title="{$expansion}">
+			<xsl:value-of select="normalize-space(.)"/>
+		</abbr>
+	</xsl:template>
+
+	<xsl:template match="tei:expand">
+		<span class="tei-expand">
+			<xsl:apply-templates/>
+		</span>
+	</xsl:template>
+
+	<xsl:template match="tei:reg">
+		<span class="tei-reg">
+			<xsl:apply-templates/>
+		</span>
+	</xsl:template>
+
 	<xsl:template match="tei:cit/tei:bibl">
 		<xsl:variable name="expansion">FIXME autorities</xsl:variable>
 
@@ -109,16 +142,7 @@
 		</xsl:variable>
 -->
 
-		<abbr title="{$expansion}">
-			<xsl:value-of select="normalize-space(.)"/>
-		</abbr>
-	</xsl:template>
-
-
-	<xsl:template match="tei:abbr">
-		<xsl:variable name="expansion">FIXME abbrevations</xsl:variable>
-
-		<abbr title="{$expansion}">
+		<abbr class="tei-bibl" title="{$expansion}">
 			<xsl:value-of select="normalize-space(.)"/>
 		</abbr>
 	</xsl:template>
