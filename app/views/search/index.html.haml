@@ -4,20 +4,20 @@
 
 = render 'search_form'
 
-- if !@results[:exact].all? { |dict, results| results.empty? }
-  %section.results.exact
-    %h2 Exact matches
-    %details
-      - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+)
-      %summary= "#{total_results} results"
-      - @results[:exact].each do |dict, results|
-        %p= "#{results.count} results in #{dict.handle}"
-    - @results[:exact].each do |dict, exact_results|
-      %div
-        %p= "Matches in #{dict.handle}"
-        - exact_results.each do |exact_result|
-          = render 'entry', :lemma => exact_result
-    %h3 Adjacent lemmas (FIXME: disabled)
+%section.results.exact
+  %h2 Exact matches
+  %details
+    - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+)
+    %summary= "#{total_results} results"
+    - @results[:exact].each do |dict, results|
+      %p= "#{results.count} results in #{dict.handle}"
+  - @results[:exact].each do |dict, exact_results|
+    %div
+      %p= "Matches in #{dict.handle}"
+      - exact_results.each do |exact_result|
+        = render 'entry', :lemma => exact_result
+
+%h3 Adjacent lemmas (FIXME: disabled)
 -#    %ul.adjacent
 -#      - @results[:preceding].each do |dict, prec_results|
 -#        - prec_results.each do |prec_result|
