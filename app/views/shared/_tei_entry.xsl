@@ -161,7 +161,7 @@
 				<xsl:when test="$is-or-needs-transliteration">
 					<xsl:call-template name="text-and-transliterations">
 						<xsl:with-param name="text" select="$text"/>
-						<xsl:with-param name="rails-entry" select="/rails:variables/rails:lemma/rails:entry"/>
+						<xsl:with-param name="rails-entry" select="ancestor::rails:entry"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:when test="$is-part-of-mixed-script-word">
