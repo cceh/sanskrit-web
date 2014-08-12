@@ -47,11 +47,11 @@ class SearchController < ApplicationController
 				similar_results = dict.similar_matches(term)
 				@results[:similar] += similar_results
 
-				preceding_results = dict.preceding_matches(term)
-				@results[:preceding][dict] = preceding_results
+				#preceding_results = dict.preceding_matches(term)
+				#@results[:preceding][dict] = preceding_results
 
-				following_results = dict.following_matches(term)
-				@results[:following][dict] = following_results
+				#following_results = dict.following_matches(term)
+				#@results[:following][dict] = following_results
 			rescue XPathQuery::Error => ex
 				flash.now[:error] << ex.message
 				flash.now[:query] << ex.query
