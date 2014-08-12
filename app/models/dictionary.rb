@@ -142,6 +142,16 @@ class Dictionary < ActiveRecord::Base
 		return matches(tei_matches)
 	end
 
+	def similar_matches_inside_definitions(term)
+		# FIXME: use something better than "contains", like similar_matches
+		query = "#{DICT_ENTRIES}[not(#{ORTH_EQUALS})][contains(string-join(./tei:sense//text()), '%{term}')]"
+		params = { :term => term }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
+	end
+
 	def preceding_matches(term)
 		num = 3 # FIXME: make number configurable
 

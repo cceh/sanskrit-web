@@ -10,6 +10,7 @@ class SearchController < ApplicationController
 		@query = {}
 		@results = {
 			:exact => {},
+			:inside_defs => {},
 			:similar => [],
 			:preceding => {},
 			:following => {},
@@ -43,6 +44,9 @@ class SearchController < ApplicationController
 
 				exact_results = dict.exact_matches(term)
 				@results[:exact][dict] = exact_results
+
+				inside_defs = dict.similar_matches_inside_definitions(term)
+				@results[:inside_defs][dict] = inside_defs
 
 				similar_results = dict.similar_matches(term)
 				@results[:similar] += similar_results

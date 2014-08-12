@@ -7,7 +7,7 @@
 %section.results.exact
   %h2 Exact matches
   %details
-    - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+)
+    - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+) || 0
     %summary= "#{total_results} results"
     - @results[:exact].each do |dict, results|
       %p= "#{results.count} results in #{dict.handle}"
@@ -15,7 +15,20 @@
     %div
       %p= "Matches in #{dict.handle}"
       - exact_results.each do |exact_result|
-        = render 'entry', :lemma => exact_result
+        = render 'entry', :lemma => exact_result # use entry as variable
+
+%section.results.inside-definition
+  %h2 Inside definitions
+  %details
+    - total_results = @results[:inside_defs].map { |d,r| r.count }.inject(&:+) || 0
+    %summary= "#{total_results} results"
+    - @results[:inside_defs].each do |dict, results|
+      %p= "#{results.count} results in #{dict.handle}"
+  - @results[:inside_defs].each do |dict, results_inside_defs|
+    %div
+      %p= "Matches in #{dict.handle}"
+      - results_inside_defs.each do |result_inside_defs|
+        = render 'match_inside_def', :entry_bundle => result_inside_defs
 
 %h3 Adjacent lemmas (FIXME: disabled)
 -#    %ul.adjacent
