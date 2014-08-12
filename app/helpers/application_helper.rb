@@ -127,6 +127,10 @@ module ApplicationHelper
 		name.gsub!(/[^A-Za-z0-9_\-]/, '-')
 		name = CGI::escapeHTML(name)
 
+		if name =~ /^[^A-Za-z]/
+			name = 'x' + name
+		end
+
 		return name
 	end
 end
