@@ -54,6 +54,9 @@ gem 'rest_client'
 # Nokogiri as XML processor
 gem 'nokogiri'
 
+# High voltage for mostly-static pages like the homepage
+gem 'high_voltage', '~> 2.2.1'
+
 group :development do
 	# Runtime developer console
 	gem 'pry'
