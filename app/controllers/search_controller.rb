@@ -1,21 +1,13 @@
 require 'xpathquery/error'
 
 class SearchController < ApplicationController
+	before_action :prepare_variables, :only => :index
 	before_action :fix_params, :only => :index
 	before_action :default_params, :only => :index
 	before_action :validate_params, :only => :index
 
 	# GET /search
 	def index
-		@query = {}
-		@results = {
-			:exact => {},
-			:inside_defs => {},
-			:similar => [],
-			:preceding => {},
-			:following => {},
-		}
-
 		has_search = !params[:q].nil?
 		if !has_search
 			return
@@ -33,10 +25,6 @@ class SearchController < ApplicationController
 			:where => where,
 		}
 
-		flash.now[:error] ||= []
-		flash.now[:query] ||= []
-		flash.now[:response] ||= []
-		flash.now[:cause] ||= []
 
 		dicts.each do |dict_handle|
 			begin
@@ -72,11 +60,24 @@ class SearchController < ApplicationController
 		end
 	end
 
-	def default_params
-		if !params[:q]
-			return
-		end
+	def prepare_variables
+		@query = {}
 
+		@results = {
+			:exact => {},
+			:inside_defs => {},
+			:similar => [],
+			:preceding => {},
+			:following => {},
+		}
+
+		flash.now[:error] ||= []
+		flash.now[:query] ||= []
+		flash.now[:response] ||= []
+		flash.now[:cause] ||= []
+	end
+
+	def default_params
 		params[:ilang] ||= 'slp1'
 		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
 		params[:where] ||= 'both'
@@ -84,6 +85,13 @@ class SearchController < ApplicationController
 
 	def validate_params
 		# TODO: raise if problems detected
+		if !params[:q] || params[:q].empty?
+			flash.now[:error] << "Please specify a query"
+		end
+
+		if !flash.now[:error].empty?
+			render
+		end
 	end
 
 	def fix_params
