@@ -25,16 +25,22 @@ class SearchController < ApplicationController
 			:where => where,
 		}
 
+		@search_in_lemma = where.include? 'lemma'
+		@search_in_definitions = where.include? 'def'
 
 		dicts.each do |dict_handle|
 			begin
 				dict = Dictionary.find_by! handle: dict_handle
 
-				exact_results = dict.exact_matches(term)
-				@results[:exact][dict] = exact_results
+				if @search_in_lemma
+					exact_results = dict.exact_matches(term)
+					@results[:exact][dict] = exact_results
+				end
 
-				inside_defs = dict.similar_matches_inside_definitions(term)
-				@results[:inside_defs][dict] = inside_defs
+				if @search_in_definitions
+					inside_defs = dict.similar_matches_inside_definitions(term)
+					@results[:inside_defs][dict] = inside_defs
+				end
 
 				similar_results = dict.similar_matches(term)
 				@results[:similar] += similar_results
@@ -98,6 +104,11 @@ class SearchController < ApplicationController
 		if params[:dict] == 'all'
 			params[:dict] = nil
 		end
+
+		if params[:where] == 'lemma-def'
+			params[:where] = ['lemma', 'def']
+		end
+		params[:where] = Array(params[:where])
 
 		params[:ilang].sub!('san-', '') unless params[:ilang].nil?
 	end
