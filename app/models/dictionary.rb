@@ -203,10 +203,11 @@ class Dictionary < ActiveRecord::Base
 
 	def default_language
 		@default_language ||= lambda do
-			ancestor = xpathquery("(//tei:re|//tei:entry)[1]/ancestor::*[@xml:lang]").first # FIXME
+			language = xpathquery("string(#{DICT_ENTRIES}[1]/ancestor::*[@xml:lang]/@xml:lang)").first
 
-			language = ancestor.attr('xml:lang') unless ancestor.nil?
-			language ||= 'unk'
+			if language.nil? || language.empty?
+				language = 'unk'
+			end
 
 			return language
 		end.call
