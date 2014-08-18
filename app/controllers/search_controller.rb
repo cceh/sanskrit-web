@@ -86,7 +86,7 @@ class SearchController < ApplicationController
 	def default_params
 		params[:ilang] ||= 'slp1'
 		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
-		params[:where] ||= 'both'
+		params[:where] ||= [ 'lemma', 'def' ]
 	end
 
 	def validate_params
@@ -108,7 +108,7 @@ class SearchController < ApplicationController
 		if params[:where] == 'lemma-def'
 			params[:where] = ['lemma', 'def']
 		end
-		params[:where] = Array(params[:where])
+		params[:where] = Array(params[:where]) unless params[:where].nil?
 
 		params[:ilang].sub!('san-', '') unless params[:ilang].nil?
 	end
