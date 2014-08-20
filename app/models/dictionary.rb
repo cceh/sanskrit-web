@@ -19,7 +19,7 @@ class Dictionary < ActiveRecord::Base
 	def setup_query_engine
 		dict_path = self.content_path
 		@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
-		@query_engine = XPathQuery::Exist.new(@dict_db, Rails.logger)
+		@query_engine = XPathQuery::Exist.new(@dict_db, :logger => Rails.logger)
 	end
 
 	def xpathquery(query, params = {})
