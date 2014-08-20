@@ -58,6 +58,13 @@ class Dictionary < ActiveRecord::Base
 		return entries
 	end
 
+	def lemmas_count
+		query = "count(#{DICT_ENTRIES})"
+		count = xpathquery(query).first
+
+		return count
+	end
+
 	def lemma(id, script)
 		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{id}']"
 		params = { :id => id }
