@@ -44,11 +44,21 @@ gem 'puma'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+LOCAL_GEMS_PATH = '~/Projects'
+gem_location = lambda do |project|
+	local_path = "#{LOCAL_GEMS_PATH}/#{project}"
+	if File.exist?(File.expand_path(local_path))
+		{ path: local_path }
+	else
+		{ github: "gioele/#{project}" }
+	end
+end
+
 # Sanskrit <-> Latin transliteration
-gem 't13n', path: '~/Projects/t13n'
+gem 't13n', gem_location['t13n']
 
 # eXist is contacted via XPathQuery + rest_client
-gem 'xpathquery', path: '~/Projects/xpathquery'
+gem 'xpathquery', gem_location['xpathquery']
 gem 'rest_client'
 
 # Nokogiri as XML processor
