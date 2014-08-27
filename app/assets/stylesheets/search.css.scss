@@ -10,8 +10,17 @@ form {
 		margin: 0.4rem;
 	}
 
+	div#query {
+		display: inline-block;
+		width: 71%;
+	}
+
 	input[type='text'] {
-		width: 90%;
+		width: 80%;
+	}
+
+	input[type='submit'] {
+		float: right;
 	}
 
 	input {

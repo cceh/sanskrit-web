@@ -1,5 +1,6 @@
 dl {
 	margin-left: 2em;
+	display: table; // FIXME: replace with a proper fix http://trentwalton.com/2012/02/13/css-column-breaks/
 }
 
 dt, dl > div {
