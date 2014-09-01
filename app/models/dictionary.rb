@@ -261,3 +261,5 @@ class Dictionary < ActiveRecord::Base
 		return xpathquery(query).first
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

@@ -16,3 +16,5 @@ Sanskrit::Application.routes.draw do
 		resources :scan, :controller => 'scans', :only => [:index, :show]
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details.

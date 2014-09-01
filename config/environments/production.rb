@@ -80,3 +80,5 @@ Sanskrit::Application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

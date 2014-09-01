@@ -49,3 +49,5 @@
 		<xsl:value-of select="$biblio-id"/>
 	</xsl:template>
 </xsl:stylesheet>
+
+<!-- Licensed under the ISC licence, see LICENCE.ISC for details -->

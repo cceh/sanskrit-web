@@ -82,3 +82,5 @@ group :development do
 	gem 'binding_of_caller'
 end
 
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

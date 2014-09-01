@@ -18,3 +18,5 @@ class LemmasController < ApplicationController
 		@lemma = dictionary.lemma(params[:id], script)
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

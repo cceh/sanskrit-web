@@ -4,3 +4,5 @@
 require File.expand_path('../config/application', __FILE__)
 
 Sanskrit::Application.load_tasks
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

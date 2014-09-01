@@ -37,3 +37,5 @@ class ScansController < ApplicationController
 		return Rails.root + "../sanskrit-dicts/#{dict}/scans/jpeg/#{filename}.jpeg"
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

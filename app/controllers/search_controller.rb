@@ -113,3 +113,5 @@ class SearchController < ApplicationController
 		params[:ilang].sub!('san-', '') unless params[:ilang].nil?
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

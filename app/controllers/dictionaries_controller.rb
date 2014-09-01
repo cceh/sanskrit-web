@@ -20,3 +20,5 @@ class DictionariesController < ApplicationController
 		@lang_definitions = dictionary.language_of_definitions
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

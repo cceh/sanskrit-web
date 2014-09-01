@@ -21,3 +21,5 @@ module Sanskrit
     # config.i18n.default_locale = :de
   end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

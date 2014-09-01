@@ -13,3 +13,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+// Licensed under the ISC licence, see LICENCE.ISC for details

@@ -12,3 +12,5 @@ end
 # ActiveSupport.on_load(:active_record) do
 #  self.include_root_in_json = true
 # end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details

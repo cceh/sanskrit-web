@@ -16,3 +16,5 @@ class LemmasControllerTest < ActionController::TestCase
 		assert_response :success
 	end
 end
+
+# Licensed under the ISC licence, see LICENCE.ISC for details
