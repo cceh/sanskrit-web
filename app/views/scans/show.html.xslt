@@ -6,6 +6,8 @@
                 version="1.0">
 	<xsl:variable name="dict-name" select="/rails:variables/rails:dict_handle/text()"/>  <!-- FIXME: extract dictionary name -->
 
+	<xsl:variable name="format" select="/rails:variables/rails:best_format/text()"/>
+
 	<!-- page-code = page-frontmatter-iv -->
 	<!-- page-name = iv (front matter) -->
 
@@ -16,8 +18,6 @@
 	</xsl:template>
 
 	<xsl:template match="rails:scan">
-		<xsl:variable name="format">jpeg</xsl:variable> <!-- FIXME: read format from data -->
-
 		<xsl:variable name="page-code">
 			<xsl:call-template name="page-code">
 				<xsl:with-param name="graphic" select="/rails:variables/rails:scan/tei:graphic"/>
