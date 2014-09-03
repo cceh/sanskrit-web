@@ -13,3 +13,9 @@ by the following people:
 
 This project has been released under the ISC licence. See the `LICENCE.ISC` file or
 <http://opensource.org/licenses/ISC> for more details.
+
+### External code
+
+This project includes code from third parties:
+
+* `jquery-details` by Mathias Bynens from <https://mths.be/details>. MIT licence.
