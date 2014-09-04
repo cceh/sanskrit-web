@@ -4,6 +4,7 @@ require 'xpathquery'
 class Dictionary < ActiveRecord::Base
 	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db'
 
+	ENTRY_ID_EQUALS = '@xml:id = "lemma-%{entry_id}"'
 	IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
 	ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
 
@@ -66,7 +67,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemma(entry_id, script)
-		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']"
+		query = "#{DICT_ENTRIES}[#{ENTRY_ID_EQUALS}]"
 		params = { :entry_id => entry_id }
 
 		results = xpathquery(query, params)
@@ -163,7 +164,7 @@ class Dictionary < ActiveRecord::Base
 		num = 3 # FIXME: make number configurable
 
 		# FIXME: the order/position() may be wrong, check that the correct set is returned
-		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		query = "#{DICT_ENTRIES}[#{ENTRY_ID_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
 		params = { :entry_id => entry_id, :num => num }
 
 		tei_matches = xpathquery(query, params)
@@ -174,7 +175,7 @@ class Dictionary < ActiveRecord::Base
 	def following_entries(entry_id)
 		num = 3 # FIXME: make number configurable
 
-		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		query = "#{DICT_ENTRIES}[#{ENTRY_ID_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
 		params = { :entry_id => entry_id, :num => num }
 
 		tei_matches = xpathquery(query, params)
