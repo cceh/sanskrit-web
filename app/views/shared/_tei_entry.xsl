@@ -8,11 +8,13 @@
 	<xsl:import href="_urls.xsl"/>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
-	<xsl:variable name="entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
-	<xsl:variable name="orth" select="$entry/tei:form/tei:orth/text()"/>
-	<xsl:variable name="transliterations" select="/rails:variables/rails:lemma/rails:transliterations/rails:*[@orig-key = $orth or local-name() = $orth]"/>
 
 	<xsl:template match="tei:form" mode="heading">
+		<xsl:variable name="tei-entry" select="ancestor::*[self::tei:entry or self::tei:re]"/>
+		<xsl:variable name="rails-entry" select="$tei-entry/.."/>
+		<xsl:variable name="tei-orth" select="tei:orth/text()"/>
+		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig-key = $tei-orth or local-name() = $tei-orth]"/>
+
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
 
