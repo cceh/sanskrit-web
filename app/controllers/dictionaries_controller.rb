@@ -1,7 +1,7 @@
 class DictionariesController < ApplicationController
 	# GET /dictionaries
 	def index
-		dictionaries = Dictionary.all
+		dictionaries = Dictionary.all.to_a
 		dictionaries.map! { |dict| [dict.handle, dict.header] }
 
 		@dictionaries = dictionaries.to_h
