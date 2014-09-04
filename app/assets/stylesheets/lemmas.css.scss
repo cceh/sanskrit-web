@@ -2,4 +2,15 @@ li.tei-re {
 	margin-left: 2em;
 }
 
+ol.results.adjacent {
+	li {
+		display: inline-block;
+		padding: 0.5em;
+	}
+
+	li.current {
+		border: solid black thin;
+	}
+}
+
 /* Licensed under the ISC licence, see LICENCE.ISC for details */

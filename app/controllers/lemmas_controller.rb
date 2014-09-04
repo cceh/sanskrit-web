@@ -14,8 +14,13 @@ class LemmasController < ApplicationController
 			raise "Unknown script #{script}"
 		end
 
+		entry_id = params[:id]
+
 		dictionary = Dictionary.find_by_handle!(params[:dictionary_id])
-		@lemma = dictionary.lemma(params[:id], script)
+		@lemma = dictionary.lemma(entry_id, script)
+
+		@preceding_entries = dictionary.preceding_entries(entry_id)
+		@following_entries = dictionary.following_entries(entry_id)
 	end
 end
 

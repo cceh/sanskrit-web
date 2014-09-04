@@ -65,9 +65,9 @@ class Dictionary < ActiveRecord::Base
 		return count
 	end
 
-	def lemma(id, script)
-		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{id}']"
-		params = { :id => id }
+	def lemma(entry_id, script)
+		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']"
+		params = { :entry_id => entry_id }
 
 		results = xpathquery(query, params)
 		if results.empty?
@@ -159,23 +159,23 @@ class Dictionary < ActiveRecord::Base
 		return matches(tei_matches)
 	end
 
-	def preceding_matches(term)
+	def preceding_entries(entry_id)
 		num = 3 # FIXME: make number configurable
 
 		# FIXME: the order/position() may be wrong, check that the correct set is returned
-		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
-		params = { :term => term, :num => num }
+		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']/preceding::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		params = { :entry_id => entry_id, :num => num }
 
 		tei_matches = xpathquery(query, params)
 
 		return matches(tei_matches)
 	end
 
-	def following_matches(term)
+	def following_entries(entry_id)
 		num = 3 # FIXME: make number configurable
 
-		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
-		params = { :term => term, :num => num }
+		query = "#{DICT_ENTRIES}[@xml:id = 'lemma-%{entry_id}']/following::*[#{IS_DICT_ENTRY}][position() <= %{num}]" # FIXME: escape parameters
+		params = { :entry_id => entry_id, :num => num }
 
 		tei_matches = xpathquery(query, params)
 
