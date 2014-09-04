@@ -8,7 +8,7 @@ module ApplicationHelper
 
 		rAILS_NS = "http://svario.it/xslt-rails"
 
-		fRAMEWORK_VARIABLES = [:@_routes, :@_config, :@view_renderer, :@_db_runtime, :@_assigns, :@_controller, :@_request, :@view_flow, :@output_buffer, :@virtual_path, :@haml_buffer]
+		fRAMEWORK_VARIABLES = [:@_routes, :@_config, :@view_renderer, :@_db_runtime, :@_assigns, :@_controller, :@_request, :@view_flow, :@output_buffer, :@virtual_path, :@haml_buffer, :@marked_for_same_origin_verification]
 		variables = _self.instance_variables - fRAMEWORK_VARIABLES
 
 		wrapper = Nokogiri::XML("<rails:variables xmlns:rails='#{rAILS_NS}'>")
