@@ -101,7 +101,11 @@ class SearchController < ApplicationController
 	end
 
 	def fix_params
-		if params[:dict] == 'all'
+		# Use CGI parsing routine to allow ?dict=foo&dict=bar
+		dicts_in_query = CGI.parse(env['QUERY_STRING']||'')['dict']
+		params[:dict] = dicts_in_query unless dicts_in_query.empty?
+
+		if params[:dict] == ['all']
 			params[:dict] = nil
 		end
 
