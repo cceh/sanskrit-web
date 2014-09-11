@@ -9,13 +9,13 @@
 	<xsl:import href="../shared/_chars.xsl"/>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
-	<xsl:variable name="entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
+	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 	<xsl:variable name="preceding-entries" select="/rails:variables/rails:preceding_entries/rails:elem/rails:entry/*[self::tei:entry or self::tei:re]"/>
 	<xsl:variable name="following-entries" select="/rails:variables/rails:following_entries/rails:elem/rails:entry/*[self::tei:entry or self::tei:re]"/>
 
 	<xsl:template match="/">
 		<rails:wrapper>
-			<xsl:apply-templates select="$entry"/>
+			<xsl:apply-templates select="$tei-entry"/>
 
 			<xsl:value-of select="$char-newline"/>
 			<xsl:call-template name="raw-tei"/>
@@ -47,7 +47,7 @@
 			<xsl:apply-templates select="$preceding-entries" mode="adjacent">
 				<xsl:with-param name="class">preceding</xsl:with-param>
 			</xsl:apply-templates>
-			<xsl:apply-templates select="$entry" mode="adjacent">
+			<xsl:apply-templates select="$tei-entry" mode="adjacent">
 				<xsl:with-param name="class">current</xsl:with-param>
 			</xsl:apply-templates>
 			<xsl:apply-templates select="$following-entries" mode="adjacent">
@@ -82,7 +82,7 @@
 			<pre>
 				<code>
 					<xsl:call-template name="raw-xml">
-						<xsl:with-param name="root" select="$entry"/>
+						<xsl:with-param name="root" select="$tei-entry"/>
 					</xsl:call-template>
 				</code>
 			</pre>
