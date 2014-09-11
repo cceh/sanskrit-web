@@ -102,8 +102,8 @@
 
 	<xsl:template match="tei:choice">
 		<xsl:choose>
-			<xsl:when test="tei:abbr and tei:expand">
-				<xsl:apply-templates select="tei:expand"/>
+			<xsl:when test="tei:abbr and tei:expan">
+				<xsl:apply-templates select="tei:expan"/>
 			</xsl:when>
 			<xsl:when test="tei:reg">
 				<xsl:variable name="favourites" select="tei:reg[descendant-or-self::tei:*[@xml:lang = 'san-Latn-x-SLP1']]"/>
@@ -121,8 +121,8 @@
 		</abbr>
 	</xsl:template>
 
-	<xsl:template match="tei:expand">
-		<span class="tei-expand">
+	<xsl:template match="tei:expan">
+		<span class="tei-expan">
 			<xsl:apply-templates/>
 		</span>
 	</xsl:template>
