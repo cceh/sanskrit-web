@@ -39,7 +39,7 @@
 
 			<xsl:variable name="lemma-url">
 				<xsl:call-template name="lemma-url">
-					<xsl:with-param name="entry" select="."/>
+					<xsl:with-param name="tei-entry" select="."/>
 					<xsl:with-param name="dict-handle" select="$dict-handle"/>
 				</xsl:call-template>
 			</xsl:variable>

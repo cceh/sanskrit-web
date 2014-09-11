@@ -14,10 +14,10 @@
 	</xsl:template>
 
 	<xsl:template name="lemma-url">
-		<xsl:param name="entry"/>
+		<xsl:param name="tei-entry"/>
 		<xsl:param name="dict-handle"/>
 
-		<xsl:variable name="id-for-url" select="substring-after($entry/@xml:id, 'lemma-')"/>
+		<xsl:variable name="id-for-url" select="substring-after($tei-entry/@xml:id, 'lemma-')"/>
 
 		<xsl:text>/dictionary/</xsl:text>
 		<xsl:value-of select="$dict-handle"/>
