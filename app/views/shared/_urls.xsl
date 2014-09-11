@@ -48,6 +48,13 @@
 		<xsl:text>/biblio/</xsl:text>
 		<xsl:value-of select="$biblio-id"/>
 	</xsl:template>
+
+	<xsl:template name="dict-url">
+		<xsl:param name="dict-handle"/>
+
+		<xsl:text>/dictionary/</xsl:text>
+		<xsl:value-of select="$dict-handle"/>
+	</xsl:template>
 </xsl:stylesheet>
 
 <!-- Licensed under the ISC licence, see LICENCE.ISC for details -->

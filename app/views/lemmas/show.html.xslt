@@ -22,6 +22,9 @@
 
 			<xsl:value-of select="$char-newline"/>
 			<xsl:call-template name="adjacent-entries"/>
+
+			<xsl:value-of select="$char-newline"/>
+			<xsl:call-template name="citation-instructions"/>
 		</rails:wrapper>
 	</xsl:template>
 
@@ -86,6 +89,170 @@
 					</xsl:call-template>
 				</code>
 			</pre>
+		</details>
+	</xsl:template>
+
+	<xsl:template name="citation-instructions">
+		<xsl:variable name="lemma-title">
+			<xsl:call-template name="text-and-transliterations">
+				<xsl:with-param name="text" select="$tei-entry/tei:form/tei:orth/text()"/>
+				<xsl:with-param name="rails-entry" select="$tei-entry/.."/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="lemma-id">
+			<xsl:call-template name="lemma-url">
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="entry" select="$tei-entry"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="lemma-url" select="/rails:variables/rails:request_url/text()"/>
+		<xsl:variable name="author">FIXME: AUTHOR</xsl:variable>
+		<xsl:variable name="publication">FIXME: DICTIONARY</xsl:variable>
+		<xsl:variable name="publication-url">
+			<xsl:call-template name="dict-url">
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:variable name="project">FIXME: PROJECT</xsl:variable>
+		<xsl:variable name="project-url" select="/rails:variables/rails:request_base_url/text()"/>
+		<xsl:variable name="date" select="substring-before(/rails:variables/rails:date/text(), ' ')"/>
+
+		<details class="citation-instructions">
+			<summary>
+				<xsl:text>Cite this entry</xsl:text>
+			</summary>
+			<div>
+				<dl>
+
+					<dt><xsl:text>Text</xsl:text></dt>
+					<dd>
+						<p>
+							<xsl:value-of select="$lemma-title"/>
+							<xsl:text>.</xsl:text>
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>In</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$publication"/>
+							<xsl:text>.</xsl:text>
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>Retrieved</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$date"/>
+							<xsl:text>,</xsl:text>
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>from</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$lemma-url"/>
+						</p>
+					</dd>
+
+					<dt><xsl:text>BibTeX</xsl:text></dt>
+					<dd>
+						<pre style="white-space: pre-line"><code>
+							<xsl:variable name="indent">
+								<span style="white-space: pre">
+									<xsl:value-of select="$char-space"/>
+									<xsl:value-of select="$char-space"/>
+									<xsl:value-of select="$char-space"/>
+									<xsl:value-of select="$char-space"/>
+								</span>
+							</xsl:variable>
+
+							<xsl:text>@misc{</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>csdl:</xsl:text>
+							<xsl:value-of select="$lemma-id"/>
+							<xsl:text>,</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>author = "</xsl:text>
+							<xsl:value-of select="$author"/>
+							<xsl:text>",</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>title = {{</xsl:text>
+							<xsl:value-of select="$lemma-title"/>
+							<xsl:value-of select="$char-space"/>
+							<xsl:text>---</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$publication"/>
+							<xsl:text>}},</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>publisher = "</xsl:text>
+							<xsl:value-of select="$project"/>
+							<xsl:text>",</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>url = "\url{</xsl:text>
+							<xsl:value-of select="$lemma-url"/>
+							<xsl:text>}",</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:copy-of select="$indent"/>
+							<xsl:text>note = "[Online; accessed </xsl:text>
+							<xsl:value-of select="$date"/>
+							<xsl:text>]"</xsl:text>
+							<xsl:value-of select="$char-newline"/>
+
+							<xsl:text>}</xsl:text>
+						</code></pre>
+					</dd>
+
+					<dt><xsl:text>Wikipedia (Mediawiki format)</xsl:text></dt>
+					<dd>
+						<p>
+							<xsl:text>Entry "</xsl:text>
+
+							<xsl:text>[</xsl:text>
+							<xsl:value-of select="$lemma-url"/>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$lemma-title"/>
+							<xsl:text>]</xsl:text>
+
+							<xsl:text>" in</xsl:text>
+
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>[</xsl:text>
+							<xsl:value-of select="$publication-url"/>
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:value-of select="$publication"/>
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>by</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$author"/>
+							<xsl:text>]</xsl:text>
+
+							<xsl:text>, </xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:text>[</xsl:text>
+							<xsl:value-of select="$project-url"/>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$project"/>
+							<xsl:text>]</xsl:text>
+
+							<xsl:value-of select="$char-space"/>
+
+							<xsl:text>(accessed</xsl:text>
+							<xsl:value-of select="$char-space"/>
+							<xsl:value-of select="$date"/>
+							<xsl:text>)</xsl:text>
+						</p>
+					</dd>
+				</dl>
+			</div>
 		</details>
 	</xsl:template>
 </xsl:stylesheet>
