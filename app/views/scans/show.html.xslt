@@ -57,7 +57,7 @@
 			</ol>
 		</nav>
 
-		<img src="{$img-url}" alt="{$alt-text}"/>
+		<img class="scan" src="{$img-url}" alt="{$alt-text}"/>
 	</xsl:template>
 
 	<xsl:template match="rails:prev_scan | rails:next_scan">
