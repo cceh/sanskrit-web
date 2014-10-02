@@ -6,7 +6,10 @@
     = javascript_include_tag("application")
     = csrf_meta_tags
   %body
+    = render 'layouts/header'
     = render 'layouts/messages'
-    = yield
+    %main
+      = yield
+    = render 'layouts/footer'
 
 -# Licensed under the ISC licence, see LICENCE.ISC for details
