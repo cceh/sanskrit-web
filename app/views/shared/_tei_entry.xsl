@@ -65,6 +65,32 @@
 			<xsl:with-param name="linked-url" select="$linked-url"/>
 			<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
 		</xsl:call-template>
+
+		<xsl:if test="tei:hyph/text() != tei:orth/text()">
+			<xsl:call-template name="text-and-transliterations">
+				<xsl:with-param name="text" select="tei:hyph/text()"/>
+				<xsl:with-param name="wrapper-native">div</xsl:with-param>
+				<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
+				<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
+				<xsl:with-param name="wrapper-text">dfn</xsl:with-param>
+				<xsl:with-param name="linked-url" select="$linked-url"/>
+				<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
+
+	<xsl:template match="tei:form" mode="listing">
+		<xsl:param name="linked-url"/>
+
+		<xsl:call-template name="text-and-transliterations">
+			<xsl:with-param name="text" select="tei:orth/text()"/>
+			<xsl:with-param name="wrapper-native">div</xsl:with-param>
+			<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
+			<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
+			<xsl:with-param name="wrapper-text">dfn</xsl:with-param>
+			<xsl:with-param name="linked-url" select="$linked-url"/>
+			<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
+		</xsl:call-template>
 	</xsl:template>
 
 	<xsl:template match="tei:*/@n">

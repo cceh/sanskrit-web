@@ -7,6 +7,15 @@ dt, dl > div {
 	display: inline-block;
 }
 
+dl > div.transliterations {
+	display: inline;
+
+	&:after {
+		content: "\A";
+		white-space: pre;
+	}
+}
+
 .native-script {
 	font-weight: bold;
 }

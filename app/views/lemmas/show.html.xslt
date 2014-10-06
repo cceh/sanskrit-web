@@ -70,7 +70,7 @@
 		</xsl:variable>
 
 		<li class="{$class}">
-			<xsl:apply-templates select="tei:form" mode="definition">
+			<xsl:apply-templates select="tei:form" mode="listing">
 				<xsl:with-param name="linked-url" select="$lemma-url"/>
 			</xsl:apply-templates>
 		</li>
