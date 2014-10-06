@@ -1,10 +1,11 @@
-%aside.messages
-  - has_errors = !flash.first.nil?
-  - num_msgs = has_errors ? flash.first.second.count : 0
-  - num_msgs.times do |idx|
-    - flash.each do |name, msgs|
-      - msg = msgs[idx]
-      - if msg.is_a?(String)
-        %p{ :class => name }= msg
+- has_errors = !flash.first.nil?
+- if has_errors
+  %aside.messages
+    - num_msgs = has_errors ? flash.first.second.count : 0
+    - num_msgs.times do |idx|
+      - flash.each do |name, msgs|
+        - msg = msgs[idx]
+        - if msg.is_a?(String)
+          %p{ :class => name }= msg
 
 -# Licensed under the ISC licence, see LICENCE.ISC for details
