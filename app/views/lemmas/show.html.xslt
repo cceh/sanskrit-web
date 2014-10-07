@@ -7,6 +7,7 @@
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_raw_xml.xsl"/>
 	<xsl:import href="../shared/_chars.xsl"/>
+	<xsl:import href="../shared/_info.xsl"/>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
 	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
@@ -113,7 +114,6 @@
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
 			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="project">FIXME: PROJECT</xsl:variable>
 		<xsl:variable name="project-url" select="/rails:variables/rails:request_base_url/text()"/>
 		<xsl:variable name="date" select="substring-before(/rails:variables/rails:date/text(), ' ')"/>
 
@@ -188,7 +188,7 @@
 
 							<xsl:copy-of select="$indent"/>
 							<xsl:text>publisher = "</xsl:text>
-							<xsl:value-of select="$project"/>
+							<xsl:value-of select="$project-name"/>
 							<xsl:text>",</xsl:text>
 							<xsl:value-of select="$char-newline"/>
 
@@ -240,7 +240,7 @@
 							<xsl:text>[</xsl:text>
 							<xsl:value-of select="$project-url"/>
 							<xsl:value-of select="$char-space"/>
-							<xsl:value-of select="$project"/>
+							<xsl:value-of select="$project-name"/>
 							<xsl:text>]</xsl:text>
 
 							<xsl:value-of select="$char-space"/>
