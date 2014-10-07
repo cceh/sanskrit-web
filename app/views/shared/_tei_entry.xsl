@@ -7,8 +7,6 @@
 	<xsl:import href="_chars.xsl"/>
 	<xsl:import href="_urls.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
-
 	<xsl:template match="tei:form" mode="heading">
 		<xsl:variable name="tei-entry" select="ancestor::*[self::tei:entry or self::tei:re]"/>
 		<xsl:variable name="rails-entry" select="$tei-entry/.."/>

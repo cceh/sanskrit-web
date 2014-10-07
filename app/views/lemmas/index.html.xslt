@@ -7,7 +7,7 @@
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:dict_handle/text()"/>
+	<xsl:variable name="dict-handle" select="/rails:variables/rails:dict/rails:handle/text()"/>
 
 	<xsl:variable name="count" select="count(/rails:variables/rails:lemmas/rails:elem)"/>
 

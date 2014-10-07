@@ -52,7 +52,7 @@ class Dictionary < ActiveRecord::Base
 			entries << {
 				:entry => tei_entry,
 				:transliterations => transliterations,
-				:dict_handle => self.handle,
+				:dict => publication_info,
 			}
 		end
 
@@ -89,7 +89,7 @@ class Dictionary < ActiveRecord::Base
 		entry = {
 			:entry => tei_entry,
 			:transliterations => transliterations,
-			:dict_handle => self.handle,
+			:dict => publication_info,
 		}
 
 		return entry
@@ -260,6 +260,28 @@ class Dictionary < ActiveRecord::Base
 	def first_entry
 		query = "#{DICT_ENTRIES}[1]"
 		return xpathquery(query).first
+	end
+
+	def publication_info
+		h = self.header
+
+		common_title = h.at('//tei:titleStmt//tei:title[@type="desc"]', NS).text
+		orig_title = h.at('//tei:sourceDesc//tei:title[@type="main"]', NS).text
+		tei_subtitle = h.at('//tei:sourceDesc//tei:title[@type="sub"]', NS)
+		orig_subtitle = tei_subtitle.text unless tei_subtitle.nil?
+		orig_author = h.at('//tei:sourceDesc//tei:author[1]', NS).text
+		orig_date = 2099 # FIXME: extract orig_date
+
+		dict = {
+			:handle => self.handle,
+			:common_title => common_title,
+			:orig_title => orig_title,
+			:orig_subtitle => orig_subtitle,
+			:orig_author => orig_author,
+			:orig_date => orig_date,
+		}
+
+		return dict
 	end
 end
 

@@ -3,7 +3,7 @@ class LemmasController < ApplicationController
 	def index
 		dictionary = Dictionary.find_by_handle!(params[:dictionary_id])
 
-		@dict_handle = dictionary.handle
+		@dict = dictionary.publication_info
 		@lemmas = dictionary.lemmas
 	end
 

@@ -3,7 +3,7 @@ class ScansController < ApplicationController
 	def index
 		dictionary = Dictionary.find_by_handle! params[:dictionary_id]
 
-		@dict_handle = dictionary.handle
+		@dict = dictionary.publication_info
 		@scans = dictionary.scans
 	end
 
@@ -12,7 +12,8 @@ class ScansController < ApplicationController
 		dictionary = Dictionary.find_by_handle! params[:dictionary_id]
 		scan_handle = "page-#{params[:id]}"
 
-		@dict_handle = dictionary.handle
+		@dict = dictionary.publication_info
+		dict_handle = @dict[:handle]
 		@dict_header = dictionary.header
 
 		@scan = dictionary.scan(scan_handle)
@@ -21,15 +22,15 @@ class ScansController < ApplicationController
 			raise ActiveRecord::RecordNotFound
 		end
 
-		@best_format = [:jpeg, :png].find { |format| File.exist?(file_for_scan(@dict_handle, @scan, format)) }
+		@best_format = [:jpeg, :png].find { |format| File.exist?(file_for_scan(dict_handle, @scan, format)) }
 
 		@prev_scan = dictionary.preceding_scan(scan_handle)
 		@next_scan = dictionary.following_scan(scan_handle)
 
 		respond_to do |format|
 			format.html
-			format.jpeg { send_file file_for_scan(@dict_handle, @scan, :jpeg), type: 'image/jpeg', disposition: 'inline' }
-			format.png { send_file file_for_scan(@dict_handle, @scan, :png), type: 'image/png', disposition: 'inline' }
+			format.jpeg { send_file file_for_scan(dict_handle, @scan, :jpeg), type: 'image/jpeg', disposition: 'inline' }
+			format.png { send_file file_for_scan(dict_handle, @scan, :png), type: 'image/png', disposition: 'inline' }
 		end
 	end
 

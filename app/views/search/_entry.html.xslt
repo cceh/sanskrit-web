@@ -8,7 +8,7 @@
 	<xsl:import href="../shared/_raw_xml.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
+	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict/rails:handle/text()"/>
 	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 
 	<xsl:template match="/">

@@ -4,7 +4,9 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
-	<xsl:variable name="dict-name" select="/rails:variables/rails:dict_handle/text()"/>  <!-- FIXME: extract dictionary name -->
+	<xsl:variable name="dict-info" select="/rails:variables/rails:dict"/>
+	<xsl:variable name="dict-handle" select="$dict-info/rails:handle/text()"/>
+	<xsl:variable name="dict-common-title" select="$dict-info/rails:common_title/text()"/>
 
 	<xsl:variable name="format" select="/rails:variables/rails:best_format/text()"/>
 
@@ -40,14 +42,14 @@
 			<xsl:text>Scan of page </xsl:text>
 			<xsl:value-of select="$page-code"/>
 			<xsl:text> from </xsl:text>
-			<xsl:value-of select="$dict-name"/>
+			<xsl:value-of select="$dict-common-title"/>
 		</xsl:variable>
 
 		<h1>
 			<xsl:text>Page </xsl:text>
 			<xsl:value-of select="$page-name"/>
 			<xsl:text> of </xsl:text>
-			<xsl:value-of select="$dict-name"/>
+			<xsl:value-of select="$dict-common-title"/>
 		</h1>
 
 		<nav>

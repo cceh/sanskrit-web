@@ -9,7 +9,11 @@
 	<xsl:import href="../shared/_chars.xsl"/>
 	<xsl:import href="../shared/_info.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict_handle/text()"/>
+	<xsl:variable name="dict-info" select="/rails:variables/rails:lemma/rails:dict"/>
+	<xsl:variable name="dict-handle" select="$dict-info/rails:handle/text()"/>
+	<xsl:variable name="dict-common-title" select="$dict-info/rails:common_title/text()"/>
+	<xsl:variable name="dict-orig-author" select="$dict-info/rails:orig_author/text()"/>
+
 	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 	<xsl:variable name="preceding-entries" select="/rails:variables/rails:preceding_entries/rails:elem/rails:entry/*[self::tei:entry or self::tei:re]"/>
 	<xsl:variable name="following-entries" select="/rails:variables/rails:following_entries/rails:elem/rails:entry/*[self::tei:entry or self::tei:re]"/>
@@ -42,9 +46,9 @@
 
 	<xsl:template name="adjacent-entries">
 		<h2>
-			<xsl:text>Previous and following entries in</xsl:text>
+			<xsl:text>Surrounding entries in</xsl:text>
 			<xsl:value-of select="$char-space"/>
-			<xsl:value-of select="$dict-handle"/><xsl:text> (FIXME: use proper name)</xsl:text>
+			<xsl:value-of select="$dict-common-title"/>
 		</h2>
 
 		<ol class="results adjacent">
@@ -107,8 +111,8 @@
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="lemma-url" select="/rails:variables/rails:request_url/text()"/>
-		<xsl:variable name="author">FIXME: AUTHOR</xsl:variable>
-		<xsl:variable name="publication">FIXME: DICTIONARY</xsl:variable>
+		<xsl:variable name="author" select="$dict-orig-author"/>
+		<xsl:variable name="publication" select="$dict-common-title"/>
 		<xsl:variable name="publication-url">
 			<xsl:value-of select="/rails:variables/rails:request_base_url/text()"/>
 			<xsl:call-template name="dict-url">
