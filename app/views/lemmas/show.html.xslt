@@ -110,6 +110,7 @@
 		<xsl:variable name="author">FIXME: AUTHOR</xsl:variable>
 		<xsl:variable name="publication">FIXME: DICTIONARY</xsl:variable>
 		<xsl:variable name="publication-url">
+			<xsl:value-of select="/rails:variables/rails:request_base_url/text()"/>
 			<xsl:call-template name="dict-url">
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
 			</xsl:call-template>
@@ -124,7 +125,7 @@
 			<div>
 				<dl>
 
-					<dt><xsl:text>Text</xsl:text></dt>
+					<dt><xsl:text>Text (for LibreOffice and Microsoft Word)</xsl:text></dt>
 					<dd>
 						<p>
 							<xsl:value-of select="$lemma-title"/>
@@ -165,7 +166,7 @@
 							<xsl:value-of select="$char-newline"/>
 
 							<xsl:copy-of select="$indent"/>
-							<xsl:text>csdl:</xsl:text>
+							<xsl:text>csl:</xsl:text>
 							<xsl:value-of select="$lemma-id"/>
 							<xsl:text>,</xsl:text>
 							<xsl:value-of select="$char-newline"/>
