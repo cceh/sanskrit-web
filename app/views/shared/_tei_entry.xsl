@@ -108,14 +108,20 @@
 
 
 
-	<xsl:template match="tei:sense" mode="definition">
-		<dd class="sense">
+	<xsl:template match="tei:entry/tei:sense" mode="definition">
+		<dd class="tei-sense">
 			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
 
 			<xsl:call-template name="provenance-info">
 				<xsl:with-param name="sense" select="."/>
 			</xsl:call-template>
 		</dd>
+	</xsl:template>
+
+	<xsl:template match="tei:sense">
+		<div class="tei-sense">
+			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
+		</div>
 	</xsl:template>
 
 	<xsl:template match="tei:gram">
