@@ -108,7 +108,7 @@
 
 
 
-	<xsl:template match="tei:entry/tei:sense" mode="definition">
+	<xsl:template match="tei:*[self::tei:entry or self::tei:re]/tei:sense" mode="definition">
 		<dd class="tei-sense">
 			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
 
