@@ -32,15 +32,17 @@ module ApplicationHelper
 			end
 		end
 
-		wrapper.root << xml_element_for_variable('date', Time.now.strftime('%Y-%m-%d %H:%M:%S %z'))
+		now = Time.now
+
+		wrapper.root << xml_element_for_variable('date', now.strftime('%Y-%m-%d %H:%M:%S %z'))
 		wrapper.root << xml_element_for_variable('request_base_url', request.base_url)
 		wrapper.root << xml_element_for_variable('request_url', request.url)
 
 		if Rails.logger.level <= Logger::DEBUG
-			now = Time.now.strftime('%Y%m%d-%H%M%S-%6N')
+			now_str = now.strftime('%Y%m%d-%H%M%S-%6N')
 			view_name = xslt_path.split('/').last.sub('.html.xslt', '')
 
-			File.open(Rails.root + 'log' + "xslt-view-#{now}-#{controller_name}-#{view_name}.xml", 'w') do |xslt_input|
+			File.open(Rails.root + 'log' + "xslt-view-#{now_str}-#{controller_name}-#{view_name}.xml", 'w') do |xslt_input|
 				xslt_input << wrapper
 			end
 		end
