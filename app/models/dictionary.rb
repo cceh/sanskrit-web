@@ -28,7 +28,9 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def header
-		return xpathquery('/tei:TEI/tei:teiHeader').first
+		# FIXME: declare stale after X seconds and compare cache
+		@header ||= xpathquery('/tei:TEI/tei:teiHeader').first
+		return @header
 	end
 
 	def matches(tei_entries)
