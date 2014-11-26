@@ -33,6 +33,21 @@ class Dictionary < ActiveRecord::Base
 		return @header
 	end
 
+	def backmatter
+		# FIXME: use a common cache system with `header`
+		@backmatter ||= xpathquery('/tei:TEI/tei:text/tei:back').first
+		return @backmatter
+	end
+
+	def backmatter_item(id)
+		backmatter_complete = backmatter
+		if !backmatter_complete.is_a? Nokogiri::XML::Element
+			return []
+		end
+
+		return backmatter_complete.xpath("//*[@xml:id = '#{id}']", NS)
+	end
+
 	def matches(tei_entries)
 		# extract the top level <entry> or <re> elements
 		entries = tei_entries.to_a.map { |tei_entry| entry_for_lemma(tei_entry) }
@@ -85,12 +100,15 @@ class Dictionary < ActiveRecord::Base
 
 	def entry_for_lemma(tei_entry)
 		tei_words = tei_words_inside_tei_entry(tei_entry)
-
 		transliterations = transliterations_for_words(tei_words)
+
+		tei_refs = tei_refs_inside_tei_entry(tei_entry)
+		references = references_for_refs(tei_refs)
 
 		entry = {
 			:entry => tei_entry,
 			:transliterations => transliterations,
+			:references => references,
 			:dict => publication_info,
 		}
 
@@ -132,6 +150,25 @@ class Dictionary < ActiveRecord::Base
 			raise "Entry is stored in unknown script #{script.inspect}"
 		end
 	end
+
+	def tei_refs_inside_tei_entry(tei_entry)
+		tei_refs = tei_entry.xpath('.//tei:ref', NS)
+		return tei_refs
+	end
+
+	def references_for_refs(tei_refs)
+		targets = tei_refs.map { |tei_ref| tei_ref.attr('target') }
+		ids = targets.map { |target| target.sub('#', '') }.uniq
+
+		references = {}
+		ids.each do |id|
+			item = backmatter_item(id).first
+			references[id] = item unless item.nil?
+		end
+
+		return references
+	end
+
 
 	def exact_matches(term)
 		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]"

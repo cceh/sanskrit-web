@@ -143,14 +143,6 @@
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template match="tei:abbr">
-		<xsl:variable name="expansion">FIXME abbrevations</xsl:variable>
-
-		<abbr class="tei-abbr" title="{$expansion}">
-			<xsl:value-of select="normalize-space(.)"/>
-		</abbr>
-	</xsl:template>
-
 	<xsl:template match="tei:expan">
 		<span class="tei-expan">
 			<xsl:apply-templates/>
@@ -161,6 +153,39 @@
 		<span class="tei-reg">
 			<xsl:apply-templates/>
 		</span>
+	</xsl:template>
+
+	<!--
+		The `tei:abbr[tei:ref]` elements represent abbreviations whose
+		expansion is described in a item of one of the appendices.
+
+		The desired item is referenced by the `tei:ref` child.
+	-->
+
+	<xsl:template match="tei:abbr[tei:ref]">
+		<xsl:variable name="target" select="tei:ref/@target"/>
+		<xsl:variable name="item-id" select="substring-after($target, '#')"/>
+		<xsl:variable name="item" select="ancestor::rails:lemma/rails:references/rails:*/*[@xml:id = $item-id]"/>
+
+		<xsl:variable name="expansion">
+			<xsl:apply-templates select="$item" mode="abbreviation"/>
+		</xsl:variable>
+
+		<abbr class="tei-abbr" title="{$expansion}">
+			<xsl:value-of select="normalize-space(.)"/>
+		</abbr>
+	</xsl:template>
+
+	<!--
+		FIXME: the template uses `rails:choice` instead of `tei:choice`
+		because of a bug in the Ruby-to-XSLT conversion.
+
+		See <https://github.com/cceh/sanskrit-web/issues/36>.
+
+		Move back to `tei:choice` once the bug is fixed.
+	-->
+	<xsl:template match="rails:choice" mode="abbreviation">
+		<xsl:value-of select="rails:expan"/>
 	</xsl:template>
 
 	<xsl:template match="tei:cit/tei:bibl">
