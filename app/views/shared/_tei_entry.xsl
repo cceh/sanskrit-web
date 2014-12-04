@@ -168,7 +168,7 @@
 		<xsl:variable name="item" select="ancestor::rails:lemma/rails:references/rails:*/*[@xml:id = $item-id]"/>
 
 		<xsl:variable name="expansion">
-			<xsl:apply-templates select="$item" mode="abbreviation"/>
+			<xsl:apply-templates select="$item" mode="abbreviation-expansion"/>
 		</xsl:variable>
 
 		<abbr class="tei-abbr" title="{$expansion}">
@@ -177,14 +177,19 @@
 	</xsl:template>
 
 	<!--
-		FIXME: the template uses `rails:choice` instead of `tei:choice`
-		because of a bug in the Ruby-to-XSLT conversion.
+		FIXME: this template and the following use `rails:item` instead
+		of `tei:item` because of a bug in the Ruby-to-XSLT conversion.
 
 		See <https://github.com/cceh/sanskrit-web/issues/36>.
 
-		Move back to `tei:choice` once the bug is fixed.
+		Move back to `tei:item` once the bug is fixed.
 	-->
-	<xsl:template match="rails:choice" mode="abbreviation">
+
+	<xsl:template match="rails:references/*/rails:item" mode="abbreviation-expansion">
+		<xsl:apply-templates select="rails:choice" mode="abbreviation-expansion"/>
+	</xsl:template>
+
+	<xsl:template match="rails:references/*/rails:item/rails:choice" mode="abbreviation-expansion">
 		<xsl:value-of select="rails:expan"/>
 	</xsl:template>
 
