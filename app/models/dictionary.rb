@@ -164,6 +164,13 @@ class Dictionary < ActiveRecord::Base
 		ids.each do |id|
 			item = backmatter_item(id).first
 			references[id] = item unless item.nil?
+
+			nested_ref = item.at('.//tei:ref', NS) unless item.nil?
+			if !nested_ref.nil?
+				nested_id = nested_ref.attr('target').sub('#', '')
+				nested_item = backmatter_item(nested_id)
+				references[nested_id] = nested_item unless nested_item.nil?
+			end
 		end
 
 		return references

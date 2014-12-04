@@ -171,7 +171,29 @@
 			<xsl:apply-templates select="$item" mode="abbreviation-expansion"/>
 		</xsl:variable>
 
-		<abbr class="tei-abbr" title="{$expansion}">
+		<abbr class="tei-abbr" title="{normalize-space($expansion)}">
+			<xsl:value-of select="normalize-space(.)"/>
+		</abbr>
+	</xsl:template>
+
+	<!--
+		The `tei:cit/tei:bibl[tei:ref]` elements represent abbreviations
+		of bibliografic references whose expansion is described in a item
+		of one of the appendices.
+
+		The desired item is referenced by the `tei:ref` child.
+	-->
+
+	<xsl:template match="tei:cit/tei:bibl[tei:ref]">
+		<xsl:variable name="target" select="tei:ref/@target"/>
+		<xsl:variable name="item-id" select="substring-after($target, '#')"/>
+		<xsl:variable name="item" select="ancestor::rails:lemma/rails:references/rails:*/*[@xml:id = $item-id]"/>
+
+		<xsl:variable name="expansion">
+			<xsl:apply-templates select="$item" mode="abbreviation-expansion"/>
+		</xsl:variable>
+
+		<abbr class="tei-bibl" title="{normalize-space($expansion)}">
 			<xsl:value-of select="normalize-space(.)"/>
 		</abbr>
 	</xsl:template>
@@ -189,25 +211,33 @@
 		<xsl:apply-templates select="rails:choice" mode="abbreviation-expansion"/>
 	</xsl:template>
 
-	<xsl:template match="rails:references/*/rails:item/rails:choice" mode="abbreviation-expansion">
-		<xsl:value-of select="rails:expan"/>
+	<xsl:template match="rails:references/*/rails:item/rails:choice[rails:expan]" mode="abbreviation-expansion">
+		<xsl:apply-templates select="rails:expan" mode="abbreviation-expansion"/>
 	</xsl:template>
 
-	<xsl:template match="tei:cit/tei:bibl">
-		<xsl:variable name="expansion">FIXME autorities</xsl:variable>
-
-<!--
-		<xsl:variable name="biblio-url">
-			<xsl:call-template name="biblio-url">
-				<xsl:with-param name="biblio-ref" select="tei:ref"/>
-			</xsl:call-template>
-		</xsl:variable>
--->
-
-		<abbr class="tei-bibl" title="{$expansion}">
-			<xsl:value-of select="normalize-space(.)"/>
-		</abbr>
+	<xsl:template match="rails:choice/rails:expan" mode="abbreviation-expansion">
+		<xsl:apply-templates mode="abbreviation-expansion"/>
 	</xsl:template>
+
+	<xsl:template match="rails:expan/rails:title" mode="abbreviation-expansion">
+		<!-- FIXME: this is correct, but the `tei:w` elements inside should not be treated as plain text. -->
+		<xsl:apply-templates mode="abbreviation-expansion"/>
+	</xsl:template>
+
+	<!--
+		In cases where the regularization form is a reference we use
+		as the expasion of this `tei:choice` the expansion of the
+		referenced item.
+	-->
+
+	<xsl:template match="rails:references/*/rails:item/rails:choice[rails:reg/rails:ref]" mode="abbreviation-expansion">
+		<xsl:variable name="target" select=".//rails:ref/@target"/>
+		<xsl:variable name="item-id" select="substring-after($target, '#')"/>
+		<xsl:variable name="item" select="ancestor::rails:lemma/rails:references/rails:*/*[@xml:id = $item-id]"/>
+
+		<xsl:apply-templates select="$item" mode="abbreviation-expansion"/>
+	</xsl:template>
+
 
 	<xsl:template match="tei:w | tei:m">
 		<xsl:variable name="is-in-sanskrit" select="contains(@xml:lang, 'san-Latn-')"/>
