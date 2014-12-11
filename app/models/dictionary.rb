@@ -122,32 +122,40 @@ class Dictionary < ActiveRecord::Base
 			word.gsub!("\u221a", '!') # FIXME: deal with root char
 			word.gsub!(/[0-9]/, '!') # FIXME: deal with digits
 
-			raw_script = tei_word.attr('xml:lang')
+			raw_lang = tei_word.attr('xml:lang')
 
-			transliterations = transliterations_for_word(word, raw_script)
+			transliterations = transliterations_for_word(word, raw_lang)
 
-			next [word, transliterations_for_word(word, raw_script)]
+			next [word, transliterations_for_word(word, raw_lang)]
 		end
 
 		return transliterations.to_h
 	end
 
 	def tei_words_inside_tei_entry(tei_entry)
-		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][@xml:lang = 'san-Latn-x-SLP1']", NS)
+		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][(@xml:lang = 'san-Latn-x-SLP1') or (@xml:lang = 'san-Latn-x-SLP1-headword2')]", NS)
 		return tei_words
 	end
 
-	def transliterations_for_word(word, script)
-		case script
-		when 'san-Latn-x-SLP1'
-			native_script = word.transliterate(:Deva)
-			return {
+	def transliterations_for_word(word, lang_tag)
+		mETHOD_FOR_LANG = {
+			'san-Latn-x-SLP1' => :slp1,
+			'san-Latn-x-SLP1-headword2' => :slp1_headword2
+		}
+
+		method = mETHOD_FOR_LANG[lang_tag]
+
+		case lang_tag
+		when 'san-Latn-x-SLP1', 'san-Latn-x-SLP1-headword2'
+			native_script = word.transliterate(:Deva, :method => method)
+			transliterations = {
 				'san-Deva' => native_script,
 				'san-Latn-x-SLP1' => native_script.transliterate(:Latn, :method => :slp1),
-				#'san-Latn-x-IAST' => native_script.transliterate(:Latn, :method => :iast),
 			}
+
+			return transliterations
 		else
-			raise "Entry is stored in unknown script #{script.inspect}"
+			raise "Entry is stored in unknown language #{lang_tag.inspect}"
 		end
 	end
 
