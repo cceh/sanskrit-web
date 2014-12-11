@@ -148,9 +148,12 @@ class Dictionary < ActiveRecord::Base
 		case lang_tag
 		when 'san-Latn-x-SLP1', 'san-Latn-x-SLP1-headword2'
 			native_script = word.transliterate(:Deva, :method => method)
+
+			# TODO: only generate the needed transliterations
 			transliterations = {
 				'san-Deva' => native_script,
 				'san-Latn-x-SLP1' => native_script.transliterate(:Latn, :method => :slp1),
+				'san-Latn-x-ISO15919' => native_script.transliterate(:Latn, :method => :iso15919),
 			}
 
 			return transliterations
