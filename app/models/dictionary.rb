@@ -33,6 +33,16 @@ class Dictionary < ActiveRecord::Base
 		return @header
 	end
 
+	def header_item(id)
+		# FIXME: merge with backmatter_item
+		header_complete = header
+		if !header_complete.is_a? Nokogiri::XML::Element
+			return []
+		end
+
+		return header_complete.xpath("//*[@xml:id = '#{id}']", NS)
+	end
+
 	def backmatter
 		# FIXME: use a common cache system with `header`
 		@backmatter ||= xpathquery('/tei:TEI/tei:text/tei:back').first
@@ -164,16 +174,18 @@ class Dictionary < ActiveRecord::Base
 
 	def tei_refs_inside_tei_entry(tei_entry)
 		tei_refs = tei_entry.xpath('.//tei:ref', NS)
+		tei_refs += tei_entry.xpath('.//tei:g[@ref]', NS)
 		return tei_refs
 	end
 
 	def references_for_refs(tei_refs)
-		targets = tei_refs.map { |tei_ref| tei_ref.attr('target') }
+		targets = tei_refs.map { |tei_ref| tei_ref.attr('target') || tei_ref.attr('ref') }
 		ids = targets.map { |target| target.sub('#', '') }.uniq
 
 		references = {}
 		ids.each do |id|
 			item = backmatter_item(id).first
+			item ||= header_item(id).first
 			references[id] = item unless item.nil?
 
 			nested_ref = item.at('.//tei:ref', NS) unless item.nil?
