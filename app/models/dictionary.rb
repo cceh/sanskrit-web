@@ -144,6 +144,7 @@ class Dictionary < ActiveRecord::Base
 
 	def tei_words_inside_tei_entry(tei_entry)
 		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][(@xml:lang = 'san-Latn-x-SLP1') or (@xml:lang = 'san-Latn-x-SLP1-headword2')]", NS)
+		tei_words = tei_words.to_a.reject { |w| w.text.blank? }
 		return tei_words
 	end
 
