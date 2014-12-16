@@ -40,10 +40,11 @@ dd {
 	margin-bottom: 0.5em;
 
 	span.tei-w {
-		color: magenta;
+		color: SaddleBrown;
 
 		a {
 			color: inherit;
+			border-bottom: dashed thin SaddleBrown;
 		}
 	}
 
