@@ -22,7 +22,9 @@
 		<xsl:value-of select="$char-space"/>
 
 		<span class="transliterations">
-			<xsl:text>(</xsl:text>
+			<span class="parens">
+				<xsl:text>(</xsl:text>
+			</span>
 
 			<xsl:for-each select="$additional-scripts">
 				<xsl:sort select="local-name()"/>
@@ -32,7 +34,9 @@
 				</xsl:apply-templates>
 			</xsl:for-each>
 
-			<xsl:text>)</xsl:text>
+			<span class="parens">
+				<xsl:text>)</xsl:text>
+			</span>
 		</span>
 	</xsl:template>
 
@@ -333,7 +337,9 @@
 		<xsl:element name="{$wrapper-transliterations}">
 			<xsl:attribute name="class">transliterations</xsl:attribute>
 
-			<xsl:text>(</xsl:text>
+			<span class="parens">
+				<xsl:text>(</xsl:text>
+			</span>
 
 			<xsl:for-each select="$additional-scripts">
 				<xsl:sort select="local-name()"/>
@@ -347,7 +353,9 @@
 				</xsl:apply-templates>
 			</xsl:for-each>
 
-			<xsl:text>)</xsl:text>
+			<span class="parens">
+				<xsl:text>)</xsl:text>
+			</span>
 		</xsl:element>
 	</xsl:template>
 
@@ -386,6 +394,8 @@
 		</xsl:variable>
 
 		<xsl:element name="{$wrapper-text-container}">
+			<xsl:attribute name="class">transliteration-wrapper</xsl:attribute>
+
 			<xsl:choose>
 				<xsl:when test="$linked-url != ''">
 					<a href="{$linked-url}">
