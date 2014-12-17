@@ -206,7 +206,12 @@ class Dictionary < ActiveRecord::Base
 		if dictionary_transliteration == transliteration
 			normalized = term
 		else
-			deva = term.transliterate(:Deva, :method => transliteration)
+			if transliteration == :devanagari
+				deva = term
+			else
+				deva = term.transliterate(:Deva, :method => transliteration)
+			end
+
 			normalized = deva.transliterate(:Latn, :method => dictionary_transliteration)
 		end
 
