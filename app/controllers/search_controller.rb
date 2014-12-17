@@ -15,7 +15,7 @@ class SearchController < ApplicationController
 
 		term = params[:q]
 		ilanguage = params[:ilang]
-		itransliteration = params[:it13n].to_sym
+		itransliteration = param_it13_to_value(params[:it13n])
 		dicts = params[:dict]
 		where = params[:where]
 
@@ -122,6 +122,16 @@ class SearchController < ApplicationController
 			params[:ilang] = pieces[0]
 			params[:it13n] = pieces[1]
 		end
+	end
+
+	def param_it13_to_value(param)
+		value = param.to_sym
+
+		if value == :iso
+			value = :iso15919
+		end
+
+		return value
 	end
 end
 
