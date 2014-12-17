@@ -14,13 +14,15 @@ class SearchController < ApplicationController
 		end
 
 		term = params[:q]
-		language = params[:ilang] # TODO: transliterate if needed
+		ilanguage = params[:ilang]
+		itransliteration = params[:it13n].to_sym
 		dicts = params[:dict]
 		where = params[:where]
 
 		@query = {
 			:term => term,
-			:ilang => language,
+			:ilanguage => ilanguage,
+			:transliteration => itransliteration,
 			:dicts => dicts,
 			:where => where,
 		}
@@ -33,16 +35,16 @@ class SearchController < ApplicationController
 				dict = Dictionary.find_by! handle: dict_handle
 
 				if @search_in_lemma
-					exact_results = dict.exact_matches(term)
+					exact_results = dict.exact_matches(term, ilanguage, itransliteration)
 					@results[:exact][dict] = exact_results
 				end
 
 				if @search_in_definitions
-					inside_defs = dict.similar_matches_inside_definitions(term)
+					inside_defs = dict.similar_matches_inside_definitions(term, ilanguage, itransliteration)
 					@results[:inside_defs][dict] = inside_defs
 				end
 
-				similar_results = dict.similar_matches(term)
+				similar_results = dict.similar_matches(term, ilanguage, itransliteration)
 				@results[:similar] += similar_results
 
 				#preceding_results = dict.preceding_matches(term)
@@ -84,7 +86,8 @@ class SearchController < ApplicationController
 	end
 
 	def default_params
-		params[:ilang] ||= 'slp1'
+		params[:ilang] ||= 'san'
+		params[:it13n] ||= 'slp1'
 		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
 		params[:where] ||= [ 'lemma', 'def' ]
 	end
@@ -114,7 +117,11 @@ class SearchController < ApplicationController
 		end
 		params[:where] = Array(params[:where]) unless params[:where].nil?
 
-		params[:ilang].sub!('san-', '') unless params[:ilang].nil?
+		if !params[:ilang].nil?
+			pieces = params[:ilang].split('-', 2)
+			params[:ilang] = pieces[0]
+			params[:it13n] = pieces[1]
+		end
 	end
 end
 

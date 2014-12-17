@@ -200,30 +200,42 @@ class Dictionary < ActiveRecord::Base
 		return references
 	end
 
+	def normalized_term(term, language, transliteration)
+		dictionary_transliteration = :slp1 # FIXME: make per dict, allow English
 
-	def exact_matches(term)
+		if dictionary_transliteration == transliteration
+			normalized = term
+		else
+			deva = term.transliterate(:Deva, :method => transliteration)
+			normalized = deva.transliterate(:Latn, :method => dictionary_transliteration)
+		end
+
+		return normalized
+	end
+
+	def exact_matches(term, language, transliteration)
 		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]"
-		params = { :term => term }
+		params = { :term => normalized_term(term, language, transliteration) }
 
 		tei_matches = xpathquery(query, params)
 
 		return matches(tei_matches)
 	end
 
-	def similar_matches(term)
+	def similar_matches(term, language, transliteration)
 		# FIXME: use something better than "contains"
 		query = "#{DICT_ENTRIES}[contains(./tei:form/tei:orth/text(), '%{term}')][not(#{ORTH_EQUALS})]"
-		params = { :term => term }
+		params = { :term => normalized_term(term, language, transliteration) }
 
 		tei_matches = xpathquery(query, params)
 
 		return matches(tei_matches)
 	end
 
-	def similar_matches_inside_definitions(term)
+	def similar_matches_inside_definitions(term, language, transliteration)
 		# FIXME: use something better than "contains", like similar_matches
 		query = "#{DICT_ENTRIES}[not(#{ORTH_EQUALS})][contains(string-join(./tei:sense//text()), '%{term}')]"
-		params = { :term => term }
+		params = { :term => normalized_term(term, language, transliteration) }
 
 		tei_matches = xpathquery(query, params)
 
