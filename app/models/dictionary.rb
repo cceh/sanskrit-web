@@ -6,7 +6,11 @@ class Dictionary < ActiveRecord::Base
 
 	ENTRY_ID_EQUALS = '@xml:id = "lemma-%{entry_id}"'
 	IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
-	ORTH_EQUALS = './tei:form/tei:orth/text() = "%{term}"' # FIXME: escape parameters
+	ORTH_EQUALS = './tei:form/tei:orth[. = "%{term}"]' # FIXME: escape parameters
+	ORTH_EQUALS_OR_NORMALIZED = './tei:form/tei:orth[(. = "%{term}") or (. = "%{normalized_term}")]' # FIXME: escape parameters
+	IN_LANGUAGE = 'ancestor-or-self::*[@xml:lang][1]'
+	LANGUAGE_CLASS = 'starts-with(@xml:lang, "LANGUAGE")'
+	LANGUAGE_EXACT = '@xml:lang = "LANGUAGE"'
 
 	DICT_ENTRIES = "/tei:TEI/tei:text/tei:body//*[#{IS_DICT_ENTRY}]"
 	DICT_SCANS = '/tei:TEI/tei:facsimile/tei:graphic'
@@ -200,8 +204,8 @@ class Dictionary < ActiveRecord::Base
 		return references
 	end
 
-	def normalized_term(term, language, transliteration)
-		dictionary_transliteration = :slp1 # FIXME: make per dict, allow English
+	def normalized_term(term, transliteration)
+		dictionary_transliteration = :slp1 # FIXME: make per dict
 
 		if dictionary_transliteration == transliteration
 			normalized = term
@@ -218,9 +222,56 @@ class Dictionary < ActiveRecord::Base
 		return normalized
 	end
 
-	def exact_matches(term, language, transliteration)
-		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}]"
-		params = { :term => normalized_term(term, language, transliteration) }
+	def term_xpath_matcher(term, languages, transliteration)
+		if languages.include?('san') # FIXME: language_has_many_transliterations(language)
+			matcher = ORTH_EQUALS_OR_NORMALIZED
+		else
+			matcher = ORTH_EQUALS
+		end
+
+		return matcher
+	end
+
+	def language_xpath_matcher(ter, languages)
+		language_matches = languages.map do |language|
+			if language == 'san' # FIXME: language_has_many_transliterations(language)
+				language_matcher = LANGUAGE_CLASS
+			else
+				language_matcher = LANGUAGE_EXACT
+			end
+			language_matcher.sub("LANGUAGE", language)
+		end
+
+		language_match = language_matches.map {|m| "(#{m})" }.join(" or ")
+		matcher = "#{IN_LANGUAGE}[#{language_match}]"
+
+		return matcher
+	end
+
+	def exact_lemma_matches(term, languages, transliteration)
+		if languages.include?('san') # FIXME: language_has_many_transliterations(language)
+			normalized = normalized_term(term, transliteration)
+		end
+
+		term_xpath = term_xpath_matcher(term, languages, transliteration)
+		language_xpath = language_xpath_matcher(term, languages)
+
+		query = "#{DICT_ENTRIES}[#{term_xpath}][#{language_xpath}]"
+		params = { :term => term, :normalized_term => normalized }
+
+		tei_matches = xpathquery(query, params)
+
+		return matches(tei_matches)
+	end
+
+	def exact_definition_matches(term, languages, transliteration)
+		if languages.include?('san') # FIXME: language_has_many_transliterations(language)
+			normalized = normalized_term(term, transliteration)
+		end
+
+		language_xpath = language_xpath_matcher(term, languages)
+		query = "#{DICT_ENTRIES}[./tei:sense//text()[(normalize-space() = '%{term}') or contains(., ' %{term} ') or (normalize-space() = '%{normalized_term}') or contains(., ' %{normalized_term}')][#{language_xpath}]]"
+		params = { :term => term, :normalized_term => normalized }
 
 		tei_matches = xpathquery(query, params)
 

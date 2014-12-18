@@ -4,14 +4,27 @@
 
 = render 'search_form'
 
-%section.results.exact
-  %h2 Exact matches
+%section.results.exact.inside-lemma
+  %h2 Exact matches (in lemmas)
   %details
-    - total_results = @results[:exact].map { |d,r| r.count }.inject(&:+) || 0
+    - total_results = @results[:exact_lemma].map { |d,r| r.count }.inject(&:+) || 0
     %summary= "#{total_results} results"
-    - @results[:exact].each do |dict, results|
+    - @results[:exact_lemma].each do |dict, results|
       %p= "#{results.count} results in #{dict.handle}"
-  - @results[:exact].each do |dict, exact_results|
+  - @results[:exact_lemma].each do |dict, exact_results|
+    %div
+      %p= "Matches in #{dict.handle}"
+      - exact_results.each do |exact_result|
+        = render 'entry', :lemma => exact_result # use entry as variable
+
+%section.results.exact.inside-definition
+  %h2 Exact matches (in definitions)
+  %details
+    - total_results = @results[:exact_definition].map { |d,r| r.count }.inject(&:+) || 0
+    %summary= "#{total_results} results"
+    - @results[:exact_definition].each do |dict, results|
+      %p= "#{results.count} results in #{dict.handle}"
+  - @results[:exact_definition].each do |dict, exact_results|
     %div
       %p= "Matches in #{dict.handle}"
       - exact_results.each do |exact_result|

@@ -37,13 +37,19 @@
 		</div>
 	</fieldset>
 
-	<fieldset id="where">
-		<legend>Where to search</legend>
+	<fieldset id="where-how">
+		<legend>Where and how to search</legend>
 
 		<div>
 			<input type="radio" name="where" value="lemma-def" id="where-both" checked="checked"/><label for="where-both">both lemmas and definitions</label>
 			<input type="radio" name="where" value="lemma" id="where-lemma"/><label for="where-lemma">only lemmas</label>
 			<input type="radio" name="where" value="def" id="where-def"/><label for="where-def">only definitions</label>
+		</div>
+
+		<div>
+			<input type="checkbox" name="how" value="exact" id="how-exact" checked="checked"/><label for="how-exact">exact</label>
+			<input type="checkbox" name="how" value="partial" id="how-partial" checked="checked"/><label for="how-partial">partial</label>
+			<input type="checkbox" name="how" value="similar" id="how-similar" checked="checked"/><label for="how-similar">similar</label>
 		</div>
 	</fieldset>
 </form>

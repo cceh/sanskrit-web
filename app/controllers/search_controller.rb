@@ -14,38 +14,43 @@ class SearchController < ApplicationController
 		end
 
 		term = params[:q]
-		ilanguage = params[:ilang]
+		ilanguages = params[:ilang]
 		itransliteration = param_it13_to_value(params[:it13n])
 		dicts = params[:dict]
 		where = params[:where]
+		how = params[:how]
 
 		@query = {
 			:term => term,
-			:ilanguage => ilanguage,
-			:transliteration => itransliteration,
+			:ilanguages => ilanguages,
+			:itransliteration => itransliteration,
 			:dicts => dicts,
 			:where => where,
 		}
 
 		@search_in_lemma = where.include? 'lemma'
-		@search_in_definitions = where.include? 'def'
+		@search_in_definition = where.include? 'def'
+
+		@exact_matches = how.include? 'exact'
+		@partial_matches = how.include? 'partial'
+		@similar_matches = how.include? 'similar'
 
 		dicts.each do |dict_handle|
 			begin
 				dict = Dictionary.find_by! handle: dict_handle
 
-				if @search_in_lemma
-					exact_results = dict.exact_matches(term, ilanguage, itransliteration)
-					@results[:exact][dict] = exact_results
+				if @search_in_lemma && @exact_matches
+					results = dict.exact_lemma_matches(term, ilanguages, itransliteration)
+					@results[:exact_lemma][dict] = results
 				end
 
-				if @search_in_definitions
-					inside_defs = dict.similar_matches_inside_definitions(term, ilanguage, itransliteration)
-					@results[:inside_defs][dict] = inside_defs
+				if @search_in_definition && @exact_matches
+					results = dict.exact_definition_matches(term, ilanguages, itransliteration)
+					@results[:exact_definition][dict] = results
 				end
 
-				similar_results = dict.similar_matches(term, ilanguage, itransliteration)
-				@results[:similar] += similar_results
+				#similar_results = dict.similar_matches(term, ilanguage, itransliteration)
+				#@results[:similar] += similar_results
 
 				#preceding_results = dict.preceding_matches(term)
 				#@results[:preceding][dict] = preceding_results
@@ -72,7 +77,9 @@ class SearchController < ApplicationController
 		@query = {}
 
 		@results = {
-			:exact => {},
+			:exact_lemma => {},
+			:exact_definition => {},
+
 			:inside_defs => {},
 			:similar => [],
 			:preceding => {},
@@ -86,10 +93,11 @@ class SearchController < ApplicationController
 	end
 
 	def default_params
-		params[:ilang] ||= 'san'
+		params[:ilang] ||= ['san', 'en', 'de']
 		params[:it13n] ||= 'slp1'
 		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
 		params[:where] ||= [ 'lemma', 'def' ]
+		params[:how] ||= [ 'exact', 'partial', 'similar' ]
 	end
 
 	def validate_params
@@ -112,10 +120,18 @@ class SearchController < ApplicationController
 			params[:dict] = nil
 		end
 
+		# Use CGI parsing routine to allow ?how=exact&how=partial
+		hows_in_query = CGI.parse(env['QUERY_STRING']||'')['how']
+		params[:how] = hows_in_query unless hows_in_query.empty?
+
 		if params[:where] == 'lemma-def'
 			params[:where] = ['lemma', 'def']
 		end
 		params[:where] = Array(params[:where]) unless params[:where].nil?
+
+		if params[:ilang] == 'any'
+			params[:ilang] = nil
+		end
 
 		if !params[:ilang].nil?
 			pieces = params[:ilang].split('-', 2)
