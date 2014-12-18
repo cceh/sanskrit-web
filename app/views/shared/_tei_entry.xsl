@@ -14,7 +14,8 @@
 		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig-key = $tei-orth or local-name() = $tei-orth]"/>
 
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
-		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
+		<xsl:variable name="romanized-script" select="$transliterations/rails:san-Latn-x-ISO15919"/>
+		<xsl:variable name="additional-scripts" select="$transliterations/*[not(self::rails:san-Latn-x-ISO15919) and contains(local-name(), '-Latn')]"/>
 
 		<xsl:apply-templates select="$native-script" mode="heading"/>
 		<xsl:apply-templates select="../@n"/>
@@ -22,6 +23,12 @@
 		<xsl:value-of select="$char-space"/>
 
 		<span class="transliterations">
+			<xsl:apply-templates select="$romanized-script" mode="heading">
+				<xsl:with-param name="last" select="false()"/>
+			</xsl:apply-templates>
+
+			<xsl:value-of select="$char-space"/>
+
 			<span class="parens">
 				<xsl:text>(</xsl:text>
 			</span>
@@ -316,7 +323,8 @@
 
 		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig_key = $text or local-name() = $text]"/>
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
-		<xsl:variable name="additional-scripts" select="$transliterations/*[contains(local-name(), '-Latn')]"/>
+		<xsl:variable name="romanized-script" select="$transliterations/rails:san-Latn-x-ISO15919"/>
+		<xsl:variable name="additional-scripts" select="$transliterations/*[not(self::rails:san-Latn-x-ISO15919) and contains(local-name(), '-Latn')]"/>
 		<xsl:variable name="is-lemma-text" select="$rails-entry/tei:*/tei:form/tei:orth/text() = $text"/>
 
 		<xsl:element name="{$wrapper-native}">
@@ -336,6 +344,16 @@
 
 		<xsl:element name="{$wrapper-transliterations}">
 			<xsl:attribute name="class">transliterations</xsl:attribute>
+
+			<xsl:apply-templates select="$romanized-script" mode="generic">
+				<xsl:with-param name="class">transliteration</xsl:with-param>
+				<xsl:with-param name="last" select="false()"/>
+				<xsl:with-param name="wrapper-text-container" select="$wrapper-text-container"/>
+				<xsl:with-param name="wrapper-text" select="$wrapper-text"/>
+				<xsl:with-param name="linked-url" select="$linked-url"/>
+			</xsl:apply-templates>
+
+			<xsl:value-of select="$char-space"/>
 
 			<span class="parens">
 				<xsl:text>(</xsl:text>
@@ -375,7 +393,7 @@
 		</xsl:variable>
 
 		<xsl:variable name="formatted-text">
-			<xsl:if test="$method != ''">
+			<xsl:if test="($method != '') and ($method != 'ISO15919')">
 				<span class="method">
 					<xsl:value-of select="$method"/>
 					<xsl:text>:</xsl:text>
