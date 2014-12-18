@@ -138,6 +138,7 @@ class SearchController < ApplicationController
 			params[:ilang] = pieces[0]
 			params[:it13n] = pieces[1]
 		end
+		params[:ilang] = Array(params[:ilang]) unless params[:ilang].nil?
 	end
 
 	def param_it13_to_value(param)
