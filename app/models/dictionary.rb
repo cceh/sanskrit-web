@@ -256,7 +256,7 @@ class Dictionary < ActiveRecord::Base
 		term_xpath = term_xpath_matcher(term, languages, transliteration)
 		language_xpath = language_xpath_matcher(term, languages)
 
-		query = "#{DICT_ENTRIES}[#{term_xpath}][#{language_xpath}]"
+		query = "#{DICT_ENTRIES}[#{term_xpath}[#{language_xpath}]]"
 		params = { :term => term, :normalized_term => normalized }
 
 		tei_matches = xpathquery(query, params)
