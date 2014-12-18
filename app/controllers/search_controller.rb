@@ -49,6 +49,16 @@ class SearchController < ApplicationController
 					@results[:exact_definition][dict] = results
 				end
 
+				if @search_in_lemma && @partial_matches
+					results = dict.partial_lemma_matches(term, ilanguages, itransliteration)
+					@results[:partial_lemma][dict] = results
+				end
+
+				if @search_in_definition && @partial_matches
+					results = dict.partial_definition_matches(term, ilanguages, itransliteration)
+					@results[:partial_definition][dict] = results
+				end
+
 				#similar_results = dict.similar_matches(term, ilanguage, itransliteration)
 				#@results[:similar] += similar_results
 
@@ -79,6 +89,8 @@ class SearchController < ApplicationController
 		@results = {
 			:exact_lemma => {},
 			:exact_definition => {},
+			:partial_lemma => {},
+			:partial_definition => {},
 
 			:inside_defs => {},
 			:similar => [],

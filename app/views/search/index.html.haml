@@ -30,18 +30,31 @@
       - exact_results.each do |exact_result|
         = render 'entry', :lemma => exact_result # use entry as variable
 
-%section.results.inside-definition
-  %h2 Inside definitions
+%section.results.partial.inside-lemma
+  %h2 Partial matches (in lemmas)
   %details
-    - total_results = @results[:inside_defs].map { |d,r| r.count }.inject(&:+) || 0
+    - total_results = @results[:partial_lemma].map { |d,r| r.count }.inject(&:+) || 0
     %summary= "#{total_results} results"
-    - @results[:inside_defs].each do |dict, results|
+    - @results[:partial_lemma].each do |dict, results|
       %p= "#{results.count} results in #{dict.handle}"
-  - @results[:inside_defs].each do |dict, results_inside_defs|
+  - @results[:partial_lemma].each do |dict, partial_results|
     %div
       %p= "Matches in #{dict.handle}"
-      - results_inside_defs.each do |result_inside_defs|
-        = render 'match_inside_def', :entry_bundle => result_inside_defs
+      - partial_results.each do |partial_result|
+        = render 'entry', :lemma => partial_result # use entry as variable
+
+%section.results.partial.inside-definition
+  %h2 Partial matches (in definitions)
+  %details
+    - total_results = @results[:partial_definition].map { |d,r| r.count }.inject(&:+) || 0
+    %summary= "#{total_results} results"
+    - @results[:partial_definition].each do |dict, results|
+      %p= "#{results.count} results in #{dict.handle}"
+  - @results[:partial_definition].each do |dict, partial_results|
+    %div
+      %p= "Matches in #{dict.handle}"
+      - partial_results.each do |partial_result|
+        = render 'entry', :lemma => partial_result # use entry as variable
 
 - if !@results[:similar].empty?
   = render 'similar_entries', :similar_entries => @results[:similar]
