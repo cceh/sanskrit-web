@@ -8,6 +8,14 @@
 	text-transform: uppercase;
 }
 
+:lang(san) {
+	font-style: normal;
+}
+
+:lang(san-Latn) {
+	font-style: italic;
+}
+
 
 // FIXME: use the standard bourbon way to set the defaults
 
