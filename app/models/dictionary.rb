@@ -184,7 +184,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def references_for_refs(tei_refs)
-		targets = tei_refs.map { |tei_ref| tei_ref.attr('target') || tei_ref.attr('ref') }
+		targets = tei_refs.map { |tei_ref| tei_ref.attr('target') || tei_ref.attr('ref') || '##none' }
 		ids = targets.map { |target| target.sub('#', '') }.uniq
 
 		references = {}
