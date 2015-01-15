@@ -94,7 +94,7 @@ class Dictionary < ActiveRecord::Base
 
 	def lemmas_count
 		query = "count(#{DICT_ENTRIES})"
-		count = xpathquery(query).first
+		count = xpathquery(query).first.to_i
 
 		return count
 	end
