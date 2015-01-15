@@ -38,6 +38,11 @@ h1 {
 	text-align: center;
 }
 
+#project-info {
+	img { background-color: black; }
+	h2 { display: inline-block; }
+}
+
 section.results.inside-definition {
 	@include column-width(25em);
 }
