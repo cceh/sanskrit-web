@@ -1,6 +1,7 @@
 <h1>Cologne Sanskrit Lexicon</h1>
 
-<p>FIXME: some words about the Cologne Sankrit Lexicon.</p>
+<% @num_entries = Dictionary.all.map(&:lemmas_count).reduce(&:+) %>
+<p>Search <%= number_with_delimiter(@num_entries) %> entries in the largest online Sanskrit lexicon.</p>
 
 <section>
 	<h2>Search</h2>
