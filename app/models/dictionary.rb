@@ -1,8 +1,8 @@
 require 't13n/core_ext/string'
-require 'xpathquery'
+require 'xpathquery/basex'
 
 class Dictionary < ActiveRecord::Base
-	EXIST_REST_ENDPOINT = 'http://localhost:8080/exist/rest/db'
+	BASEX_REST_ENDPOINT = 'http://localhost:8984/rest'
 
 	ENTRY_ID_EQUALS = '@xml:id = "lemma-%{entry_id}"'
 	IS_DICT_ENTRY = 'self::tei:entry or self::tei:re'
@@ -25,8 +25,8 @@ class Dictionary < ActiveRecord::Base
 
 	def setup_query_engine
 		dict_path = self.content_path
-		@dict_db = EXIST_REST_ENDPOINT + '/' + "dict/#{dict_path}"
-		@query_engine = XPathQuery::Exist.new(@dict_db, :logger => Rails.logger)
+		@dict_db = BASEX_REST_ENDPOINT + "/#{dict_path}"
+		@query_engine = XPathQuery::BaseX.new(@dict_db, :logger => Rails.logger)
 	end
 
 	def xpathquery(query, params = {})
