@@ -141,6 +141,12 @@
 		</em>
 	</xsl:template>
 
+	<xsl:template match="tei:milestone[@unit='following_verb_root']">
+		<span class="tei-milestone">
+			<xsl:value-of select="$char-square-root"/>
+		</span>
+	</xsl:template>
+
 	<xsl:template match="tei:choice">
 		<xsl:choose>
 			<xsl:when test="tei:abbr and tei:expan">
