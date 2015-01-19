@@ -14,7 +14,7 @@ class SearchController < ApplicationController
 		end
 
 		term = params[:q]
-		ilanguages = params[:ilang]
+		ilanguages = param_ilanguage_to_value(params[:ilang])
 		itransliteration = param_it13_to_value(params[:it13n])
 		dicts = params[:dict]
 		where = params[:where]
@@ -30,7 +30,6 @@ class SearchController < ApplicationController
 
 		@search_in_lemma = where.include? 'lemma'
 		@search_in_definition = where.include? 'def'
-
 		@exact_matches = how.include? 'exact'
 		@partial_matches = how.include? 'partial'
 		@similar_matches = how.include? 'similar'
@@ -151,6 +150,25 @@ class SearchController < ApplicationController
 			params[:it13n] = pieces[1]
 		end
 		params[:ilang] = Array(params[:ilang]) unless params[:ilang].nil?
+	end
+
+	LANGUAGE_ALIASES = {
+		'eng' => 'en',
+		'deu' => 'de',
+		'ger' => 'de',
+	}
+
+	def param_ilanguage_to_value(param)
+		languages = []
+
+		param.each do |language|
+			languages << language
+			if LANGUAGE_ALIASES.has_key?(language)
+				languages << LANGUAGE_ALIASES[language]
+			end
+		end
+
+		return languages
 	end
 
 	def param_it13_to_value(param)
