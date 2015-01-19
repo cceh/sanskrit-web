@@ -73,6 +73,7 @@ gem 'high_voltage', '~> 2.2.1'
 group :development do
 	# Runtime developer console
 	gem 'pry'
+	gem 'pry-byebug'
 
 	# RailsAdmin provides an easy-to-use interface for your data . https://github.com/sferik/rails_admin
 	#gem 'rails_admin'
