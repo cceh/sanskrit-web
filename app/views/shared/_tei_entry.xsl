@@ -51,10 +51,10 @@
 		<xsl:param name="last" select="true()"/>
 
 		<xsl:variable name="lang" select="local-name()"/>
-		<xsl:variable name="text" select="text()"/>
+		<xsl:variable name="text-pieces" select="./rails:elem"/>
 
 		<span xml:lang="{$lang}">
-			<xsl:value-of select="$text"/>
+			<xsl:apply-templates select="$text-pieces"/>
 		</span>
 
 		<xsl:if test="not($last)">
@@ -62,11 +62,26 @@
 		</xsl:if>
 	</xsl:template>
 
+	<xsl:template match="rails:transliterations/rails:*/rails:*/rails:elem[not(*)]">
+		<xsl:value-of select="."/>
+	</xsl:template>
+
+	<xsl:template match="rails:transliterations/rails:*/rails:*/rails:elem[*]">
+		<xsl:apply-templates select="*"/>
+	</xsl:template>
+
+	<xsl:template match="rails:transliterations/rails:*/rails:*/rails:elem/tei:g">
+		<!--
+			FIXME: follow reference and use mappings, see
+			<https://github.com/gioele/sanskrit-dict-to-tei/issues/151>
+		-->
+	</xsl:template>
+
 	<xsl:template match="tei:form" mode="definition">
 		<xsl:param name="linked-url"/>
 
 		<xsl:call-template name="text-and-transliterations">
-			<xsl:with-param name="text" select="tei:orth/text()"/>
+			<xsl:with-param name="text" select="tei:orth"/>
 			<xsl:with-param name="wrapper-native">div</xsl:with-param>
 			<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
 			<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
@@ -75,9 +90,11 @@
 			<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
 		</xsl:call-template>
 
-		<xsl:if test="tei:hyph/text() != tei:orth/text()">
+		<xsl:variable name="hyph-diff-from-orth" select="true()"/>
+
+		<xsl:if test="$hyph-diff-from-orth">
 			<xsl:call-template name="text-and-transliterations">
-				<xsl:with-param name="text" select="tei:hyph/text()"/>
+				<xsl:with-param name="text" select="tei:hyph"/>
 				<xsl:with-param name="wrapper-native">div</xsl:with-param>
 				<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
 				<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
@@ -92,7 +109,7 @@
 		<xsl:param name="linked-url"/>
 
 		<xsl:call-template name="text-and-transliterations">
-			<xsl:with-param name="text" select="tei:orth/text()"/>
+			<xsl:with-param name="text" select="tei:orth"/>
 			<xsl:with-param name="wrapper-native">div</xsl:with-param>
 			<xsl:with-param name="wrapper-transliterations">div</xsl:with-param>
 			<xsl:with-param name="wrapper-text-container">dt</xsl:with-param>
@@ -263,7 +280,7 @@
 		<xsl:variable name="is-or-needs-transliteration" select="$is-in-sanskrit and not($is-part-of-mixed-script-word)"/> <!-- FIXME: maybe set to true for cyrillic and others -->
 		<xsl:variable name="should-be-searchable" select="$is-in-sanskrit"/>
 
-		<xsl:variable name="text" select="string(.)"/> <!-- FIXME: deal with <g> elements inside <w> -->
+		<xsl:variable name="text" select="."/>
 
 		<xsl:variable name="text-content">
 			<xsl:choose>
@@ -318,6 +335,42 @@
 		</span>
 	</xsl:template>
 
+	<xsl:template name="text-for-lookup">
+		<xsl:param name="elem"/>
+		<xsl:variable name="pieces" select="$elem/text() | $elem/*"/>
+
+		<xsl:variable name="pieces-text">
+			<xsl:for-each select="$pieces">
+				<xsl:choose>
+					<xsl:when test="self::text()">
+						<xsl:value-of select="normalize-space(.)"/>
+					</xsl:when>
+					<xsl:when test="@ref">
+						<xsl:text>+++</xsl:text>
+						<xsl:value-of select="local-name(.)"/>
+						<xsl:text>-</xsl:text>
+						<xsl:value-of select="substring-after(@ref, '#')"/>
+						<xsl:text>+++</xsl:text>
+					</xsl:when>
+					<xsl:when test="text()">
+						<xsl:text>+++</xsl:text>
+						<xsl:value-of select="local-name(.)"/>
+						<xsl:text>-</xsl:text>
+						<xsl:value-of select="text()"/>
+						<xsl:text>+++</xsl:text>
+					</xsl:when>
+					<xsl:when test="not(*)">
+						<xsl:text>+++</xsl:text>
+						<xsl:value-of select="local-name(.)"/>
+						<xsl:text>+++</xsl:text>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:for-each>
+		</xsl:variable>
+
+		<xsl:value-of select="string($pieces-text)"/>
+	</xsl:template>
+
 	<xsl:template name="text-and-transliterations">
 		<xsl:param name="text"/>
 		<xsl:param name="wrapper-native">span</xsl:param>
@@ -327,11 +380,17 @@
 		<xsl:param name="linked-url"/>
 		<xsl:param name="rails-entry"/>
 
-		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig_key = $text or local-name() = $text]"/>
+		<xsl:variable name="lookup-text">
+			<xsl:call-template name="text-for-lookup">
+				<xsl:with-param name="elem" select="$text"/>
+			</xsl:call-template>
+		</xsl:variable>
+
+		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig_key = $lookup-text or local-name() = $lookup-text]"/>
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="romanized-script" select="$transliterations/rails:san-Latn-x-ISO15919"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[not(self::rails:san-Latn-x-ISO15919) and contains(local-name(), '-Latn')]"/>
-		<xsl:variable name="is-lemma-text" select="$rails-entry/tei:*/tei:form/tei:orth/text() = $text"/>
+		<xsl:variable name="is-lemma-text" select="$rails-entry/tei:*/tei:form/tei:orth = $text"/>
 
 		<xsl:element name="{$wrapper-native}">
 			<xsl:attribute name="class">native-script</xsl:attribute>
@@ -391,7 +450,7 @@
 		<xsl:param name="linked-url"/>
 
 		<xsl:variable name="lang" select="local-name()"/>
-		<xsl:variable name="text" select="text()"/>
+		<xsl:variable name="text-pieces" select="./rails:elem"/>
 		<xsl:variable name="method">
 			<xsl:call-template name="method-name">
 				<xsl:with-param name="lang" select="$lang"/>
@@ -413,7 +472,7 @@
 				<xsl:attribute name="lang"><xsl:value-of select="$lang"/></xsl:attribute>
 				<xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
 
-				<xsl:value-of select="$text"/>
+				<xsl:apply-templates select="$text-pieces"/>
 			</xsl:element>
 		</xsl:variable>
 

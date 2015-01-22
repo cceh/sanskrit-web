@@ -131,19 +131,58 @@ class Dictionary < ActiveRecord::Base
 
 	def transliterations_for_words(tei_words)
 		transliterations = tei_words.map do |tei_word|
-			word = tei_word.text # FIXME: include sub-tags?
-			word.strip! # FIXME
-			word.gsub!("\u221a", '!') # FIXME: deal with root char
-			word.gsub!(/[0-9]/, '!') # FIXME: deal with digits
-
 			raw_lang = tei_word.attr('xml:lang')
 
-			transliterations = transliterations_for_word(word, raw_lang)
+			pieces = tei_word.children.map do |child|
+				if child.text?
+					child.text.strip.gsub(/[0-9]/, '!n!') # FIXME: deal with digits
+				else
+					child
+				end
+			end
+			pieces.delete("")
 
-			next [word, transliterations_for_word(word, raw_lang)]
+			transliterated_pieces = pieces.map do |piece|
+				transliterations_for_word(piece, raw_lang)
+			end
+
+			t13ns = transliterated_pieces.first.keys
+			transliterations = t13ns.map do |t13n|
+				transliteration = transliterated_pieces.map do |piece|
+					piece[t13n]
+				end
+
+				next [t13n, transliteration]
+			end.to_h
+
+			codeword = codeword_from_pieces(pieces)
+
+			next [codeword, transliterations]
 		end
 
 		return transliterations.to_h
+	end
+
+	def codeword_from_pieces(pieces)
+		codeword = ""
+
+		pieces.each do |piece|
+			if piece.is_a? String
+				codepiece = piece
+			else
+				codepiece = '+++'
+				codepiece += piece.name
+				if piece.attr('ref')
+					codepiece += '-' + piece.attr('ref').gsub(/^#/, '')
+				elsif piece.text
+					codepiece += '-' + piece.text
+				end
+				codepiece += '+++'
+			end
+			codeword << codepiece
+		end
+
+		return codeword
 	end
 
 	def tei_words_inside_tei_entry(tei_entry)
@@ -153,6 +192,10 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def transliterations_for_word(word, lang_tag)
+		if !word.is_a?(String)
+			return transliterations_for_word_element(word, lang_tag)
+		end
+
 		mETHOD_FOR_LANG = {
 			'san-Latn-x-SLP1' => :slp1,
 			'san-Latn-x-SLP1-headword2' => :slp1_headword2
@@ -175,6 +218,29 @@ class Dictionary < ActiveRecord::Base
 		else
 			raise "Entry is stored in unknown language #{lang_tag.inspect}"
 		end
+	end
+
+	def transliterations_for_word_element(word, lang_tag)
+		if word.text.empty?
+			word_elem = word.dup
+			transliterations = {
+				'san-Deva' => word_elem,
+				'san-Latn-x-SLP1' => word_elem,
+				'san-Latn-x-ISO15919' => word_elem,
+			}
+
+		else
+			w_transliterations = transliterations_for_word(word.text, lang_tag)
+			transliterations = {}
+
+			w_transliterations.each_pair do |script, t13n|
+				word_elem = word.dup
+				word_elem.content = t13n
+				transliterations[script] = word_elem
+			end
+		end
+
+		return transliterations
 	end
 
 	def tei_refs_inside_tei_entry(tei_entry)
