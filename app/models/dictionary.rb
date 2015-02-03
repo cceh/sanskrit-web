@@ -49,7 +49,11 @@ class Dictionary < ActiveRecord::Base
 
 	def backmatter
 		# FIXME: use a common cache system with `header`
-		@backmatter ||= xpathquery('/tei:TEI/tei:text/tei:back').first
+		if !@backmatter_retrieved
+			@backmatter ||= xpathquery('/tei:TEI/tei:text/tei:back').first
+			@backmatter_retrieved = true
+		end
+
 		return @backmatter
 	end
 
