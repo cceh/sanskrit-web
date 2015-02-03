@@ -135,7 +135,7 @@ class Dictionary < ActiveRecord::Base
 
 			pieces = tei_word.children.map do |child|
 				if child.text?
-					child.text.strip.gsub(/([0-9])/, '') # FIXME: deal with digits
+					child.text.strip.gsub(/(.)[0-9]/, '\1') # FIXME: deal with digits
 				else
 					child
 				end
