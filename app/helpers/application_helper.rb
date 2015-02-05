@@ -110,12 +110,7 @@ module ApplicationHelper
 			end
 		else
 			if v.respond_to?(:to_xml)
-				begin
-					doc << v.to_xml(:skip_instruct => true).to_s
-				rescue ArgumentError
-					# Some to_xml methods don't understand skip_instruct
-					doc << v.to_xml.to_s
-				end
+				doc.parent << v
 			elsif v.respond_to?(:to_s)
 				Rails.logger.debug "v = #{v.inspect}"
 				doc.text v.to_s
