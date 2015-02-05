@@ -44,7 +44,7 @@ class Dictionary < ActiveRecord::Base
 			return []
 		end
 
-		return header_complete.xpath("//*[@xml:id = '#{id}']", NS)
+		return header_complete.xpath("id('#{id}')", NS)
 	end
 
 	def backmatter
@@ -63,7 +63,7 @@ class Dictionary < ActiveRecord::Base
 			return []
 		end
 
-		return backmatter_complete.xpath("//*[@xml:id = '#{id}']", NS)
+		return backmatter_complete.xpath("id('#{id}')", NS)
 	end
 
 	def matches(tei_entries)
