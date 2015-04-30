@@ -1,3 +1,47 @@
+<%
+value_attr = proc do |value, is_selected_fn|
+	attrs = "value='#{value}'"
+	value_is_selected = is_selected_fn[value]
+	attrs << " checked='checked'" if value_is_selected
+	attrs.html_safe
+end
+
+value_ilang = proc do |value|
+	is_selected_fn = proc do |val|
+		pieces = val.sub('iso', 'iso15919').split('-')
+
+		mAX_LANGS = 3 # FIXME: read num of languages somewhere
+
+		if val == 'any'
+			@query[:ilanguages].count > 2
+		elsif @query[:ilanguages].one?
+			if val == 'san' || val == 'other'
+				@query[:ilanguages].first == val
+			else
+				# FIXME: this matches also 'san'
+				pieces.first == @query[:ilanguages].first &&
+				pieces.last.to_sym == @query[:itransliteration]
+			end
+		elsif @query[:ilanguages].count > 1 && @query[:ilanguages].count < mAX_LANGS
+			@query[:ilanguages].include?(val)
+		end
+	end
+
+	value_attr[value, is_selected_fn]
+end
+
+value_where = proc do |value|
+	is_selected_fn = proc { |val| @query[:where] == val.split('-') }
+
+	value_attr[value, is_selected_fn]
+end
+
+value_how = proc do |value|
+	is_selected_fn = proc { |val| @query[:how].include?(val) }
+
+	value_attr[value, is_selected_fn]
+end
+%>
 <form action="/search" method="GET">
 	<div id="query">
 		<label for="q">Query:</label>
@@ -19,21 +63,21 @@
 		<legend>Input language</legend>
 
 		<div>
-			<input id="lan-any" type="radio" name="ilang" checked="checked" value="any"/><label for="lan-any">Sanskrit (SLP1) or any other language</label>
+			<input type="radio" name="ilang" id="lan-any" <%= value_ilang['any'] %>/><label for="lan-any">Sanskrit (SLP1) or any other language</label>
 		</div>
 
 		<div>
-			<input type="radio" name="ilang" value="san" id="lan-san"/><label for="lan-san">Sanskrit (autodetect input script)</label>
-			<input type="radio" name="ilang" value="san-slp1" id="lan-san-slp1"><label for="lan-san-slp1">SLP1</label>
-			<input type="radio" name="ilang" value="san-hk" id="lan-san-hk"><label for="lan-san-hk">Harvard-Kyoto</label>
-			<input type="radio" name="ilang" value="san-iso" id="lan-san-iso"><label for="lan-san-iso">ISO 15919</label>
-			<input type="radio" name="ilang" value="san-devanagari" id="lan-san-devanagari"><label for="lan-san-devanagari">Devanagari</label>
+			<input type="radio" name="ilang" id="lan-san" <%= value_ilang['san'] %>/><label for="lan-san">Sanskrit (autodetect input script)</label>
+			<input type="radio" name="ilang" id="lan-san-slp1" <%= value_ilang['san-slp1'] %>/><label for="lan-san-slp1">SLP1</label>
+			<input type="radio" name="ilang" id="lan-san-hk" <%= value_ilang['san-hk'] %>/><label for="lan-san-hk">Harvard-Kyoto</label>
+			<input type="radio" name="ilang" id="lan-san-iso" <%= value_ilang['san-iso'] %>/><label for="lan-san-iso">ISO 15919</label>
+			<input type="radio" name="ilang" id="lan-san-devanagari" <%= value_ilang['san-devanagari'] %>/><label for="lan-san-devanagari">Devanagari</label>
 		</div>
 
 		<div>
-			<input type="radio" name="ilang" value="other" id="lan-other"/><label for="lan-other">other languages</label>
-			<input type="radio" name="ilang" value="eng" id="lan-eng"/><label for="lan-eng">English</label>
-			<input type="radio" name="ilang" value="deu" id="lan-deu"/><label for="lan-deu">German</label>
+			<input type="radio" name="ilang" id="lan-other" <%= value_ilang['other'] %>/><label for="lan-other">other languages</label>
+			<input type="radio" name="ilang" id="lan-eng" <%= value_ilang['eng'] %>/><label for="lan-eng">English</label>
+			<input type="radio" name="ilang" id="lan-deu" <%= value_ilang['deu'] %>/><label for="lan-deu">German</label>
 		</div>
 	</fieldset>
 
@@ -41,15 +85,15 @@
 		<legend>Where and how to search</legend>
 
 		<div>
-			<input type="radio" name="where" value="lemma-def" id="where-both" checked="checked"/><label for="where-both">both lemmas and definitions</label>
-			<input type="radio" name="where" value="lemma" id="where-lemma"/><label for="where-lemma">only lemmas</label>
-			<input type="radio" name="where" value="def" id="where-def"/><label for="where-def">only definitions</label>
+			<input type="radio" name="where" id="where-both" <%= value_where['lemma-def'] %>/><label for="where-both">both lemmas and definitions</label>
+			<input type="radio" name="where" id="where-lemma" <%= value_where['lemma'] %>/><label for="where-lemma">only lemmas</label>
+			<input type="radio" name="where" id="where-def" <%= value_where['def'] %>/><label for="where-def">only definitions</label>
 		</div>
 
 		<div>
-			<input type="checkbox" name="how" value="exact" id="how-exact" checked="checked"/><label for="how-exact">exact</label>
-			<input type="checkbox" name="how" value="partial" id="how-partial" checked="checked"/><label for="how-partial">partial</label>
-			<input type="checkbox" name="how" value="similar" id="how-similar" checked="checked"/><label for="how-similar">similar</label>
+			<input type="checkbox" name="how" id="how-exact" <%= value_how['exact'] %>/><label for="how-exact">exact</label>
+			<input type="checkbox" name="how" id="how-partial" <%= value_how['partial'] %>/><label for="how-partial">partial</label>
+			<input type="checkbox" name="how" id="how-similar" <%= value_how['similar'] %>/><label for="how-similar">similar</label>
 		</div>
 	</fieldset>
 </form>

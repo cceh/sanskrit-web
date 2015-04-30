@@ -6,7 +6,7 @@
 <section>
 	<h2>Search</h2>
 
-	<% @query = {} %>
+	<% @query = SearchController.query_from_params %>
 	<%= render 'search/search_form'  %>
 </section>
 

@@ -1,9 +1,9 @@
 require 'xpathquery/error'
 
 class SearchController < ApplicationController
-	before_action :prepare_variables, :only => :index
 	before_action :fix_params, :only => :index
 	before_action :default_params, :only => :index
+	before_action :prepare_variables, :only => :index
 	before_action :validate_params, :only => :index
 
 	# GET /search
@@ -13,20 +13,14 @@ class SearchController < ApplicationController
 			return
 		end
 
-		term = params[:q]
-		ilanguages = param_ilanguage_to_value(params[:ilang])
-		itransliteration = param_it13_to_value(params[:it13n])
-		dicts = params[:dict]
-		where = params[:where]
-		how = params[:how]
+		@query = SearchController.query_from_params(params)
 
-		@query = {
-			:term => term,
-			:ilanguages => ilanguages,
-			:itransliteration => itransliteration,
-			:dicts => dicts,
-			:where => where,
-		}
+		term = @query[:term]
+		ilanguages = @query[:ilanguages]
+		itransliteration = @query[:itransliteration]
+		dicts = @query[:dicts]
+		where = @query[:where]
+		how = @query[:how]
 
 		@search_in_lemma = where.include? 'lemma'
 		@search_in_definition = where.include? 'def'
@@ -82,8 +76,35 @@ class SearchController < ApplicationController
 		end
 	end
 
+	def self.query_from_params(params = nil)
+		# FIXME: find a way to merge with default_params
+		params ||= {
+			:ilang => ['san', 'en', 'de'],
+			:it13n => 'slp1',
+			:dict => ['monier', 'pwg'],
+			:where => [ 'lemma', 'def' ],
+			:how => [ 'exact', 'partial', 'similar' ],
+		}
+
+		term = params[:q]
+		ilanguages = param_ilanguage_to_value(params[:ilang])
+		itransliteration = param_it13_to_value(params[:it13n])
+		dicts = params[:dict]
+		where = params[:where]
+		how = params[:how]
+
+		@query = {
+			:term => term,
+			:ilanguages => ilanguages,
+			:itransliteration => itransliteration,
+			:dicts => dicts,
+			:where => where,
+			:how => how,
+		}
+	end
+
 	def prepare_variables
-		@query = {}
+		@query = SearchController.query_from_params(params)
 
 		@results = {
 			:exact_lemma => {},
@@ -158,7 +179,7 @@ class SearchController < ApplicationController
 		'ger' => 'de',
 	}
 
-	def param_ilanguage_to_value(param)
+	def self.param_ilanguage_to_value(param)
 		languages = []
 
 		param.each do |language|
@@ -171,7 +192,7 @@ class SearchController < ApplicationController
 		return languages
 	end
 
-	def param_it13_to_value(param)
+	def self.param_it13_to_value(param)
 		value = param.to_sym
 
 		if value == :iso
