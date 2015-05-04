@@ -60,9 +60,9 @@ end
 # Sanskrit <-> Latin transliteration
 gem 't13n', gem_location['t13n']
 
-# eXist is contacted via XPathQuery + rest_client
+# eXist is contacted via XPathQuery + rest-client
 gem 'xpathquery', gem_location['xpathquery']
-gem 'rest_client'
+gem 'rest-client'
 
 # Nokogiri as XML processor
 gem 'nokogiri'
