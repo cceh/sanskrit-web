@@ -43,8 +43,4 @@ h1 {
 	h2 { display: inline-block; }
 }
 
-section.results.inside-definition {
-	@include column-width(25em);
-}
-
 /* Licensed under the ISC licence, see LICENCE.ISC for details */
