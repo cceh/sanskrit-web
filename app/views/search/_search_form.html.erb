@@ -6,6 +6,14 @@ value_attr = proc do |value, is_selected_fn|
 	attrs.html_safe
 end
 
+value_dict = proc do |value|
+	is_selected_fn = proc do |val|
+		@query[:dicts].include?(val)
+	end
+
+	value_attr[value, is_selected_fn]
+end
+
 value_ilang = proc do |value|
 	is_selected_fn = proc do |val|
 		pieces = val.sub('iso', 'iso15919').split('-')
@@ -54,9 +62,8 @@ end
 	<fieldset id="dictionaries">
 		<legend>Dictionaries</legend>
 
-		<input type="checkbox" name="dict" value="all" id="dict-all" checked="checked"/><label for="dict-all">All</label>
-		<input type="checkbox" name="dict" value="monier" id="dict-monier" disabled="disabled" checked="checked"/><label for="dict-monier">monier</label>
-		<input type="checkbox" name="dict" value="pwg" id="dict-pwg" disabled="disabled" checked="checked"/><label for="dict-pwg">pwg</label>
+		<input type="checkbox" name="dict" id="dict-monier" <%= value_dict['monier'] %>/><label for="dict-monier">monier</label>
+		<input type="checkbox" name="dict" id="dict-pwg" <%= value_dict['pwg'] %>/><label for="dict-pwg">pwg</label>
 	</fieldset>
 
 	<fieldset id="input-language">
