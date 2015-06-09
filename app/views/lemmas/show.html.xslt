@@ -221,7 +221,7 @@
 					</dd>
 
 					<xsl:value-of select="$char-newline"/>
-					<dt><xsl:text>Wikipedia (Mediawiki format)</xsl:text></dt>
+					<dt><xsl:text>Mediawiki format (for Wikipedia)</xsl:text></dt>
 					<dd>
 						<p>
 							<xsl:text>Entry "</xsl:text>
