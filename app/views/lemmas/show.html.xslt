@@ -122,13 +122,19 @@
 		<xsl:variable name="project-url" select="/rails:variables/rails:request_base_url/text()"/>
 		<xsl:variable name="date" select="substring-before(/rails:variables/rails:date/text(), ' ')"/>
 
+		<xsl:value-of select="$char-newline"/>
 		<details class="citation-instructions">
+			<xsl:value-of select="$char-newline"/>
 			<summary>
 				<xsl:text>Cite this entry</xsl:text>
 			</summary>
+
+			<xsl:value-of select="$char-newline"/>
 			<div>
+				<xsl:value-of select="$char-newline"/>
 				<dl>
 
+					<xsl:value-of select="$char-newline"/>
 					<dt><xsl:text>Text (for LibreOffice and Microsoft Word)</xsl:text></dt>
 					<dd>
 						<p>
@@ -154,6 +160,7 @@
 						</p>
 					</dd>
 
+					<xsl:value-of select="$char-newline"/>
 					<dt><xsl:text>BibTeX</xsl:text></dt>
 					<dd>
 						<pre style="white-space: pre-line"><code>
@@ -213,6 +220,7 @@
 						</code></pre>
 					</dd>
 
+					<xsl:value-of select="$char-newline"/>
 					<dt><xsl:text>Wikipedia (Mediawiki format)</xsl:text></dt>
 					<dd>
 						<p>
@@ -257,6 +265,8 @@
 						</p>
 					</dd>
 				</dl>
+				<xsl:value-of select="$char-newline"/>
+
 			</div>
 		</details>
 	</xsl:template>
