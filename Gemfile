@@ -70,6 +70,10 @@ gem 'nokogiri'
 # High voltage for mostly-static pages like the homepage
 gem 'high_voltage', '~> 2.2.1'
 
+# markerb (and kramdown) to parse static pages written in Markdown + ERB
+gem 'markerb'
+gem 'kramdown'
+
 group :development do
 	# Runtime developer console
 	gem 'pry'

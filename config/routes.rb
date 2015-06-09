@@ -4,6 +4,8 @@ Sanskrit::Application.routes.draw do
 
 	root :to => 'high_voltage/pages#show', id: 'home'
 
+	get '/legal-notice', :to => 'high_voltage/pages#show', id: 'legal-notice'
+
 	get '/search', :to => 'search#index'
 
 	get '/dictionary', :to => redirect('/dictionaries')
