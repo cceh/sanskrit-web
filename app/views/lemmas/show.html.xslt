@@ -100,7 +100,7 @@
 	<xsl:template name="citation-instructions">
 		<xsl:variable name="lemma-title">
 			<xsl:call-template name="text-and-transliterations">
-				<xsl:with-param name="text" select="$tei-entry/tei:form/tei:orth/text()"/>
+				<xsl:with-param name="text" select="$tei-entry/tei:form/tei:orth"/>
 				<xsl:with-param name="rails-entry" select="$tei-entry/.."/>
 			</xsl:call-template>
 		</xsl:variable>
