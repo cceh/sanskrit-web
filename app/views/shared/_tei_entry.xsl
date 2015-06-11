@@ -97,11 +97,14 @@
 	</xsl:template>
 
 	<xsl:template match="tei:*[self::tei:entry or self::tei:re]/tei:sense" mode="definition">
+		<xsl:variable name="rails-entry" select="./../.."/>
+		<xsl:variable name="rails-lemma" select="$rails-entry/.."/>
 		<dd class="tei-sense">
 			<xsl:apply-templates select="node()[not(self::tei:note)]"/>
 
 			<xsl:call-template name="provenance-info">
 				<xsl:with-param name="sense" select="."/>
+				<xsl:with-param name="dict-handle" select="$rails-lemma/rails:dict/rails:handle"/>
 			</xsl:call-template>
 		</dd>
 	</xsl:template>
@@ -297,6 +300,7 @@
 
 	<xsl:template name="provenance-info">
 		<xsl:param name="sense"/>
+		<xsl:param name="dict-handle"/>
 
 		<xsl:variable name="page-ref" select="$sense/tei:note/tei:ref"/>
 		<xsl:variable name="scan-url">
