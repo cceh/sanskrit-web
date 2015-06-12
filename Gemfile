@@ -85,6 +85,9 @@ group :development do
 	# Better error page for Rails and other Rack apps. https://github.com/charliesome/better_errors
 	gem 'better_errors'
 	gem 'binding_of_caller'
+
+	# Log support for HTTP requests (i.e. XML DB requests)
+	gem 'http_logger'
 end
 
 
