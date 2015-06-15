@@ -362,7 +362,14 @@ class Dictionary < ActiveRecord::Base
 
 	def exact_definition_matches_generic(term, languages)
 		languages_xpath = language_xpath_matcher(term, languages)
-		query = "#{DICT_ENTRIES}[./tei:sense//text()[(normalize-space() = '%{term}') or contains(., ' %{term} ') or contains(., ' %{term}.') or contains(., ' %{term},')][#{languages_xpath}]]"
+#		query = "#{DICT_ENTRIES}[./tei:sense//text()[(normalize-space() = '%{term}') or contains(., ' %{term} ') or contains(., ' %{term}.') or contains(., ' %{term},')][#{languages_xpath}]]"
+		query = "/descendant::tei:sense//text()" +
+		        "[(normalize-space() = '%{term}') or " +
+		        " contains(., ' %{term} ') or " +
+		        " contains(., ' %{term}.') or " +
+		        " contains(., ' %{term},')]" +
+		        "[#{languages_xpath}]" +
+		        "/ancestor::*[#{IS_DICT_ENTRY}][1]"
 		params = { :term => term }
 
 		tei_matches = xpathquery(query, params)
