@@ -328,7 +328,14 @@ class Dictionary < ActiveRecord::Base
 
 	def exact_lemma_matches_generic(term, languages)
 		languages_xpath = language_xpath_matcher(term, languages)
-		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}[#{languages_xpath}]]"
+#		query = "#{DICT_ENTRIES}[#{ORTH_EQUALS}[#{languages_xpath}]]"
+		# FIXME: avoid BaseX-specific constructs
+		# FIXME: unify with the other queries
+		query = "db:text('#{handle}', '%{term}')" +
+		        "/parent::tei:orth" +
+		        "[#{languages_xpath}]" +
+		        "/parent::tei:form/parent::*[#{IS_DICT_ENTRY}]"
+
 		params = { :term => term }
 
 		tei_matches = xpathquery(query, params)
