@@ -88,6 +88,10 @@ group :development do
 
 	# Log support for HTTP requests (i.e. XML DB requests)
 	gem 'http_logger'
+
+	# Profile performance using ruby-prof and rack-mini-profiler
+	gem 'ruby-prof'
+	gem 'rack-mini-profiler', require: false
 end
 
 

@@ -34,6 +34,10 @@ Sanskrit::Application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+#	config.middleware.use Rack::RubyProf,
+#		:path => Rails.root + 'tmp/sanskrit-web-profile',
+#		:printers => { RubyProf::CallTreePrinter => 'calltree.cachegrind.out' }
 end
 
 # Licensed under the ISC licence, see LICENCE.ISC for details
