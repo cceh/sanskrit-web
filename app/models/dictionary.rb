@@ -95,10 +95,11 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def lemmas_count
+		# FIXME: use a common cache system with `header`
 		query = "count(#{DICT_ENTRIES})"
-		count = xpathquery(query).first.to_i
+		@count ||= xpathquery(query).first.to_i
 
-		return count
+		return @count
 	end
 
 	def lemma(entry_id, script)
