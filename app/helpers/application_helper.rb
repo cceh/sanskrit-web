@@ -69,6 +69,7 @@ module ApplicationHelper
 
 
 		xslt = $xslt_templates_cache[xslt_path]
+		$xslt_templates_cache.delete(xslt_path) if Rails.env.development?
 		root = xslt.transform(wrapper).root
 
 		if root.nil?
