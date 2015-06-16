@@ -14,8 +14,6 @@
 	<xsl:template match="/">
 		<rails:wrapper>
 			<xsl:apply-templates select="$tei-entry"/>
-
-			<xsl:call-template name="raw-tei"/>
 		</rails:wrapper>
 	</xsl:template>
 
