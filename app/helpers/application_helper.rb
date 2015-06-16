@@ -89,7 +89,7 @@ module ApplicationHelper
 		when Hash
 			v.map do |key, value|
 				name = acceptable_xml_name(key)
-				Rails.logger.debug "key = #{key.inspect}, name = #{name.inspect}"
+#				Rails.logger.debug "key = #{key.inspect}, name = #{name.inspect}"
 
 				attrs = {}
 				attrs[:orig_key] = key.to_s unless name == key.to_s
@@ -108,7 +108,7 @@ module ApplicationHelper
 			if v.respond_to?(:to_xml)
 				doc.parent << v
 			elsif v.respond_to?(:to_s)
-				Rails.logger.debug "v = #{v.inspect}"
+#				Rails.logger.debug "v = #{v.inspect}"
 				doc.text v.to_s
 			else
 				raise "Cannot XMLify #{v.inspect}"
