@@ -396,7 +396,12 @@ class Dictionary < ActiveRecord::Base
 	def partial_lemma_matches_generic(term, languages)
 		languages_xpath = language_xpath_matcher(term, languages)
 
-		query = "#{DICT_ENTRIES}[#{ORTH_CONTAINS}[#{languages_xpath}]]"
+#		query = "#{DICT_ENTRIES}[#{ORTH_CONTAINS}[#{languages_xpath}]]"
+		# FIXME: unify with the other queries
+		query = "/descendant::tei:orth" +
+		        "[contains(., '%{term}')]" +
+		        "[#{languages_xpath}]" +
+		        "/parent::tei:form/parent::*[#{IS_DICT_ENTRY}]"
 		params = { :term => term }
 
 		tei_matches = xpathquery(query, params)
