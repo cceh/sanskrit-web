@@ -54,16 +54,11 @@ module ApplicationHelper
 		if !$xslt_templates_cache.has_key?(xslt_path)
 			xslt_source = File.read(xslt_path)
 
-			helper_path = Rails.root + "app/helpers/#{controller_name}_helper.xsl"
-			if File.exists?(helper_path)
-				elem = "<import href='#{helper_path}' xmlns='http://www.w3.org/1999/XSL/Transform'/>"
-				xslt_source.sub!(/(stylesheet .*?)>/m, '\1>' + elem)
-			end
-
 			xslt_template = nil
 			Dir.chdir(view_dir) do
 				xslt_template = Nokogiri::XSLT(xslt_source)
 			end
+
 			$xslt_templates_cache[xslt_path] = xslt_template
 		end
 
