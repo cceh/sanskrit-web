@@ -13,11 +13,6 @@ class DictionariesController < ApplicationController
 
 		@handle = dictionary.handle
 		@header = dictionary.header
-
-		@num_lemmas = dictionary.lemmas_count
-
-		@lang_lemmas = dictionary.language_of_lemmas
-		@lang_definitions = dictionary.language_of_definitions
 	end
 end
 

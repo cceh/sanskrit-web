@@ -1,0 +1,14 @@
+// Place all the styles related to the dictionaries controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+nav li {
+	display: inline-block;
+	list-style: none;
+
+	& + li {
+		margin-left: 1em;
+	}
+}
+
+/* Licensed under the ISC licence, see LICENCE.ISC for details */

@@ -5,6 +5,8 @@
                 exclude-result-prefixes="tei rails"
                 version="1.0">
 	<xsl:import href="../shared/_chars.xsl"/>
+	<xsl:import href="../shared/_raw_xml.xsl"/>
+	<xsl:import href="../shared/_tei_header.xsl"/>
 
 	<xsl:variable name="handle" select="/rails:variables/rails:handle"/>
 	<xsl:variable name="num-lemmas" select="/rails:variables/rails:num_lemmas"/>
@@ -24,56 +26,59 @@
 	</xsl:variable>
 
 	<xsl:template match="/rails:variables/rails:header/tei:teiHeader">
-		<xsl:variable name="desc-title" select=".//tei:titleStmt/tei:title[@type='desc']"/>
-		<xsl:variable name="orig-title" select=".//tei:sourceDesc//tei:title[@type='main']"/>
-		<xsl:variable name="orig-sub-title" select=".//tei:sourceDesc//tei:title[@type='sub']"/>
-
-		<xsl:variable name="author" select=".//tei:sourceDesc//tei:author"/>
-
 		<rails:wrapper>
-			<h1>
-				<xsl:value-of select="$desc-title"/>
-			</h1>
+			<xsl:call-template name="desc-title">
+				<xsl:with-param name="root" select="."/>
+			</xsl:call-template>
 
-			<p>
-				<xsl:text>Originally: </xsl:text>
-				<xsl:value-of select="$orig-title"/>
-				<xsl:text>, </xsl:text>
-				<xsl:value-of select="$orig-sub-title"/>
-			</p>
+			<section>
+				<h2>Original edition</h2>
 
-			<p>
-				<xsl:text>By </xsl:text>
-				<xsl:value-of select="$author"/>
-				<xsl:text>.</xsl:text>
-			</p>
+				<xsl:apply-templates select=".//tei:fileDesc/tei:sourceDesc"/>
+			</section>
 
-			<p>
-				<xsl:text>The </xsl:text>
-				<xsl:value-of select="$desc-title"/>
-				<xsl:text> dictionary contains </xsl:text>
-				<xsl:value-of select="$num-lemmas"/>
-				<xsl:value-of select="$char-space"/>
-				<xsl:text> lemmas in </xsl:text>
-				<xsl:copy-of select="$lang-lemmas"/>
-				<xsl:text> and </xsl:text>
-				<xsl:text> definitions in </xsl:text>
-				<xsl:copy-of select="$lang-definitions"/>
-				<xsl:text>.</xsl:text>
-			</p>
+			<section>
+				<h2>Digital edition</h2>
 
-			<a href="{$handle}/lemmas">
-				<xsl:text>Browse lemmas</xsl:text>
-			</a>
+				<xsl:apply-templates select=".//tei:fileDesc/tei:editionStmt"/>
 
-			<a href="{$handle}/scans">
-				<xsl:text>Browse scans</xsl:text>
-			</a>
+				<xsl:apply-templates select=".//tei:fileDesc/tei:seriesStmt"/>
+			</section>
 
-			<a href="../search?dict={$handle}">
-				<xsl:text>Search inside</xsl:text>
-			</a>
+			<nav>
+				<ul>
+					<li>
+						<a href="{$handle}/lemmas">
+							<xsl:text>Browse lemmas</xsl:text>
+						</a>
+					</li>
+					<li>
+						<a href="{$handle}/scans">
+							<xsl:text>Browse scans</xsl:text>
+						</a>
+					</li>
+					<li>
+						<a href="../search?dict={$handle}">
+							<xsl:text>Search inside</xsl:text>
+						</a>
+					</li>
+				</ul>
+			</nav>
+
+			<xsl:call-template name="raw-tei-snippet">
+				<xsl:with-param name="tei-element" select="."/>
+			</xsl:call-template>
 		</rails:wrapper>
+	</xsl:template>
+
+	<xsl:template name="desc-title">
+		<xsl:param name="root"/>
+
+		<xsl:variable name="desc-title" select="$root//tei:titleStmt/tei:title[@type='desc']"/>
+
+		<h1>
+			<xsl:value-of select="$desc-title"/>
+		</h1>
 	</xsl:template>
 
 	<xsl:template name="language-name">
