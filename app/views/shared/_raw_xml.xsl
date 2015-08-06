@@ -35,6 +35,23 @@
 	<xsl:template match="text()" mode="raw-xml">
 		<xsl:value-of select="."/>
 	</xsl:template>
+
+	<xsl:template name="raw-tei-snippet">
+		<xsl:param name="tei-element"/>
+
+		<details class="raw-tei">
+			<summary>
+				<xsl:text>[click to show TEI-XML code…]</xsl:text>
+			</summary>
+			<pre>
+				<code>
+					<xsl:call-template name="raw-xml">
+						<xsl:with-param name="root" select="$tei-element"/>
+					</xsl:call-template>
+				</code>
+			</pre>
+		</details>
+	</xsl:template>
 </xsl:stylesheet>
 
 <!-- Licensed under the ISC licence, see LICENCE.ISC for details -->

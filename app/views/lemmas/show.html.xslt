@@ -23,7 +23,9 @@
 			<xsl:apply-templates select="$tei-entry"/>
 
 			<xsl:value-of select="$char-newline"/>
-			<xsl:call-template name="raw-tei"/>
+			<xsl:call-template name="raw-tei-snippet">
+				<xsl:with-param name="tei-element" select="$tei-entry"/>
+			</xsl:call-template>
 
 			<xsl:value-of select="$char-newline"/>
 			<xsl:call-template name="adjacent-entries"/>
@@ -80,21 +82,6 @@
 			</xsl:apply-templates>
 		</li>
 		<xsl:value-of select="$char-newline"/>
-	</xsl:template>
-
-	<xsl:template name="raw-tei">
-		<details class="raw-tei">
-			<summary>
-				<xsl:text>[click to show TEI-XML code…]</xsl:text>
-			</summary>
-			<pre>
-				<code>
-					<xsl:call-template name="raw-xml">
-						<xsl:with-param name="root" select="$tei-entry"/>
-					</xsl:call-template>
-				</code>
-			</pre>
-		</details>
 	</xsl:template>
 
 	<xsl:template name="citation-instructions">
