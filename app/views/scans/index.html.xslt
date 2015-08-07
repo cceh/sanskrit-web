@@ -4,6 +4,8 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
+	<xsl:import href="../shared/_scans_helper.xsl"/>
+
 	<xsl:import href="../shared/_chars.xsl"/>
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>

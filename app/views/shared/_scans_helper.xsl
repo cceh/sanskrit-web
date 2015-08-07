@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:tei="http://www.tei-c.org/ns/1.0"
-    xmlns:rails="http://svario.it/xslt-rails"
-    exclude-result-prefixes="tei rails"
-    version="1.0">
-
+                xmlns:tei="http://www.tei-c.org/ns/1.0"
+                xmlns:rails="http://svario.it/xslt-rails"
+                exclude-result-prefixes="tei rails"
+                version="1.0">
     <xsl:template name="page-code">
         <xsl:param name="graphic"/>
 

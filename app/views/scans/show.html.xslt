@@ -4,6 +4,8 @@
                 xmlns:rails="http://svario.it/xslt-rails"
                 exclude-result-prefixes="tei rails"
                 version="1.0">
+	<xsl:import href="../shared/_scans_helper.xsl"/>
+
 	<xsl:variable name="dict-info" select="/rails:variables/rails:dict"/>
 	<xsl:variable name="dict-handle" select="$dict-info/rails:handle/text()"/>
 	<xsl:variable name="dict-common-title" select="$dict-info/rails:common_title/text()"/>
