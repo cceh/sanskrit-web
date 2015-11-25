@@ -41,7 +41,7 @@
     %div
       %p= "Matches in #{dict.handle}"
       - partial_results.each do |partial_result|
-        = render 'entry', :lemma => partial_result # use entry as variable
+        = render 'partial_entry', :lemma => partial_result # use entry as variable
 
 %section.results.partial.inside-definition
   %h2 Partial matches (in definitions)
@@ -54,7 +54,7 @@
     %div
       %p= "Matches in #{dict.handle}"
       - partial_results.each do |partial_result|
-        = render 'entry', :lemma => partial_result # use entry as variable
+        = render 'partial_entry', :lemma => partial_result # use entry as variable
 
 - if !@results[:similar].empty?
   = render 'similar_entries', :similar_entries => @results[:similar]
