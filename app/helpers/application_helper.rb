@@ -206,6 +206,8 @@ module ApplicationHelper
 				# ignore
 			when :@lemmas
 				# ignore
+			when :index_listing
+				# ignore
 			else
 				raise "Cannot generate cache key for variable '#{name.inspect}'"
 			end

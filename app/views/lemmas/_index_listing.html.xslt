@@ -7,24 +7,12 @@
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>
 
-	<xsl:variable name="dict-handle" select="/rails:variables/rails:dict/rails:handle/text()"/>
-
-	<xsl:variable name="count" select="count(/rails:variables/rails:lemmas/rails:elem)"/>
+	<xsl:variable name="dict-handle" select="/rails:variables/rails:lemma/rails:dict/rails:handle/text()"/>
+	<xsl:variable name="rails-entry" select="/rails:variables/rails:lemma/rails:entry"/>
+	<xsl:variable name="tei-entry" select="$rails-entry/*[self::tei:entry or self::tei:re]"/>
 
 	<xsl:template match="/">
-		<rails:wrapper>
-			<h1>
-				<xsl:text>Lemmas in </xsl:text>
-				<xsl:value-of select="$dict-handle"/>
-				<xsl:text> FIXME(complete name) (</xsl:text>
-				<xsl:value-of select="$count"/>
-				<xsl:text>)</xsl:text>
-			</h1>
-
-			<ol>
-				<xsl:apply-templates select="/rails:variables/rails:lemmas/rails:elem/rails:entry/tei:*"/>
-			</ol>
-		</rails:wrapper>
+		<xsl:apply-templates select="$tei-entry"/>
 	</xsl:template>
 
 	<xsl:template match="tei:entry | tei:re">
@@ -35,21 +23,18 @@
 		</xsl:variable>
 
 		<li class="{$class}">
-			<xsl:variable name="lemma" select="tei:form/tei:orth/text()"/>
-
 			<xsl:variable name="lemma-url">
 				<xsl:call-template name="lemma-url">
-					<xsl:with-param name="tei-entry" select="."/>
+					<xsl:with-param name="tei-entry" select="$tei-entry"/>
 					<xsl:with-param name="dict-handle" select="$dict-handle"/>
 				</xsl:call-template>
 			</xsl:variable>
 
-			<a href="{$lemma-url}">
-				<xsl:call-template name="text-and-transliterations">
-					<xsl:with-param name="text" select="$lemma"/>
-					<xsl:with-param name="rails-entry" select="parent::rails:entry"/>
-				</xsl:call-template>
-			</a>
+			<xsl:call-template name="text-and-transliterations">
+				<xsl:with-param name="text" select="$tei-entry/tei:form/tei:orth"/>
+				<xsl:with-param name="linked-url" select="$lemma-url"/>
+				<xsl:with-param name="rails-entry" select="$rails-entry"/>
+			</xsl:call-template>
 		</li>
 	</xsl:template>
 </xsl:stylesheet>

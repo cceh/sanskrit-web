@@ -1,0 +1,12 @@
+- content_for(:title, 'Cologne Sanskrit Lexicon (search)')
+
+%h1
+  Content of
+  = @dict[:common_title]
+  = "(#{@lemmas.count} lemmas)"
+
+%ol
+  - @lemmas.each do |lemma|
+    = render 'index_listing', :lemma => lemma # use entry as variable
+
+-# Licensed under the ISC licence, see LICENCE.ISC for details
