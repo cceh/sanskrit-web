@@ -15,11 +15,11 @@ module ApplicationHelper
 		local_variables = {}
 		global_variables = {}
 
-		if bindings.local_variable_defined?('local_assigns')
-			local_variables = bindings.local_variable_get('local_assigns')
+		if bindings.local_variable_defined?(:local_assigns)
+			local_variables = bindings.local_variable_get(:local_assigns)
 		end
 
-		overriden_include_globals = local_variables['include_globals']
+		overriden_include_globals = local_variables[:include_globals]
 		if !overriden_include_globals.nil?
 			include_globals = overriden_include_globals
 		end
