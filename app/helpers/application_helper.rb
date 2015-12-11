@@ -4,7 +4,7 @@ module ApplicationHelper
 	def render_xslt(bindings, cache_key_fn, data_enhancements_fn, include_globals=false)
 		xslt_path = eval('__FILE__', bindings).sub(/\.erb$/, '.xslt')
 		controller_name = eval('controller_name', bindings)
-		_self = eval('self', bindings)
+		_self = bindings.receiver
 
 		rAILS_NS = "http://svario.it/xslt-rails"
 
