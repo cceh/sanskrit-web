@@ -51,6 +51,21 @@ form {
 	}
 }
 
+div#wait-message {
+	text-align: center;
+	color: #8C7800;
+	background-color: #FFF6BF;
+	padding: 1rem;
+	margin: 0;
+
+	position: relative;
+	display: none;
+
+	p {
+		width: 80%;
+	}
+}
+
 details, summary {
 	display: block; // FIXME: use a reset style
 }

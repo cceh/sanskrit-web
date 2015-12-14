@@ -20,3 +20,4 @@ This project includes code from third parties:
 
 * `jquery-details` by Mathias Bynens from <https://mths.be/details>. MIT
   licence.
+* `spin.js` by Felix Gnass from <http://spin.js.org/>. MIT licence.
