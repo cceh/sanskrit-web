@@ -39,7 +39,7 @@ module ApplicationHelper
 			cache_file = (cache_dir + cache_key).sub_ext('.html')
 			if cache_file.exist?
 				Rails.logger.debug("XSLT Cache hit for #{cache_key}")
-				return cache_file.read
+				return cache_file.read unless params.has_key?(:nocache)
 			end
 		end
 		Rails.logger.debug("XSLT Cache MISS for #{cache_key}")
