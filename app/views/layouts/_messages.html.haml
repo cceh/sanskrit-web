@@ -1,4 +1,4 @@
-- has_errors = !flash.first.nil?
+- has_errors = !flash[:error].empty?
 - if has_errors
   %aside.messages
     - num_msgs = has_errors ? flash.first.second.count : 0
