@@ -79,14 +79,9 @@ class Dictionary < ActiveRecord::Base
 		entries = []
 
 		tei_entries.each do |tei_entry|
-			tei_orth = tei_entry.at("./tei:form/tei:orth", NS)
-			tei_words = [tei_orth]
-
-			transliterations = transliterations_for_words(tei_words)
-
 			entries << {
 				:entry => tei_entry,
-				:transliterations => transliterations,
+				:transliterations => :MISSING,
 				:dict => publication_info,
 			}
 		end
@@ -118,15 +113,12 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def entry_for_lemma(tei_entry)
-		tei_words = tei_words_inside_tei_entry(tei_entry)
-		transliterations = transliterations_for_words(tei_words)
-
 		tei_refs = tei_refs_inside_tei_entry(tei_entry)
 		references = references_for_refs(tei_refs)
 
 		entry = {
 			:entry => tei_entry,
-			:transliterations => transliterations,
+			:transliterations => :MISSING,
 			:references => references,
 			:dict => publication_info,
 		}
@@ -134,7 +126,23 @@ class Dictionary < ActiveRecord::Base
 		return entry
 	end
 
-	def transliterations_for_words(tei_words)
+	def self.transliterations_for_entry(tei_entry)
+		transliterations = {}
+		errors = []
+
+		begin
+			tei_words = self.tei_words_inside_tei_entry(tei_entry)
+			transliterations = self.transliterations_for_words(tei_words)
+		rescue T13n::Error => ex
+			errors << ex
+		end
+
+		return transliterations, errors
+	end
+
+	def self.transliterations_for_words(tei_words)
+		Rails.logger.debug { "Calculating transliterations for #{tei_words.map(&:text).inspect}" }
+
 		transliterations = tei_words.map do |tei_word|
 			raw_lang = tei_word.attr('xml:lang')
 
@@ -160,7 +168,7 @@ class Dictionary < ActiveRecord::Base
 				next [t13n, transliteration]
 			end.to_h
 
-			codeword = codeword_from_pieces(pieces)
+			codeword = Dictionary.codeword_from_pieces(pieces)
 
 			next [codeword, transliterations]
 		end
@@ -168,7 +176,7 @@ class Dictionary < ActiveRecord::Base
 		return transliterations.to_h
 	end
 
-	def codeword_from_pieces(pieces)
+	def Dictionary.codeword_from_pieces(pieces)
 		codeword = ""
 
 		pieces.each do |piece|
@@ -190,15 +198,15 @@ class Dictionary < ActiveRecord::Base
 		return codeword
 	end
 
-	def tei_words_inside_tei_entry(tei_entry)
+	def self.tei_words_inside_tei_entry(tei_entry)
 		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][(@xml:lang = 'san-Latn-x-SLP1') or (@xml:lang = 'san-Latn-x-SLP1-headword2')]", NS)
 		tei_words = tei_words.to_a.reject { |w| w.text.blank? }
 		return tei_words
 	end
 
-	def transliterations_for_word(word, lang_tag)
+	def self.transliterations_for_word(word, lang_tag)
 		if !word.is_a?(String)
-			return transliterations_for_word_element(word, lang_tag)
+			return Dictionary.transliterations_for_word_element(word, lang_tag)
 		end
 
 		mETHOD_FOR_LANG = {
@@ -225,7 +233,7 @@ class Dictionary < ActiveRecord::Base
 		end
 	end
 
-	def transliterations_for_word_element(word, lang_tag)
+	def Dictionary.transliterations_for_word_element(word, lang_tag)
 		if word.text.empty?
 			word_elem = word.dup
 			transliterations = {

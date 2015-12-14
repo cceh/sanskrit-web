@@ -44,7 +44,7 @@ module ApplicationHelper
 		end
 		Rails.logger.debug("XSLT Cache MISS for #{cache_key}")
 
-		data_enhancements_fn[all_variables]
+		data_enhancements_fn[all_variables, flash]
 
 		wrapper = Nokogiri::XML("<rails:variables xmlns:rails='#{rAILS_NS}'/>")
 		local_variables.each_pair do |var_name, value|
@@ -216,11 +216,42 @@ module ApplicationHelper
 		return key
 	end
 
-	def ApplicationHelper.add_transliterations(vars)
+	def ApplicationHelper.add_transliterations(vars, flash)
+		add_missing_transliterations = lambda do |value|
+			if value.nil? ; return ; end
+
+			if value.is_a?(Hash) && value[:transliterations] == :MISSING
+				tei_entry = value[:entry]
+
+				transliterations, errors = Dictionary.transliterations_for_entry(tei_entry)
+				value[:transliterations] = transliterations
+
+				dict_handle = value[:dict][:handle]
+				errors.each do |ex|
+					tei_orth = tei_entry.xpath('.//text()[normalize-space(.) != "" ]').first
+					error_message = "(in #{dict_handle}, #{tei_orth}) " + ex.message
+					Rails.logger.error(error_message)
+					Rails.logger.error(ex.cause)
+					unless flash.now[:error].count >= 10
+						flash.now[:error] << error_message
+						flash.now[:cause] << ex.cause.inspect
+					end
+				end
+			elsif value.is_a?(Array)
+				value.each do |v|
+					add_missing_transliterations[v]
+				end
+			else
+				# ignore
+				#raise "Variable kind not handled: #{value.class}"
+			end
+		end
+
+		add_missing_transliterations[vars.values]
 	end
 
 	CACHE_KEY_FN = lambda { |xslt_name, vars| cache_key_for_rendering(xslt_name, vars) }
-	ENHANCE_FN = lambda { |vars| add_transliterations(vars) }
+	ENHANCE_FN = lambda { |vars, flash| add_transliterations(vars, flash) }
 end
 
 # Licensed under the ISC licence, see LICENCE.ISC for details
