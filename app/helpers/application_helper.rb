@@ -104,6 +104,8 @@ module ApplicationHelper
 			html = root.to_xml(save_opts)
 		end
 
+		GC.start
+
 		cache_file.parent.mkpath
 		cache_file.open('w') { |f| f << html }
 		return html
