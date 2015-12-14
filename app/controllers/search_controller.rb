@@ -117,11 +117,6 @@ class SearchController < ApplicationController
 			:preceding => {},
 			:following => {},
 		}
-
-		flash.now[:error] ||= []
-		flash.now[:query] ||= []
-		flash.now[:response] ||= []
-		flash.now[:cause] ||= []
 	end
 
 	def default_params
