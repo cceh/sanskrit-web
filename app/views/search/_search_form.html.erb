@@ -50,7 +50,7 @@ value_how = proc do |value|
 	value_attr[value, is_selected_fn]
 end
 %>
-<form action="/search" method="GET">
+<form action="<%= controller.relative_url_root %>/search" method="GET">
 	<div id="query">
 		<label for="q">Query:</label>
 		<input type="text" name="q" id="q" value="<%= @query[:term] %>" />

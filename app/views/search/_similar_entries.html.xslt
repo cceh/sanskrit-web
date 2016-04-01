@@ -8,6 +8,8 @@
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>
 
+	<xsl:variable name="url-root" select="string(/rails:variables/rails:relative_url_root)"/>
+
 	<xsl:variable name="entries" select="/rails:variables/rails:similar_entries"/>
 
 	<xsl:key name="entries" match="/rails:variables/rails:similar_entries/rails:elem/rails:entry/*[self::tei:entry or self::tei:re]" use="tei:form/tei:orth" />
@@ -54,6 +56,7 @@
 			<xsl:variable name="search-url">
 				<xsl:call-template name="search-url">
 					<xsl:with-param name="text" select="$lemma"/>
+					<xsl:with-param name="url-root" select="$url-root"/>
 				</xsl:call-template>
 			</xsl:variable>
 

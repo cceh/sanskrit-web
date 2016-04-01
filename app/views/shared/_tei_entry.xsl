@@ -8,6 +8,8 @@
 	<xsl:import href="_urls.xsl"/>
 	<xsl:import href="_transliterations.xsl"/>
 
+	<xsl:variable name="url-root" select="string(/rails:variables/rails:relative_url_root)"/>
+
 	<xsl:template match="tei:form" mode="heading">
 		<xsl:variable name="tei-entry" select="ancestor::*[self::tei:entry or self::tei:re]"/>
 		<xsl:variable name="rails-entry" select="$tei-entry/.."/>
@@ -267,6 +269,7 @@
 		<xsl:variable name="search-url">
 			<xsl:call-template name="search-url">
 				<xsl:with-param name="text" select="$text"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
 			</xsl:call-template>
 		</xsl:variable>
 
@@ -307,6 +310,7 @@
 			<xsl:call-template name="scan-url">
 				<xsl:with-param name="page-ref" select="$page-ref"/>
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
 			</xsl:call-template>
 		</xsl:variable>
 

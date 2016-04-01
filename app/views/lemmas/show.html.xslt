@@ -9,6 +9,8 @@
 	<xsl:import href="../shared/_chars.xsl"/>
 	<xsl:import href="../shared/_info.xsl"/>
 
+	<xsl:variable name="url-root" select="string(/rails:variables/rails:relative_url_root)"/>
+
 	<xsl:variable name="dict-info" select="/rails:variables/rails:lemma/rails:dict"/>
 	<xsl:variable name="dict-handle" select="$dict-info/rails:handle/text()"/>
 	<xsl:variable name="dict-common-title" select="$dict-info/rails:common_title/text()"/>
@@ -73,6 +75,7 @@
 			<xsl:call-template name="lemma-url">
 				<xsl:with-param name="tei-entry" select="."/>
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
 			</xsl:call-template>
 		</xsl:variable>
 
@@ -95,6 +98,7 @@
 			<xsl:call-template name="lemma-url">
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
 				<xsl:with-param name="tei-entry" select="$tei-entry"/>
+				<xsl:with-param name="url-root" select="''"/> <!-- no URL root for the ID pseudo URL -->
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="lemma-url" select="/rails:variables/rails:request_url/text()"/>
@@ -104,6 +108,7 @@
 			<xsl:value-of select="/rails:variables/rails:request_base_url/text()"/>
 			<xsl:call-template name="dict-url">
 				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
 			</xsl:call-template>
 		</xsl:variable>
 		<xsl:variable name="project-url" select="/rails:variables/rails:request_base_url/text()"/>

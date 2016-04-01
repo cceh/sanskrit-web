@@ -61,6 +61,7 @@ module ApplicationHelper
 		wrapper.root << xml_element_for_variable('date', now.strftime('%Y-%m-%d %H:%M:%S %z'))
 		wrapper.root << xml_element_for_variable('request_base_url', request.base_url)
 		wrapper.root << xml_element_for_variable('request_url', request.url)
+		wrapper.root << xml_element_for_variable('relative_url_root', controller.relative_url_root)
 
 		if Rails.logger.debug?
 			now_str = now.strftime('%Y%m%d-%H%M%S-%6N')

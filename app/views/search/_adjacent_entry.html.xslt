@@ -7,6 +7,8 @@
 	<xsl:import href="../shared/_tei_entry.xsl"/>
 	<xsl:import href="../shared/_urls.xsl"/>
 
+	<xsl:variable name="url-root" select="string(/rails:variables/rails:relative_url_root)"/>
+
 	<xsl:variable name="tei-entry" select="/rails:variables/rails:lemma/rails:entry/*[self::tei:entry or self::tei:re]"/>
 
 	<xsl:template match="/">
@@ -19,6 +21,7 @@
 		<xsl:variable name="search-url">
 			<xsl:call-template name="search-url">
 				<xsl:with-param name="text" select="$lemma"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
 			</xsl:call-template>
 		</xsl:variable>
 
