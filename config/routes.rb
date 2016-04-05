@@ -8,14 +8,14 @@ Sanskrit::Application.routes.draw do
 
 	get '/search', :to => 'search#index'
 
-	get '/dictionary', :to => redirect('/dictionaries')
-	get '/dictionaries', :to => 'dictionaries#index'
+	get '/dictionary', :to => redirect('dictionaries/')
+	get '/dictionaries/', :to => 'dictionaries#index', :trailing_slash => true
 	resources :dictionary, :controller => 'dictionaries', :only => [:index, :show] do
-		get '/lemma', :to => redirect { |params, req| "/dictionary/#{params[:dictionary_id]}/lemmas" }
+		get '/lemma', :to => redirect { |params, req| "dictionary/#{params[:dictionary_id]}/lemmas" }
 		get '/lemmas', :to => 'lemmas#index'
 		resources :lemma, :controller => 'lemmas', :only => [:index, :show]
 
-		get '/scan', :to => redirect { |params, req| "/dictionary/#{params[:dictionary_id]}/scans" }
+		get '/scan', :to => redirect { |params, req| "dictionary/#{params[:dictionary_id]}/scans" }
 		get '/scans', :to => 'scans#index'
 		resources :scan, :controller => 'scans', :only => [:index, :show]
 	end
