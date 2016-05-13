@@ -314,13 +314,20 @@
 			</xsl:call-template>
 		</xsl:variable>
 
+		<xsl:variable name="dict-url">
+			<xsl:call-template name="dict-url">
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
+			</xsl:call-template>
+		</xsl:variable>
+
 		<xsl:value-of select="$char-space"/>
 
 		<cite class="provenance-info">
 			<xsl:text>(</xsl:text>
 			<abbr class="dictionary">
-				<a href="/dictionary/{$dict-handle}">
-					<xsl:value-of select="$dict-handle"/>
+				<a href="{$dict-url}">
+					<xsl:value-of select="$dict-handle"/> <!-- FIXME: use a more readable name -->
 				</a>
 			</abbr>
 
