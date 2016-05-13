@@ -40,8 +40,10 @@ Sanskrit::Application.configure do
   # config.action_view.raise_on_missing_translations = true
 
 #	config.middleware.use Rack::RubyProf,
+#		:request_thread_only => true,
+#		:merge_fibers => true,
 #		:path => Rails.root + 'tmp/sanskrit-web-profile',
-#		:printers => { RubyProf::CallTreePrinter => 'calltree.cachegrind.out' }
+#		:printers => { RubyProf::CallTreePrinter => 'calltree' }
 end
 
 # Licensed under the ISC licence, see LICENCE.ISC for details
