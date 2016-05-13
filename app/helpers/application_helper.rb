@@ -105,7 +105,7 @@ module ApplicationHelper
 			html = root.to_xml(save_opts)
 		end
 
-		GC.start
+		GC.start if Random.rand(100).zero?
 
 		cache_file.parent.mkpath
 		cache_file.open('w') { |f| f << html }
