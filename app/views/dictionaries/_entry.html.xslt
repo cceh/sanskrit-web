@@ -5,6 +5,9 @@
                 exclude-result-prefixes="tei rails"
                 version="1.0">
 	<xsl:import href="../shared/_chars.xsl"/>
+	<xsl:import href="../shared/_urls.xsl"/>
+
+	<xsl:variable name="url-root" select="string(/rails:variables/rails:relative_url_root)"/>
 
 	<xsl:variable name="dict-handle" select="/rails:variables/rails:dict_handle"/>
 
@@ -19,9 +22,16 @@
 
 		<xsl:variable name="author" select=".//tei:sourceDesc//tei:author"/>
 
+		<xsl:variable name="dict-url">
+			<xsl:call-template name="dict-url">
+				<xsl:with-param name="dict-handle" select="$dict-handle"/>
+				<xsl:with-param name="url-root" select="$url-root"/>
+			</xsl:call-template>
+		</xsl:variable>
+
 		<section>
 			<h2>
-				<a href="../dictionary/{$dict-handle}">
+				<a href="{$dict-url}">
 					<xsl:value-of select="$desc-title"/>
 				</a>
 			</h2>
@@ -42,13 +52,13 @@
 			</p>
 
 			<p>
-				<a href="../dictionary/{$dict-handle}">
+				<a href="{$dict-url}">
 					<xsl:text>More info</xsl:text>
 				</a>
 
 				<xsl:value-of select="$char-space"/>
 
-				<a href="../dictionary/{$dict-handle}/scans">
+				<a href="{$dict-url}/scans">
 					<xsl:text>Browse</xsl:text>
 				</a>
 
