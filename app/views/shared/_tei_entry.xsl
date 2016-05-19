@@ -16,41 +16,89 @@
 		<xsl:variable name="tei-orth" select="tei:orth/text()"/>
 		<xsl:variable name="transliterations" select="$rails-entry/../rails:transliterations/rails:*[@orig-key = $tei-orth or local-name() = $tei-orth]"/>
 
+		<xsl:variable name="orth-language" select="tei:orth/@xml:lang"/> <!-- FIXME: traverse parents to find the correct xml:lang -->
+		<xsl:variable name="needs-transliterations" select="starts-with($orth-language, 'san')"/>
+
+		<xsl:choose>
+			<xsl:when test="$needs-transliterations">
+				<xsl:apply-templates select="." mode="heading-with-transliterations">
+					<xsl:with-param name="transliterations" select="$transliterations"/>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="." mode="heading-no-transliterations">
+					<xsl:with-param name="transliterations" select="$transliterations"/>
+				</xsl:apply-templates>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="tei:form" mode="heading-with-transliterations">
+		<xsl:param name="transliterations"/>
+
 		<xsl:variable name="native-script" select="$transliterations/*[not(contains(local-name(), '-Latn'))]"/>
 		<xsl:variable name="romanized-script" select="$transliterations/rails:san-Latn-x-ISO15919"/>
 		<xsl:variable name="additional-scripts" select="$transliterations/*[not(self::rails:san-Latn-x-ISO15919) and contains(local-name(), '-Latn')]"/>
-
+		
 		<xsl:apply-templates select="$native-script" mode="heading"/>
 		<xsl:apply-templates select="../@n"/>
-
+		
 		<xsl:value-of select="$char-space"/>
-
+		
 		<span class="transliterations">
 			<xsl:apply-templates select="$romanized-script" mode="heading">
 				<xsl:with-param name="last" select="false()"/>
 			</xsl:apply-templates>
-
+			
 			<xsl:value-of select="$char-space"/>
-
+			
 			<span class="parens">
 				<xsl:text>(</xsl:text>
 			</span>
-
+			
 			<xsl:for-each select="$additional-scripts">
 				<xsl:sort select="local-name()"/>
-
+				
 				<xsl:apply-templates select="." mode="heading">
 					<xsl:with-param name="last" select="position() = count($additional-scripts)"/>
 				</xsl:apply-templates>
 			</xsl:for-each>
-
+			
 			<span class="parens">
 				<xsl:text>)</xsl:text>
 			</span>
 		</span>
 	</xsl:template>
 
+	<xsl:template match="tei:form" mode="heading-no-transliterations">
+		<xsl:param name="transliterations"/>
+
+		<xsl:value-of select="string(tei:orth)"/>
+	</xsl:template>
+
+
+
 	<xsl:template match="tei:form" mode="definition">
+		<xsl:param name="linked-url"/>
+
+		<xsl:variable name="orth-language" select="tei:orth/@xml:lang"/> <!-- FIXME: traverse parents to find the correct xml:lang -->
+		<xsl:variable name="needs-transliterations" select="starts-with($orth-language, 'san')"/>
+
+		<xsl:choose>
+			<xsl:when test="$needs-transliterations">
+				<xsl:apply-templates select="." mode="definition-with-transliterations">
+					<xsl:with-param name="linked-url" select="$linked-url"/>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="." mode="definition-no-transliterations">
+					<xsl:with-param name="linked-url" select="$linked-url"/>
+				</xsl:apply-templates>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="tei:form" mode="definition-with-transliterations">
 		<xsl:param name="linked-url"/>
 
 		<xsl:call-template name="text-and-transliterations">
@@ -78,7 +126,47 @@
 		</xsl:if>
 	</xsl:template>
 
+	<xsl:template match="tei:form" mode="definition-no-transliterations">
+		<xsl:variable name="hyph-diff-from-orth" select="true()"/>
+
+		<dt>
+			<dfn>
+				<xsl:apply-templates select="tei:orth"/>
+			</dfn>
+		</dt>
+
+		<xsl:if test="$hyph-diff-from-orth">
+			<dt>
+				<dfn>
+					<xsl:apply-templates select="tei:hyph"/>
+				</dfn>
+			</dt>
+		</xsl:if>
+	</xsl:template>
+
+
+
 	<xsl:template match="tei:form" mode="listing">
+		<xsl:param name="linked-url"/>
+
+		<xsl:variable name="orth-language" select="tei:orth/@xml:lang"/> <!-- FIXME: traverse parents to find the correct xml:lang -->
+		<xsl:variable name="needs-transliterations" select="starts-with($orth-language, 'san')"/> <!-- FIXME: move to a shared template -->
+
+		<xsl:choose>
+			<xsl:when test="$needs-transliterations">
+				<xsl:apply-templates select="." mode="listing-with-transliterations">
+					<xsl:with-param name="linked-url" select="$linked-url"/>
+				</xsl:apply-templates>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:apply-templates select="." mode="listing-no-transliterations">
+					<xsl:with-param name="linked-url" select="$linked-url"/>
+				</xsl:apply-templates>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template match="tei:form" mode="listing-with-transliterations">
 		<xsl:param name="linked-url"/>
 
 		<xsl:call-template name="text-and-transliterations">
@@ -91,6 +179,30 @@
 			<xsl:with-param name="rails-entry" select="parent::tei:*/parent::rails:entry"/>
 		</xsl:call-template>
 	</xsl:template>
+
+	<xsl:template match="tei:form" mode="listing-no-transliterations">
+		<xsl:param name="linked-url"/>
+
+		<a href="{$linked-url}">
+			<xsl:apply-templates select="tei:orth"/>
+		</a>
+	</xsl:template>
+
+
+
+	<xsl:template match="tei:orth">
+		<xsl:apply-templates/>
+	</xsl:template>
+
+	<xsl:template match="tei:hyph">
+		<xsl:apply-templates/>
+	</xsl:template>
+
+	<xsl:template match="tei:hyph/tei:choice">
+		<xsl:apply-templates select="tei:expan"/>
+	</xsl:template>
+
+
 
 	<xsl:template match="tei:*/@n">
 		<sup class="homograph-id">

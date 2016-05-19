@@ -16,6 +16,11 @@ dl > div.transliterations {
 	}
 }
 
+dl > dt {
+	display: block;
+	font-weight: bold;
+}
+
 sup {
 	font-weight: normal;
 	font-size: normal;
