@@ -127,18 +127,29 @@
 	</xsl:template>
 
 	<xsl:template match="tei:form" mode="definition-no-transliterations">
+		<xsl:param name="linked-url"/>
+
+		<xsl:variable name="hyph-text">
+			<xsl:apply-templates select="tei:hyph"/>
+		</xsl:variable>
 		<xsl:variable name="hyph-diff-from-orth" select="true()"/>
 
 		<dt>
 			<dfn>
-				<xsl:apply-templates select="tei:orth"/>
+				<xsl:call-template name="text-no-transliterations">
+					<xsl:with-param name="text" select="string(tei:orth)"/>
+					<xsl:with-param name="linked-url" select="$linked-url"/>
+				</xsl:call-template>
 			</dfn>
 		</dt>
 
 		<xsl:if test="$hyph-diff-from-orth">
 			<dt>
 				<dfn>
-					<xsl:apply-templates select="tei:hyph"/>
+					<xsl:call-template name="text-no-transliterations">
+						<xsl:with-param name="text" select="$hyph-text"/>
+						<xsl:with-param name="linked-url" select="$linked-url"/>
+					</xsl:call-template>
 				</dfn>
 			</dt>
 		</xsl:if>
@@ -183,9 +194,28 @@
 	<xsl:template match="tei:form" mode="listing-no-transliterations">
 		<xsl:param name="linked-url"/>
 
-		<a href="{$linked-url}">
-			<xsl:apply-templates select="tei:orth"/>
-		</a>
+		<xsl:call-template name="text-no-transliterations">
+			<xsl:with-param name="text" select="string(tei:orth)"/>
+			<xsl:with-param name="linked-url" select="$linked-url"/>
+		</xsl:call-template>
+	</xsl:template>
+
+
+
+	<xsl:template name="text-no-transliterations">
+		<xsl:param name="text"/>
+		<xsl:param name="linked-url"/>
+
+		<xsl:choose>
+			<xsl:when test="$linked-url != ''">
+				<a href="{$linked-url}">
+					<xsl:value-of select="$text"/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$text"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 
