@@ -81,7 +81,7 @@ class SearchController < ApplicationController
 		params ||= {
 			:ilang => ['san', 'en', 'de'],
 			:it13n => 'slp1',
-			:dict => ['monier', 'pwg'],
+			:dict => ['monier', 'pwg', 'aptestud'],
 			:where => [ 'lemma', 'def' ],
 			:how => [ 'exact', 'partial', 'similar' ],
 		}
@@ -122,7 +122,7 @@ class SearchController < ApplicationController
 	def default_params
 		params[:ilang] ||= ['san', 'en', 'de']
 		params[:it13n] ||= 'slp1'
-		params[:dict] ||= ['monier', 'pwg'] # FIXME: use all dictionaries if no dict has been specified
+		params[:dict] ||= ['monier', 'pwg', 'aptestud'] # FIXME: use all dictionaries if no dict has been specified
 		params[:where] ||= [ 'lemma', 'def' ]
 		params[:how] ||= [ 'exact', 'partial', 'similar' ]
 	end
