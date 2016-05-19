@@ -47,11 +47,13 @@ gem 'puma'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-LOCAL_GEMS_PATH = '~/Projects'
+LOCAL_GEMS_PATHS = ['..', '~/Projects']
 gem_location = lambda do |project|
-	local_path = "#{LOCAL_GEMS_PATH}/#{project}"
-	if File.exist?(File.expand_path(local_path))
-		{ path: local_path }
+	local_paths = LOCAL_GEMS_PATHS.map { |prefix| "#{prefix}/#{project}" }
+	if File.exist?(File.expand_path(local_paths[0]))
+		{ path: local_paths[0] }
+	elsif File.exist?(File.expand_path(local_paths[1]))
+		{ path: local_paths[1] }
 	else
 		{ github: "gioele/#{project}" }
 	end
