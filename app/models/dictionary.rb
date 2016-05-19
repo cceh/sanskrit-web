@@ -199,7 +199,7 @@ class Dictionary < ActiveRecord::Base
 	end
 
 	def self.tei_words_inside_tei_entry(tei_entry)
-		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][(@xml:lang = 'san-Latn-x-SLP1') or (@xml:lang = 'san-Latn-x-SLP1-headword2')]", NS)
+		tei_words = tei_entry.xpath("./*[not(self::tei:re)]//*[self::tei:orth or self::tei:hyph or self::tei:w or self::tei:m][(@xml:lang = 'san-Latn-x-SLP1') or (@xml:lang = 'san-Latn-x-SLP1-headword2') or (@xml:lang = 'san-Latn-x-HK')]", NS)
 		tei_words = tei_words.to_a.reject { |w| w.text.blank? }
 		return tei_words
 	end
@@ -211,13 +211,14 @@ class Dictionary < ActiveRecord::Base
 
 		mETHOD_FOR_LANG = {
 			'san-Latn-x-SLP1' => :slp1,
-			'san-Latn-x-SLP1-headword2' => :slp1_headword2
+			'san-Latn-x-SLP1-headword2' => :slp1_headword2,
+			'san-Latn-x-HK' => :hk,
 		}
 
 		method = mETHOD_FOR_LANG[lang_tag]
 
 		case lang_tag
-		when 'san-Latn-x-SLP1', 'san-Latn-x-SLP1-headword2'
+		when 'san-Latn-x-SLP1', 'san-Latn-x-SLP1-headword2', 'san-Latn-x-HK'
 			native_script = word.transliterate(:Deva, :method => method)
 
 			# TODO: only generate the needed transliterations
