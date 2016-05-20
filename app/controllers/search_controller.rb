@@ -79,11 +79,14 @@ class SearchController < ApplicationController
 	def self.query_from_params(params = nil)
 		# FIXME: find a way to merge with default_params
 		params ||= {
-			:ilang => ['san', 'en', 'de'],
+#			:ilang => ['san', 'en', 'de'],
+			:ilang => ['san'],
 			:it13n => 'slp1',
 			:dict => ['monier', 'pwg', 'aptestud'],
-			:where => [ 'lemma', 'def' ],
-			:how => [ 'exact', 'partial', 'similar' ],
+#			:where => [ 'lemma', 'def' ],
+			:where => ['lemma'],
+#			:how => [ 'exact', 'partial', 'similar' ],
+			:how => ['exact'],
 		}
 
 		term = params[:q]
@@ -120,11 +123,14 @@ class SearchController < ApplicationController
 	end
 
 	def default_params
-		params[:ilang] ||= ['san', 'en', 'de']
+#		params[:ilang] ||= ['san' , 'en', 'de']
+		params[:ilang] ||= ['san']
 		params[:it13n] ||= 'slp1'
 		params[:dict] ||= ['monier', 'pwg', 'aptestud'] # FIXME: use all dictionaries if no dict has been specified
-		params[:where] ||= [ 'lemma', 'def' ]
-		params[:how] ||= [ 'exact', 'partial', 'similar' ]
+#		params[:where] ||= [ 'lemma', 'def' ]
+		params[:where] ||= ['lemma']
+#		params[:how] ||= [ 'exact', 'partial', 'similar' ]
+		params[:how] ||= ['exact']
 	end
 
 	def validate_params
